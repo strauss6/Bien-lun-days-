@@ -83,6 +83,8 @@ export interface GridCell extends AspectHit {
 export interface DayAspect extends GridCell {
   transit: PlanetId;
   natal: PointId;
+  /** Contribution signée de cet aspect au score du jour, pour cet axe. */
+  contribution: number;
 }
 
 export interface AxisDay {
@@ -94,7 +96,14 @@ export interface AxisDay {
   score: number;
   /** Score brut, pour le debug et les tests. */
   raw: number;
-  /** Aspects du jour qui contribuent à cet axe, du plus fort au plus faible. */
+  /**
+   * Score de sélection des dates : même calcul, contribution lunaire divisée
+   * par quatre. La Lune donne au ruban son grain quotidien, mais elle repasse
+   * sur chaque point natal tous les mois — elle ne doit pas décider des cinq
+   * dates du rapport.
+   */
+  significance: number;
+  /** Aspects du jour, du plus contributif au moins contributif en valeur absolue. */
   aspects: DayAspect[];
 }
 

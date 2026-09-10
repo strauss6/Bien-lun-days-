@@ -32,9 +32,16 @@ Une heure d'erreur = ~15° d'Ascendant = produit faux. Pipeline :
 1. `ville → { lat, lng }` : table `cities` importée de GeoNames `cities5000`, recherche
    trigram + population décroissante. Aucun appel réseau.
 2. `{ lat, lng } → zone IANA` : `tz-lookup`.
-3. `(date locale, heure locale, zone) → UTC` : `DateTime.fromObject(..., { zone })` de
-   `luxon`, qui applique la règle **en vigueur à cette date** via la tzdata du runtime
-   (heure d'été, décalages historiques, offsets non entiers).
+3. `(date locale, heure locale, zone) → UTC` : offsets candidats de la veille, du jour et
+   du lendemain, chacun testé par aller-retour sur l'heure murale demandée. La règle
+   appliquée est celle **en vigueur à cette date** (heure d'été, décalages historiques,
+   offsets non entiers).
+
+   **`luxon` n'est pas utilisé ici.** Son champ `offset` est en minutes entières, ce qui
+   perd les 21 secondes de Paris Mean Time (`+00:09:21`, en vigueur en France jusqu'au
+   11 mars 1911). `Intl.DateTimeFormat` avec `timeZoneName: 'longOffset'` expose l'offset
+   à la seconde — vérifié : Node renvoie bien `GMT+00:09:21`. 21 secondes valent 5' d'
+   Ascendant : peu, mais gratuit à conserver.
 
 Signature :
 
@@ -67,15 +74,17 @@ honnête au lieu de simuler une précision qu'il n'a pas.
 |---|---|---|
 | 1 | Paris, 14/03/1991 14:07 | UTC+1 → `13:07Z` |
 | 2 | Paris, 15/07/1985 03:30 | UTC+2 (CEST) → `01:30Z` |
-| 3 | Paris, 28/03/1976 02:30 | `dst-gap` — l'heure d'été est réintroduite cette nuit-là |
-| 4 | New York, 05/11/2000 01:30 | `dst-ambiguous`, premier offset UTC−4 |
+| 3 | Paris, 28/03/1976 01:30 | `dst-gap` — la transition a lieu à 01:00, l'heure murale 01:30 n'a jamais existé ; 02:30 la même nuit est valide |
+| 4 | New York, 29/10/2000 01:30 | `dst-ambiguous`, premier offset UTC−4 |
 | 5 | Paris, 05/02/1911 08:00 | **Paris Mean Time, UTC+00:09:21** → `07:50:39Z` — naissance avant 1945 en France |
 | 6 | Paris, 10/06/1943 09:00 | UTC+2 (heure allemande d'été, occupation) → `07:00Z` |
 | 7 | Kolkata, 01/01/1990 06:00 | UTC+5:30 |
 | 8 | Sydney, 01/01/1990 06:00 | UTC+11 (été austral) |
 
 Les cas 5 et 6 sont les vrais tests de régression : ils échouent avec toute implémentation
-naïve à offset fixe.
+naïve à offset fixe. Le cas 3 a été calibré sur le comportement réel de la tzdata — la
+transition française de 1976 est à 01:00, pas à 02:00 comme le supposait la première
+version de ce document.
 
 ## 3. `natal.ts`
 
@@ -101,9 +110,19 @@ l'Ascendant reste défini, on le calcule sans cas particulier.
 **Maisons en signes entiers** — décision actée, Placidus non implémenté :
 `house(p) = ((signe(p) − signe(ASC) + 12) mod 12) + 1`.
 
-**Validation** : trois thèmes de référence documentés (données de naissance publiques),
-comparaison aux longitudes de référence — tolérance **0,05°** pour les planètes, **0,2°**
-pour ASC/MC. Ces tests conditionnent la suite du développement.
+**Validation, sans donnée externe.** Plutôt que de comparer à un thème de référence
+recopié, les tests rejouent la géométrie : l'Ascendant calculé est converti en
+coordonnées horizontales avec les rotations d'astronomy-engine, et on vérifie qu'il est
+bien à **altitude nulle sur l'horizon est** ; le MC qu'il coupe le **méridien**. Cinq
+sites, deux hémisphères, une haute latitude (Helsinki). Résultat obtenu : altitude de
+l'ASC à `−0,0000°`, azimut du MC à `180,00°`.
+
+Ce test a immédiatement trouvé un bug qu'aucune relecture n'aurait attrapé : un signe
+inversé sur l'obliquité, qui déplaçait l'Ascendant d'un signe entier.
+
+Contrôles planétaires complémentaires, sur des repères publics : la **conjonction
+Uranus–Neptune de 1993** vers 19° du Capricorne (obtenue à 19°14' et 19°06', 8' d'écart),
+l'entrée de Pluton en Sagittaire, et la position du Soleil au jour près.
 
 ## 4. `aspects.ts`
 
@@ -134,9 +153,16 @@ Un aspect large existe sans peser ; un aspect serré domine la journée.
 - Chaque jour renvoie la liste brute des aspects trouvés `{ transit, aspect, natal, orb, e }`,
   conservée jusqu'au rapport : c'est elle qui alimente les textes et l'affichage des orbes.
 
-Volume : 48 couples (transit × point natal) × 5 aspects × 90 jours = **21 600 combinaisons
-testées**, typiquement 200 à 400 aspects retenus. Ce sont ces deux nombres réels qui
-s'affichent sur l'écran de calcul.
+Volume : 57 couples (16 Business + 25 Amour + 16 Énergie) × 5 aspects × 90 jours =
+**25 650 combinaisons testées**, environ **200 aspects retenus** sur les thèmes de contrôle
+(un « aspect retenu » est un événement continu, pas un jour : Vénus qui reste deux semaines
+dans l'orbe d'un trigone compte pour un). Ce sont ces nombres réels qui s'affichent sur
+l'écran de calcul.
+
+**Marge de calcul.** La grille est calculée sur 92 jours, un de plus de chaque côté. Sans
+cette marge le lissage du premier et du dernier jour ne dispose que d'un voisin, leur
+variance est plus forte que celle du reste de la série, et les deux bords se retrouvent
+surreprésentés dans les extrêmes du rapport. La marge est retirée avant la normalisation.
 
 ## 6. `scoring.ts`
 
@@ -146,8 +172,8 @@ Planètes en transit :
 
 | Axe | Poids |
 |---|---|
-| Business | Jupiter 1,00 · Saturne 0,90 · Mercure 0,60 · Soleil 0,70 |
-| Amour | Vénus 1,00 · Mars 0,70 · Jupiter 0,65 · Lune 0,45 |
+| Business | Jupiter 1,00 · Saturne 0,90 · Soleil 0,70 · Mercure 0,60 |
+| Amour | Vénus 1,00 · Mars 0,70 · Jupiter 0,65 · Soleil 0,55 · Lune 0,45 |
 | Énergie | Mars 1,00 · Saturne 0,85 · Soleil 0,80 · Lune 0,50 |
 
 Points natals visés :
@@ -155,8 +181,16 @@ Points natals visés :
 | Axe | Poids |
 |---|---|
 | Business | Soleil 1,00 · MC 0,95 · Mercure 0,70 · Jupiter 0,60 |
-| Amour | Vénus 1,00 · Lune 0,80 · DSC 0,75 · Soleil 0,60 |
+| Amour | Vénus 1,00 · Lune 0,80 · DSC 0,75 · Mars 0,70 · Soleil 0,60 |
 | Énergie | ASC 1,00 · Soleil 0,85 · Mars 0,80 · Lune 0,55 |
+
+**Écart assumé au périmètre initial.** L'axe Amour porte le Soleil en transit et le Mars
+natal en plus de la liste prévue. Sur 90 jours Vénus parcourt ~110°, Mars ~50° et Jupiter
+~8° : cela ne produit pas cinq événements **distincts** vers quatre points natals, et deux
+thèmes de contrôle sur huit ne pouvaient pas livrer cinq dates Amour. Le paywall promet
+cinq dates par axe ; la promesse est donc une contrainte de moteur. Le Soleil sur le Vénus
+ou le Descendant natal est par ailleurs une configuration relationnelle classique, et
+Vénus–Mars est le cœur du sujet. Un test tient la promesse sur dix thèmes quelconques.
 
 Polarité de l'aspect, modulée par la nature du transitant :
 
@@ -200,11 +234,27 @@ du rapport — *« Fond de période : Saturne traverse ta maison 10 sur les 90 j
 Ajout que je recommande : c'est l'information la plus impressionnante du rapport et elle
 disparaîtrait sinon.
 
-### 6.3 Sélection des dates
+### 6.3 Sélection des dates — trois contraintes, chacune trouvée sur un rapport réel
 
-Top 5 et bottom 3 par axe avec **contrainte d'espacement minimum de 3 jours** : on garde le
-meilleur jour de chaque grappe. Sans elle, un seul transit exact livre cinq dates
-consécutives et le rapport paraît vide.
+L'espacement de 3 jours ne suffit pas. Les trois règles suivantes ont été ajoutées après
+avoir lu de vrais rapports générés sur un vrai thème :
+
+1. **Événements distincts.** Vénus reste dans l'orbe d'un trigone une quinzaine de jours :
+   avec le seul espacement de 3 jours, les cinq « meilleures dates Amour » étaient cinq
+   fois « Vénus trigone Vénus ». Deux dates du rapport ne peuvent plus partager le même
+   `transit|aspect|point natal`.
+2. **La Lune ne décide pas des dates.** Elle repasse sur chaque point natal tous les mois.
+   Elle donne au ruban son grain quotidien — c'est voulu, un jour de Lune *est* un
+   événement d'un jour — mais elle ne doit pas remplir le top 5, sinon le rapport promet
+   une date rare et livre un événement mensuel. Deux séries sont donc calculées : celle
+   qui s'affiche, Lune à poids plein, et celle qui classe, Lune divisée par quatre.
+3. **Seuil de qualité.** Une date citée doit dépasser 55 (ou descendre sous 45). Un axe ne
+   présente pas un jour tiède comme un pic.
+
+**Aspect cité.** Le trier par proximité à l'exact est faux : un carré très serré peut être
+l'aspect le plus net d'une journée par ailleurs excellente, et le rapport justifiait alors
+un pic par un aspect négatif. Un bon jour est expliqué par sa plus forte contribution
+**positive**, un mauvais par sa plus forte contribution **négative**.
 
 ## 7. Génération des textes
 
