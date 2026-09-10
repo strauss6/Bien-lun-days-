@@ -169,3 +169,21 @@ réparé, ce qui reste incertain.
 - **Incertain** : le bandeau de saison n'est pour l'instant qu'une barre colorée sans nom.
   Il lui faut deux mots — ÉTÉ, AUTOMNE — pour que l'idée « on lit le temps passer » se
   comprenne. À traiter avec la carte de jour en T09.
+
+## T07 — Le quiz, cinq écrans
+
+- **Fait** : logique de validation pure et testée dans `lib/quiz/steps.ts`, cinq écrans à
+  une question chacun, autocomplétion de ville sur l'index local, et l'avancement par
+  **graduation du ruban qui s'étend** — elle prend la couleur de l'axe dès qu'il est choisi,
+  si bien que le produit répond avant même d'avoir calculé. Six tests de bout en bout :
+  parcours complet, heure inconnue, graduation, clavier seul, absence de débordement, et
+  couleur de focus.
+- **Cassé / réparé** : le champ heure affichait le surlignage bleu de Chrome et une bague
+  de focus de deux pixels qui écrasait la question — les champs portent maintenant leur
+  focus par le filet du bas, qui s'épaissit et passe à l'encre pleine, et l'accent du
+  navigateur est ramené à l'encre. Deux attentes de test corrigées en conséquence, dont
+  l'une, sur la révélation du ruban, était **instable** : elle lisait `sessionStorage` avant
+  l'hydratation. Elle attend désormais le marqueur au lieu de le supposer posé.
+- **Incertain** : la carte du quiz est très haute sur un grand écran, avec beaucoup de vide
+  sous le bouton. Acceptable sur téléphone, à revoir si le parcours se joue aussi sur
+  ordinateur.

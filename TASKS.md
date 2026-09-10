@@ -97,7 +97,7 @@ produit vendable.
       débordement horizontal, rendu identique sous `prefers-reduced-motion`, et **aucune
       légende ni libellé de mode de tracé** — règle 5 du budget de densité.
 
-- [ ] **T07 — Le quiz, cinq écrans.** (90 min)
+- [x] **T07 — Le quiz, cinq écrans.** (90 min)
       Prénom, date, heure — avec la phrase du brief et la case « je ne la connais pas » —,
       ville avec autocomplétion, axe prioritaire. Avancement par **graduation du ruban qui
       s'étend**, pas de barre de progression. Une question par écran, transition immédiate.

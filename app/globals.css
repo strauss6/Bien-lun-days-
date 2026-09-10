@@ -57,6 +57,33 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-ink);
   outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/*
+ * Les champs de saisie portent leur focus autrement : le filet du bas s'épaissit
+ * et passe à l'encre pleine. Un rectangle de deux pixels autour d'un champ pleine
+ * largeur écrase la question qu'il sert, et le premier champ d'un écran reçoit le
+ * focus par programme — la bague apparaîtrait sans que personne ait rien touché.
+ */
+input[type='text']:focus-visible,
+input[type='date']:focus-visible,
+input[type='time']:focus-visible {
+  outline: none;
+  border-bottom-width: 2px;
+  border-bottom-color: var(--color-ink);
+  padding-bottom: calc(0.5rem - 1px);
+}
+
+/* Les segments d'un champ date ou heure sont surlignés par la couleur d'accent. */
+input[type='date'],
+input[type='time'] {
+  accent-color: var(--color-ink);
+}
+
+input[type='date']::selection,
+input[type='time']::selection {
+  background: rgb(15 20 25 / 0.14);
 }
 
 /* Surface posée sur le papier : blanche, largement arrondie, ombre à peine là. */

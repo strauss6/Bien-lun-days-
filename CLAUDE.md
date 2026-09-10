@@ -109,6 +109,9 @@ une commande en échec.
   pour que le ruban survive à l'impression en noir et blanc et au daltonisme.
 - `prefers-reduced-motion` respecté partout : sans animation, tout reste utilisable.
 - **Variante A des glyphes**, nue. La variante à nœuds vectoriels est abandonnée.
+- **EB Garamond est réservé aux phrases d'interprétation**, une par écran. Jamais un titre,
+  jamais un bouton, jamais un libellé : partout ailleurs, le mono. C'est cette étanchéité
+  qui fait tenir les deux voix — la machine mesure, quelqu'un parle.
 
 ## Budget de densité
 

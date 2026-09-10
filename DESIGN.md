@@ -1,7 +1,9 @@
 # Bien.Luné — plan de design
 
-> **Validé le 10 septembre 2026** : la palette, les deux typographies avec les dates et
-> les scores en mono, et la **variante A** des glyphes — nue, sans nœuds vectoriels. La
+> **Validé le 10 septembre 2026** : les deux typographies avec les dates et les scores en
+> mono et **EB Garamond conservé pour les seules phrases d'interprétation** — décision
+> reprise après le passage à la direction colorée, à réexaminer si le serif pèse une fois
+> les cinq écrans en place. La **variante A** des glyphes, nue, sans nœuds vectoriels. La
 > variante B est abandonnée et n'est plus maintenue.
 >
 > **Directive reçue avec la validation : l'interface doit être beaucoup plus épurée que

@@ -67,8 +67,11 @@ test.describe('le ruban des trente jours', () => {
   });
 
   test('se révèle une seule fois par session', async ({ page }) => {
-    const stored = await page.evaluate(() => sessionStorage.getItem('ribbon-revealed'));
-    expect(stored).toBe('1');
+    // Le marqueur est posé dans un effet, donc après hydratation : lire
+    // `sessionStorage` juste après la navigation donne un test instable.
+    await expect
+      .poll(() => page.evaluate(() => sessionStorage.getItem('ribbon-revealed')))
+      .toBe('1');
   });
 
   test('sous prefers-reduced-motion, le ruban est là d\'emblée', async ({ page, context }) => {
