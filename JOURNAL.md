@@ -61,3 +61,21 @@ réparé, ce qui reste incertain.
   commodité, ce que le brief signale comme le raté habituel.
 - **Incertain** : rien. Un test parcourt toutes les combinaisons planète × aspect × point
   et vérifie qu'aucun libellé ne contient jamais un nom de signe.
+
+## T03 — Rareté, dernière et prochaine occurrence
+
+- **Fait** : `lib/astro/rarity.ts`. Classement par période orbitale — la Lune n'est jamais
+  mise en avant, seuls Jupiter et au-delà le sont. Balayage mensuel depuis la naissance
+  jusqu'à soixante ans devant, affiné au jour, passages rétrogrades regroupés en un seul
+  événement, occurrence précédente convertie en âge. Cache par thème et fenêtre : 1 050 ms
+  à froid, 0 ms ensuite.
+- **Cassé / réparé** : rien à réparer — le regroupement des passages rétrogrades avait été
+  identifié et spécifié en amont, à partir du prototype de la planche de validation. Les
+  treize tests passent du premier coup, y compris les valeurs attendues sur le thème de
+  référence : Jupiter conjonction Soleil en 2015 à 21 ans et prochaine en 2038, Saturne
+  trigone Soleil en 2016 à 23 ans, Saturne opposition Jupiter en 1997 à 3 ans, Neptune
+  conjonction Lune jamais auparavant.
+- **Incertain** : sur 30 jours, treize événements ressortent, dont beaucoup sans occurrence
+  antérieure ni suivante — ils n'ont rien à raconter au-delà de leur nom. L'écran des jours
+  rares devra les classer et n'en montrer que quelques-uns, sinon le budget de densité
+  saute. À traiter en T10.

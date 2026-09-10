@@ -45,7 +45,7 @@ produit vendable.
       *Fini quand* : un test prend un jour à score bas et vérifie que les deux aspects
       retournés sont bien les deux aspects durs qui l'ont fait tomber, sur dix thèmes.
 
-- [ ] **T03 — `rarity.ts`.** (90 min)
+- [x] **T03 — `rarity.ts`.** (90 min)
       Classe de rareté par période orbitale (Lune jamais mise en avant → Pluton
       exceptionnel). Pour tout aspect classé rare ou au-dessus : balayage mensuel sur ±60
       ans autour de la naissance, affinage au jour, **dernière occurrence convertie en âge
