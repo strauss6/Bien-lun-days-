@@ -255,3 +255,28 @@ réparé, ce qui reste incertain.
   seconde ne se répande. Le diagnostic sur les polices était par ailleurs inexact ici :
   `--font-geist-mono` résout vers `"Geist Mono"`, donc le nom littéral fonctionnait — le
   changement reste meilleur, puisqu'il apporte la police de repli métrique.
+
+## T11 · T12 — Le doigt sur le ruban, les cartes aimantées
+
+**Fait.** Le ruban accepte un geste : une surface de capture au-dessus des trois bandes,
+`dayAtX` pour convertir l'abscisse en jour — par cases, pas par centres, le jour change à
+mi-chemin entre deux colonnes —, et une poignée ronde pour que le doigt ait une cible.
+Vibration de 8 ms au franchissement d'un pic, décidée par `crossesPeak`, qui inspecte
+**tous les jours traversés** et non la seule destination : un scrub rapide saute cinq
+colonnes par frame. Les trente jours vivent maintenant dans un rail aimanté — une carte
+par jour, `scroll-snap` natif, donc l'inertie du système et non une réimplémentation.
+Ruban et rail pilotent le même index dans les deux sens.
+
+**Cassé, réparé.** Trois choses. Le rail portait la gouttière : la carte suivante dépassait
+de 20 px dans la marge et l'on voyait deux jours à la fois — la gouttière est passée sur la
+carte. La pastille « aujourd'hui », flottante en bas d'écran, se posait **sur** le bouton
+« Les jours rares », noir sur noir : elle a rejoint la ligne de date, à la place où iOS met
+« Aujourd'hui », en contour et non en aplat pour laisser un seul noir plein par écran. Et
+lire le jour courant par une mise à jour fonctionnelle d'état faisait vibrer deux fois en
+Strict Mode — un `ref` a réglé ça.
+
+**Incertain.** Le retour haptique n'a jamais été senti : `navigator.vibrate` n'existe pas
+sur iOS Safari, qui est la moitié de la cible, et l'environnement de test n'a pas de
+téléphone. Le test prouve que la vibration est *demandée* au bon moment, pas qu'elle a
+lieu. À vérifier sur un Android réel avant de compter dessus.
+

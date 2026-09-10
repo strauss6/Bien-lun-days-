@@ -162,3 +162,26 @@ export function tickPositions(days: number, firstLabel = 'AUJ.'): Tick[] {
     };
   });
 }
+
+/**
+ * Score à partir duquel un jour porte un glyphe sur le ruban.
+ *
+ * Vit ici et non dans le composant : le scrub au doigt doit vibrer exactement
+ * là où l'œil voit un pic, et deux constantes séparées finissent toujours par
+ * diverger.
+ */
+export const PEAK_SCORE = 88;
+
+/**
+ * Jour visé par une abscisse, dans le repère du `viewBox`.
+ *
+ * Inverse de `columnCenter`, mais découpé en **cases** et non en centres : le
+ * doigt qui glisse doit changer de jour à mi-chemin entre deux colonnes, pas
+ * quand il touche le centre de la suivante. Hors de la zone de tracé, on borne
+ * au lieu de refuser — le doigt qui déborde à gauche veut le premier jour.
+ */
+export function dayAtX(x: number, days: number): number {
+  const pitch = PLOT_WIDTH / days;
+  const raw = Math.floor((x - LABEL_GUTTER) / pitch);
+  return Math.min(days - 1, Math.max(0, raw));
+}

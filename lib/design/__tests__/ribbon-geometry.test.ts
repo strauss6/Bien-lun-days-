@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   BAND_HEIGHT, LABEL_GUTTER, PLOT_WIDTH, RIBBON_WIDTH, bandMarks, columnCenter,
-  seasonStops, tickPositions,
+  dayAtX, seasonStops, tickPositions,
 } from '../ribbon-geometry';
 
 const scores30 = Array.from({ length: 30 }, (_, i) => (i * 97) / 29);
@@ -99,5 +99,27 @@ describe('graduation', () => {
     expect(tickPositions(30, 'J1')[0].label).toBe('J1');
     expect(ticks.find((t) => t.day === 7)?.label).toBe('+7');
     expect(ticks).toHaveLength(30);
+  });
+});
+
+describe('dayAtX', () => {
+  const days = 30;
+
+  it('rend le jour dont la colonne contient l’abscisse', () => {
+    for (let day = 0; day < days; day += 1) {
+      expect(dayAtX(columnCenter(day, days), days)).toBe(day);
+    }
+  });
+
+  it('bascule à mi-chemin entre deux colonnes, pas au centre de la suivante', () => {
+    const between = (columnCenter(4, days) + columnCenter(5, days)) / 2;
+    expect(dayAtX(between - 0.1, days)).toBe(4);
+    expect(dayAtX(between + 0.1, days)).toBe(5);
+  });
+
+  it('borne au lieu de refuser quand le doigt déborde', () => {
+    expect(dayAtX(-200, days)).toBe(0);
+    expect(dayAtX(0, days)).toBe(0);
+    expect(dayAtX(RIBBON_WIDTH + 200, days)).toBe(days - 1);
   });
 });

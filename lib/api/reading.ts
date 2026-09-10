@@ -92,6 +92,24 @@ export interface RarePayload {
   firstInLifetime: boolean;
 }
 
+/** Une journée du rapport, telle que l'interface la reçoit. */
+export interface ReadingDay {
+  date: string;
+  season: string;
+  axes: Record<AxisId, {
+    score: number;
+    explaining: ExplainingAspect[];
+    /**
+     * Signe où se trouve la planète qui porte le jour. C'est ce que le glyphe
+     * posé sur un pic du ruban indique : **où est la planète**, jamais qui est
+     * la personne.
+     */
+    peakSign: number | null;
+    /** Phrase du jour, par gabarit déterministe, vérifiée en sortie. */
+    phrase: string;
+  }>;
+}
+
 export interface ReadingPayload {
   firstName: string;
   birth: {
@@ -108,22 +126,7 @@ export interface ReadingPayload {
   axisOrder: AxisId[];
   axisLabels: Record<AxisId, string>;
   startDate: string;
-  days: Array<{
-    date: string;
-    season: string;
-    axes: Record<AxisId, {
-      score: number;
-      explaining: ExplainingAspect[];
-      /**
-       * Signe où se trouve la planète qui porte le jour. C'est ce que le glyphe
-       * posé sur un pic du ruban indique : **où est la planète**, jamais qui est
-       * la personne.
-       */
-      peakSign: number | null;
-      /** Phrase du jour, par gabarit déterministe, vérifiée en sortie. */
-      phrase: string;
-    }>;
-  }>;
+  days: ReadingDay[];
   rare: RarePayload[];
   stats: { comparisonsTested: number; aspectEvents: number };
 }

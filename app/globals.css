@@ -108,6 +108,36 @@ input[type='time']::selection {
   letter-spacing: 0.02em;
 }
 
+/*
+ * Rail des jours : une carte par jour, aimantée.
+ *
+ * Pleine largeur, gouttière portée par la carte et non par le rail — sinon la
+ * carte suivante dépasse dans la marge et l'on voit deux jours à la fois, ce
+ * que la règle 1 du budget de densité interdit. La barre de défilement est
+ * masquée : sur trente cartes qui s'accrochent une à une, elle n'apprend rien
+ * que la pagination ne dise déjà, et elle mange une ligne sur un téléphone. Le
+ * rail reste défilable au clavier, `tabindex` et flèches, sans souris.
+ */
+.day-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  margin-inline: calc(var(--spacing) * -5);
+}
+
+.day-track::-webkit-scrollbar {
+  display: none;
+}
+
+.day-track > * {
+  flex: 0 0 100%;
+  padding-inline: calc(var(--spacing) * 5);
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

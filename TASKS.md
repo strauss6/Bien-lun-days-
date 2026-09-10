@@ -136,12 +136,12 @@ produit vendable.
 
 ## Phase 3 — le fini
 
-- [ ] **T11 — Scrub et retour haptique.** (75 min)
+- [x] **T11 — Scrub et retour haptique.** (75 min)
       Le doigt déplace un curseur sur le ruban, la carte se met à jour en direct. Vibration
       de 8 ms au franchissement d'un pic, silencieuse là où l'API n'existe pas, désactivée
       sous `prefers-reduced-motion`.
 
-- [ ] **T12 — Défilement magnétique et pastille « aujourd'hui ».** (60 min)
+- [x] **T12 — Défilement magnétique et pastille « aujourd'hui ».** (60 min)
       Les cartes s'accrochent une à une. La pastille reste visible et ramène au jour courant
       en un tap, où qu'on soit dans les 30 jours.
 

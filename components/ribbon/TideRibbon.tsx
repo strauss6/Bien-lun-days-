@@ -1,10 +1,11 @@
 'use client';
 
+import type { PointerEvent as ReactPointerEvent } from 'react';
 import { useEffect, useId, useRef, useState } from 'react';
 import type { AxisId, Season } from '@/lib/astro/types';
 import {
-  BAND_HEIGHT, BASELINE, LABEL_GUTTER, RIBBON_WIDTH, bandMarks, columnCenter,
-  seasonStops, tickPositions,
+  BAND_HEIGHT, BASELINE, LABEL_GUTTER, PEAK_SCORE, RIBBON_WIDTH, bandMarks, columnCenter,
+  dayAtX, seasonStops, tickPositions,
 } from '@/lib/design/ribbon-geometry';
 import { AXIS_COLORS } from '@/lib/design/tokens';
 import { ZodiacGlyph } from '@/components/glyphs/ZodiacGlyph';
@@ -13,7 +14,6 @@ const GRADUATION_HEIGHT = 20;
 /** Bandeau de saison : présent, jamais dominant. */
 const SEASON_STRIP = 5;
 const AXES: AxisId[] = ['business', 'love', 'energy'];
-const PEAK_SCORE = 88;
 
 export interface RibbonDay {
   date: string;
@@ -34,6 +34,11 @@ interface Props {
    * faux dès le lendemain.
    */
   firstLabel?: string;
+  /**
+   * Le doigt déplace le curseur. Absent, le ruban reste une image : c'est le cas
+   * sur la page de démonstration, où le ruban illustre et ne pilote rien.
+   */
+  onScrub?: (day: number) => void;
   className?: string;
 }
 
@@ -47,9 +52,10 @@ interface Props {
  * Le tracé se révèle de gauche à droite une seule fois par session — au-delà, la
  * répétition devient un péage. Sous `prefers-reduced-motion`, il est là d'emblée.
  */
-export function TideRibbon({ days, selected, labels, firstLabel, className }: Props) {
+export function TideRibbon({ days, selected, labels, firstLabel, onScrub, className }: Props) {
   const gradientId = useId();
   const clipId = useId();
+  const svg = useRef<SVGSVGElement>(null);
   const revealed = useRef(false);
   const [drawn, setDrawn] = useState(true);
 
@@ -80,6 +86,27 @@ export function TideRibbon({ days, selected, labels, firstLabel, className }: Pr
     return () => cancelAnimationFrame(frame);
   }, []);
 
+  /**
+   * Abscisse du doigt, ramenée dans le repère du `viewBox`.
+   *
+   * Le SVG est mis à l'échelle en largeur : un pixel d'écran ne vaut pas une
+   * unité utilisateur, et convertir avec la seule largeur du `viewBox` ferait
+   * dériver le curseur sur les grands écrans.
+   */
+  const dayUnderFinger = (clientX: number) => {
+    const box = svg.current?.getBoundingClientRect();
+    if (!box || box.width === 0) return 0;
+    return dayAtX(((clientX - box.left) / box.width) * RIBBON_WIDTH, days.length);
+  };
+
+  const scrub = (event: ReactPointerEvent<SVGRectElement>) => {
+    if (!onScrub) return;
+    // Capture dès l'appui : le doigt peut sortir du ruban en glissant sans
+    // que le geste s'interrompe.
+    event.currentTarget.setPointerCapture(event.pointerId);
+    onScrub(dayUnderFinger(event.clientX));
+  };
+
   const n = days.length;
   const stops = seasonStops(days.map((d) => d.season));
   const ticks = tickPositions(n, firstLabel);
@@ -88,6 +115,7 @@ export function TideRibbon({ days, selected, labels, firstLabel, className }: Pr
 
   return (
     <svg
+      ref={svg}
       className={className}
       viewBox={`0 0 ${RIBBON_WIDTH} ${totalHeight}`}
       style={{ display: 'block', width: '100%', height: 'auto' }}
@@ -196,7 +224,36 @@ export function TideRibbon({ days, selected, labels, firstLabel, className }: Pr
         ))}
       </g>
 
+      {onScrub ? (
+        <rect
+          data-testid="ribbon-scrub"
+          x={LABEL_GUTTER}
+          y={0}
+          width={RIBBON_WIDTH - LABEL_GUTTER}
+          height={totalHeight}
+          fill="transparent"
+          style={{ touchAction: 'none', cursor: 'ew-resize' }}
+          onPointerDown={scrub}
+          onPointerMove={(e) => {
+            if (e.buttons === 0 && e.pointerType === 'mouse') return;
+            if (!e.currentTarget.hasPointerCapture(e.pointerId)) return;
+            onScrub?.(dayUnderFinger(e.clientX));
+          }}
+          onPointerUp={(e) => e.currentTarget.releasePointerCapture(e.pointerId)}
+        />
+      ) : null}
+
+      {/* Poignée du curseur : sans elle, le doigt n'a rien à saisir. */}
+      <circle
+        cx={columnCenter(selected, n)}
+        cy={bandsTop - 3.5}
+        r={3}
+        fill="var(--color-ink)"
+        fillOpacity={0.55}
+        pointerEvents="none"
+      />
       <line
+        pointerEvents="none"
         x1={columnCenter(selected, n)}
         y1={bandsTop}
         x2={columnCenter(selected, n)}
