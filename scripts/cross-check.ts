@@ -49,7 +49,7 @@ console.log(`  Pluton conjonction Ascendant (exact)      ${e4.d}  orbe ${(e4.orb
 
 console.log('\n── Entrées de signe');
 for (const [p, iso, label] of [['jupiter', '2028-06-01', 'Jupiter → Balance'], ['uranus', '2025-01-01', 'Uranus → Gémeaux'], ['saturn', '2025-01-01', 'Saturne → Bélier']] as Array<[PlanetId, string, string]>) {
-  let prev = signOf(longitudeOf(p, day(iso)));
+  const prev = signOf(longitudeOf(p, day(iso)));
   for (let i = 1; i < 900; i += 1) {
     const t = new Date(day(iso).getTime() + i * 86400000);
     const s = signOf(longitudeOf(p, t));

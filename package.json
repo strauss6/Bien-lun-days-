@@ -7,14 +7,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "e2e": "playwright test"
   },
   "dependencies": {
+    "all-the-cities": "^3.1.0",
     "astronomy-engine": "^2.1.19",
-    "luxon": "^3.7.2",
     "next": "^15.5.25",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
@@ -22,15 +23,18 @@
     "zod": "^4.6.1"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.7",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4.3.3",
-    "@types/luxon": "^3.7.5",
     "@types/node": "^22.20.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^15.5.25",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",
     "tsx": "^4.23.13",
-    "typescript": "^7.0.2",
+    "typescript": "^5.9.3",
     "vitest": "^5.0.0"
   }
 }

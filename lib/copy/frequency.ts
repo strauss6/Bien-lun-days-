@@ -95,9 +95,13 @@ export function rankSlots(options: {
       longHere.add(slotKey('long', t.transit, t.aspect, t.natal));
     }
 
-    for (const k of seenHere) stats.get(k) && (stats.get(k)!.seen += 1);
-    for (const k of citedHere) stats.get(k) && (stats.get(k)!.cited += 1);
-    for (const k of longHere) stats.get(k) && (stats.get(k)!.long += 1);
+    const bump = (key: string, field: 'cited' | 'seen' | 'long') => {
+      const entry = stats.get(key);
+      if (entry) entry[field] += 1;
+    };
+    for (const k of seenHere) bump(k, 'seen');
+    for (const k of citedHere) bump(k, 'cited');
+    for (const k of longHere) bump(k, 'long');
 
     options.onProgress?.(i + 1, charts);
   }

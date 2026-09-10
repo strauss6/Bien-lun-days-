@@ -1,0 +1,69 @@
+@import 'tailwindcss';
+
+/*
+ * Deux valeurs portent l'interface entière. Les quatre teintes de saison
+ * n'existent que pour dire quelle saison le Soleil traverse : elles
+ * n'apparaissent que dans le ruban et sur les glyphes.
+ */
+@theme {
+  --color-paper: #eff0ee;
+  --color-ink: #131518;
+
+  --color-spring: #2c7a3f;
+  --color-summer: #c08e00;
+  --color-summer-text: #8a6600;
+  --color-autumn: #a5282c;
+  --color-winter: #1c5a96;
+
+  --font-technical: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-reading: 'EB Garamond', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+}
+
+:root {
+  color-scheme: light;
+}
+
+html,
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-technical);
+}
+
+/* Le focus clavier reste visible partout : c'est une exigence, pas une option. */
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+/* Registre « interprétation » : colonne étroite, interlignage large. */
+.reading {
+  font-family: var(--font-reading);
+  font-size: 1.1875rem;
+  line-height: 1.62;
+  max-width: 34rem;
+}
+
+/* Registre « calcul » : dense, tabulaire, aligné. */
+.technical {
+  font-family: var(--font-technical);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

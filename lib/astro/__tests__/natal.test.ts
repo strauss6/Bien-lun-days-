@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { angles, eclipticPointHorizon, longitudeOf, trueObliquity } from '../ephemeris';
-import { computeNatalChart, wholeSignHouse } from '../natal';
-import { resolveBirthInstant } from '../time';
+import { wholeSignHouse } from '../natal';
 import { signOf } from '../angles';
 import { referenceChart } from './fixtures';
 
