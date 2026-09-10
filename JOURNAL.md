@@ -161,6 +161,11 @@ réparé, ce qui reste incertain.
   en CSS direct, où rien ne peut les élaguer. Le test de bout en bout qui interdisait toute
   couleur hors saison encodait la règle périmée : il vérifie désormais qu'aucune teinte
   n'est écrite en dur, et qu'un axe porte bien sa propre teinte.
+- **Manqué** : j'ai commité une première fois avec un test de bout en bout rouge, ce que la
+  définition de « terminé » interdit — l'assertion sur les couleurs n'acceptait que le
+  préfixe `var(--color-`, alors que les teintes d'axe passent par `var(--axis-`. Corrigé
+  dans le commit suivant. La leçon est de lire la sortie des cinq commandes avant de
+  commiter, pas après.
 - **Incertain** : le bandeau de saison n'est pour l'instant qu'une barre colorée sans nom.
   Il lui faut deux mots — ÉTÉ, AUTOMNE — pour que l'idée « on lit le temps passer » se
   comprenne. À traiter avec la carte de jour en T09.

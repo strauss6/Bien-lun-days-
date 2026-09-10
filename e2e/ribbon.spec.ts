@@ -52,12 +52,10 @@ test.describe('le ruban des trente jours', () => {
     const fills = await page.locator('svg rect, svg line, svg text').evaluateAll((els) =>
       els.map((el) => el.getAttribute('fill') ?? el.getAttribute('stroke') ?? ''),
     );
-    const allowed = ['#1338B8', '#C21048', '#9A5B00'];
     for (const f of fills) {
       const ok = f === ''
-        || f.startsWith('url(#')
-        || f.startsWith('var(--color-')
-        || allowed.includes(f);
+        || f.startsWith('url(#')      // dégradé d'axe ou bandeau de saison
+        || f.startsWith('var(--');    // jeton de couleur
       expect(ok, `teinte inattendue : ${f}`).toBe(true);
     }
   });
