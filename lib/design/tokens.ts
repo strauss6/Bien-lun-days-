@@ -22,7 +22,14 @@ export const INK = '#0F1419';
 export const SURFACE = '#FFFFFF';
 
 export interface AxisPalette {
-  /** Extrémité profonde du dégradé : les scores les plus hauts. */
+  /**
+   * Extrémité profonde du dégradé, et teinte du grand nombre de la carte.
+   *
+   * Elle porte donc du texte, et doit tenir le seuil du grand texte — 3:1 — sur
+   * le blanc des cartes comme sur le papier. C'est la raison pour laquelle
+   * l'orangé de l'axe Énergie n'est pas celui d'Apple : `#FF9500` sort à 2,2:1,
+   * illisible en caractères. `#D46700` tient 3,7:1 et reste franchement orange.
+   */
   deep: string;
   /** Extrémité lumineuse : les scores moyens. */
   bright: string;
@@ -37,7 +44,7 @@ export interface AxisPalette {
 export const AXIS_COLORS = {
   business: { deep: '#1E4FFF', bright: '#22D3EE', text: '#1338B8' },
   love: { deep: '#FF2D6F', bright: '#FF9A5B', text: '#C21048' },
-  energy: { deep: '#FF9500', bright: '#B8E62E', text: '#9A5B00' },
+  energy: { deep: '#D46700', bright: '#FFC24B', text: '#9A5B00' },
 } as const satisfies Record<string, AxisPalette>;
 
 export const SEASON_COLORS = {

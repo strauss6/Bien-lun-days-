@@ -305,3 +305,25 @@ couleur — question `Q9`, à trancher avec la direction artistique. Et le budge
 tenu très large : la machine d'intégration n'est pas un téléphone sur un réseau ordinaire,
 et un seuil serré rendrait le test capricieux plutôt qu'utile.
 
+## Q9 — La famille Énergie assombrie, les nombres rendus à leur couleur
+
+**Fait.** Décision de direction artistique appliquée : plutôt que d'éteindre les nombres,
+on assombrit la famille pour qu'elle les mérite. `#FF9500` devient **`#D46700`** — 3,7:1
+sur blanc, 3,4:1 sur le papier, franchement orange. Tous les scores de la carte retrouvent
+la teinte vive de leur axe ; seuls les libellés gardent le jeton `text`. Les scores
+secondaires passent en gras : à 20 px, c'est le poids qui les fait entrer dans la catégorie
+« grand texte » de la norme, donc dans le seuil que la teinte vive tient.
+
+**Cassé, réparé.** Le premier essai n'a changé que `deep`. Le dégradé allait alors de la
+rouille au lime en traversant le kaki, et la bande Énergie du ruban lisait **olive** — sale
+à côté du bleu et du rose, l'inverse du but. `bright` est passé de `#B8E62E` à `#FFC24B` :
+la famille se referme sur l'ambre, la bande redevient chaude. Le test de contraste, qui
+vérifiait jusque-là que l'orangé vif **échouait**, vérifie maintenant que les trois teintes
+vives **passent** le seuil du grand texte : l'attente a changé parce que la décision a
+changé, et le commentaire du test le dit.
+
+**Incertain.** L'ambre de l'axe Énergie et le pêche de l'axe Amour se rapprochent à
+l'extrémité lumineuse de leurs dégradés. Ils restent séparés par la teinte à l'autre bout,
+rouille contre magenta, et par le tracé — pile de tirets contre double filet. À revoir si
+quelqu'un confond les deux bandes sur un vrai téléphone.
+

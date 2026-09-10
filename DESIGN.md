@@ -49,7 +49,7 @@ Les scores hauts sont donc saturés, les jours ternes s'effacent d'eux-mêmes.
 |---|---|---|---|---|
 | **Business** | `#1E4FFF` | `#22D3EE` | `#1338B8` | 232° — bleu électrique vers cyan |
 | **Amour** | `#FF2D6F` | `#FF9A5B` | `#C21048` | 340° — magenta vers corail |
-| **Énergie** | `#FF9500` | `#B8E62E` | `#9A5B00` | 40° — ambre vers lime |
+| **Énergie** | `#D46700` | `#B8E62E` | `#9A5B00` | 30° — orangé brûlé vers lime |
 
 Trois familles franchement séparées sur la roue, distinguables d'un coup d'œil y compris
 en vignette de partage. **Le mode de tracé reste** — colonne pleine, double filet, pile de
@@ -274,16 +274,34 @@ pour le document que relira l'astrologue, où le lecteur, lui, sait les lire.
 ## 10 — Où vont les teintes vives, où va le jeton `text`
 
 Chaque axe porte trois valeurs : `deep` et `bright`, les deux bornes de son dégradé, et
-`text`. La règle est sans exception :
+`text`. La règle a trois lignes et aucune exception :
 
-- **Les teintes vives ne servent qu'aux formes** — les bandes du ruban, la graduation du
-  quiz, le contour d'un choix retenu. Une forme n'a pas de seuil de lisibilité à tenir,
-  elle a une surface.
-- **Tout ce qui se lit emploie le jeton `text`** — les scores, les noms d'axes, les
-  libellés. Les trois passent 4,5:1 sur le blanc des cartes comme sur le papier, et un
-  test unitaire le vérifie à chaque exécution.
+- **`deep` porte les formes et les nombres.** Le haut du dégradé du ruban, et tous les
+  scores de la carte — le grand à 38 px, les deux autres à 20 px en gras. Comme elle porte
+  du texte, elle tient le seuil du grand texte, 3:1, sur le blanc des cartes comme sur le
+  papier. Les scores secondaires sont en **gras** et non en demi-gras pour cette raison
+  exacte : à 20 px, c'est le poids qui les fait entrer dans la catégorie « grand texte » de
+  la norme.
+- **`bright` ne porte que des formes.** L'autre extrémité du dégradé, jamais un caractère.
+  Aucun seuil à tenir, et un test vérifie qu'aucune ne devienne lisible par accident — ce
+  serait le signe qu'on a commencé à s'en servir pour du texte.
+- **`text` porte les libellés** — noms d'axes sur la carte comme sur le ruban. Du petit
+  texte, donc le seuil du texte courant, 4,5:1, vérifié à chaque exécution.
 
-La raison tient en un chiffre : `#FF9500`, l'orangé de l'axe Énergie, donne **2,2:1** sur
-blanc. Il est superbe en aplat et illisible en caractères. Voir `Q9` pour la suite —
-faut-il assombrir la famille pour réconcilier les deux emplois.
+Un écran se lit ainsi : les nombres parlent en couleur vive, les mots qui les nomment
+reculent d'un ton. La hiérarchie vient de la taille, jamais d'une teinte éteinte.
 
+**Pourquoi l'orangé de l'axe Énergie n'est pas celui d'Apple.** `#FF9500`, `systemOrange`,
+donne **2,2:1** sur blanc : superbe en aplat, illisible en caractères — sous le seuil du
+texte courant *et* sous celui du grand texte. Deux issues étaient possibles : rendre les
+nombres au jeton `text`, ou assombrir la famille pour que la teinte vive les mérite. La
+direction artistique a tranché pour la seconde le 10 septembre 2026 : un score brun sur une
+carte blanche ne tient pas la promesse d'un produit qui parle en couleur. `#D46700` tient
+**3,7:1** sur blanc, **3,4:1** sur le papier, et reste franchement orange.
+
+**Et pourquoi `bright` a suivi.** Le premier essai gardait le lime `#B8E62E` à l'autre
+extrémité. Le dégradé passait alors de la rouille au vert acide en traversant le kaki, et
+la bande Énergie lisait **olive** — sale à côté du bleu et du rose, exactement le contraire
+de ce que la révision de couleur cherchait. `#FFC24B` referme la famille sur l'ambre : la
+bande redevient chaude et nette. L'axe Amour reste distinct par sa teinte, rose contre
+ambre, et par son tracé — double filet contre pile de tirets.

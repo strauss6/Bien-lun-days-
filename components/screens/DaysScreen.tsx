@@ -246,7 +246,7 @@ function DayCard({
       <section className="surface p-6">
         <p
           className="technical text-[38px] font-semibold leading-none tracking-[-0.03em] tabular-nums"
-          style={{ color: `var(--axis-${primary}-text)` }}
+          style={{ color: `var(--axis-${primary})` }}
         >
           {countAt(lead.score, progress)}
         </p>
@@ -300,9 +300,15 @@ function DayCard({
             key={axis}
             className="grid grid-cols-[2.6em_1fr] items-baseline gap-x-4 py-4 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-ink/8"
           >
+            {/*
+              Gras et non demi-gras : à 20 px, c'est ce qui fait entrer le nombre
+              dans la catégorie « grand texte » de la norme, donc dans le seuil
+              que la teinte vive tient. Le poids sert la lisibilité avant le
+              dessin.
+            */}
             <dt
-              className="text-[20px] font-semibold tabular-nums tracking-[-0.02em]"
-              style={{ color: `var(--axis-${axis}-text)` }}
+              className="text-[20px] font-bold tabular-nums tracking-[-0.02em]"
+              style={{ color: `var(--axis-${axis})` }}
             >
               {countAt(day.axes[axis].score, progress)}
             </dt>

@@ -2,10 +2,10 @@
  * Contraste, au sens de la norme.
  *
  * Le produit affiche des nombres colorés sur du blanc. Une teinte qui plaît en
- * aplat sur un ruban ne tient pas forcément comme texte : l'orangé de l'axe
- * Énergie, à `#FF9500`, sort à 2,2:1 sur blanc — illisible au soleil, illisible
- * pour un œil vieillissant. D'où le jeton `text` de chaque axe, et d'où ce
- * module, qui le vérifie au lieu de le supposer.
+ * aplat sur un ruban ne tient pas forcément comme texte : `#FF9500`, l'orangé
+ * d'Apple, sort à 2,2:1 sur blanc — illisible au soleil, illisible pour un œil
+ * vieillissant. C'est ce module qui l'a montré, et c'est pour ça que la famille
+ * Énergie du produit est plus sombre. On mesure au lieu de supposer.
  *
  * Formule WCAG 2.1, à la lettre : luminance relative puis rapport (L+0,05).
  */

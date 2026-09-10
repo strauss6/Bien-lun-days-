@@ -12,22 +12,41 @@ describe('formule de contraste', () => {
   });
 });
 
-describe('jetons de texte des axes', () => {
+describe('jetons des axes', () => {
   for (const [axis, palette] of Object.entries(AXIS_COLORS)) {
-    it(`${axis} reste lisible sur la carte et sur le papier`, () => {
+    it(`${axis} — le jeton de texte tient le seuil du texte courant`, () => {
       expect(contrast(palette.text, SURFACE)).toBeGreaterThanOrEqual(AA_TEXT);
       expect(contrast(palette.text, PAPER)).toBeGreaterThanOrEqual(AA_TEXT);
+    });
+
+    /*
+     * `deep` a deux emplois : le haut du dégradé du ruban, qui est une forme, et
+     * le grand nombre de la carte, qui est du texte. Le second impose le seuil du
+     * grand texte — 24 px, ou 18,66 px en gras.
+     *
+     * Ce test disait l'inverse jusqu'au 10 septembre 2026 : il vérifiait que
+     * `#FF9500` échouait, et le grand nombre portait alors le jeton `text`. La
+     * direction artistique a tranché la question Q9 dans l'autre sens — garder la
+     * teinte vive sur le nombre et assombrir la famille pour qu'elle la mérite.
+     * L'attente a donc changé parce que la décision a changé, pas pour faire
+     * passer un test rouge : `#FF9500` est devenu `#D46700`.
+     */
+    it(`${axis} — la teinte vive peut porter le grand nombre`, () => {
+      expect(contrast(palette.deep, SURFACE)).toBeGreaterThanOrEqual(AA_LARGE);
+      expect(contrast(palette.deep, PAPER)).toBeGreaterThanOrEqual(AA_LARGE);
     });
   }
 
   /*
-   * La teinte vive n'est pas une teinte de texte, et le test le dit plutôt que
-   * de laisser croire l'inverse : `#FF9500` sur blanc ne passe même pas le seuil
-   * du grand texte. C'est la raison d'être du jeton `text` — les nombres de
-   * l'interface l'emploient, les dégradés du ruban gardent la teinte vive.
+   * `bright` est l'autre extrémité du dégradé : elle ne porte jamais de texte, et
+   * n'a donc aucun seuil à tenir. Le test fige cette frontière plutôt que de la
+   * laisser à la mémoire de qui relit le fichier.
    */
-  it('l’orangé vif de l’axe Énergie ne peut pas servir de texte', () => {
-    expect(contrast(AXIS_COLORS.energy.deep, SURFACE)).toBeLessThan(AA_LARGE);
+  it('l’extrémité lumineuse reste une couleur de forme, jamais de texte', () => {
+    const lisibles = Object.entries(AXIS_COLORS)
+      .filter(([, p]) => contrast(p.bright, SURFACE) >= AA_LARGE)
+      .map(([axis]) => axis);
+    expect(lisibles).toEqual([]);
   });
 });
 

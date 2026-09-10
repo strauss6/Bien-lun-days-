@@ -192,6 +192,19 @@ plus tout à fait de la même couleur. Deux options :
    monte à 3,1:1 et pourrait alors porter les grands nombres, avec un `bright` ajusté.
    Le ruban reste chaud, la carte retrouve l'orangé. Une ligne dans `tokens.ts`.
 
-Option retenue en attendant : la 1, parce qu'elle est la plus réversible — elle ne touche
-à aucune valeur de la palette.
+**Tranché le 10 septembre 2026 : option 2.** Un score brun sur une carte blanche ne tient
+pas la promesse d'un produit qui parle en couleur. La famille Énergie passe de `#FF9500` à
+**`#D46700`** — 3,7:1 sur blanc, 3,4:1 sur le papier, franchement orange. Le grand nombre
+de l'axe prioritaire retrouve la teinte vive de son axe ; les scores secondaires et tous
+les libellés gardent le jeton `text`. `bright` ne bouge pas : le lime est ce qui empêche
+l'axe Énergie de se confondre avec le pêche de l'axe Amour. Règle complète en `DESIGN.md`
+§10, figée par un test unitaire.
+
+Deux ajustements sont sortis du rendu, pas du raisonnement. `bright` a dû suivre : avec la
+rouille en haut et le lime `#B8E62E` en bas, le dégradé traversait le kaki et la bande
+Énergie lisait **olive** — sale, exactement le contraire de ce que la révision de couleur
+cherchait. `#FFC24B` referme la famille sur l'ambre. Et les scores secondaires, à 20 px,
+sont passés en **gras** : c'est le poids qui les fait entrer dans la catégorie « grand
+texte » de la norme, donc dans le seuil que la teinte vive tient. Ils ont ainsi la couleur
+vive eux aussi — c'était le 51 brun qui avait ouvert la question.
 
