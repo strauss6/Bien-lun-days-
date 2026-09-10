@@ -94,6 +94,9 @@ export function toReadingRequest(draft: QuizDraft, startDate: string): ReadingIn
     country: draft.city.country,
     priorityAxis: draft.priorityAxis,
     startDate,
+    // Le fuseau de la ville de naissance sert aussi de fuseau de résidence par
+    // défaut : c'est le plus souvent le même, et il est déjà dans l'index.
+    zone: draft.city.zone,
   };
 }
 
@@ -104,3 +107,5 @@ export const AXIS_CHOICES: Array<{ id: AxisId; label: string; blurb: string }> =
 ];
 
 export const DRAFT_STORAGE_KEY = 'bien-lune:draft';
+/** Résultat du calcul, gardé le temps de la session pour ne pas recalculer au retour. */
+export const RESULT_STORAGE_KEY = 'bien-lune:reading';

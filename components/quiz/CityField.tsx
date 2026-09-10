@@ -10,7 +10,20 @@ import type { City } from '@/lib/cities/search';
  * porte les coordonnées et donc le fuseau. Une commune de moins de mille habitants
  * n'est pas dans la base — on le dit franchement plutôt que de laisser l'écran vide.
  */
-export function CityField({ value, onChange }: { value: City | null; onChange: (city: City | null) => void }) {
+async function searchByApi(query: string): Promise<City[]> {
+  const response = await fetch(`/api/cities?q=${encodeURIComponent(query)}`);
+  const body = await response.json();
+  return body.cities ?? [];
+}
+
+interface CityFieldProps {
+  value: City | null;
+  onChange: (city: City | null) => void;
+  /** Injectable : la version autonome cherche dans l'index embarqué, sans serveur. */
+  search?: (query: string) => Promise<City[]>;
+}
+
+export function CityField({ value, onChange, search = searchByApi }: CityFieldProps) {
   const [query, setQuery] = useState(value?.name ?? '');
   const [results, setResults] = useState<City[]>([]);
   const [searched, setSearched] = useState(false);
@@ -29,16 +42,14 @@ export function CityField({ value, onChange }: { value: City | null; onChange: (
     }
     const timer = setTimeout(async () => {
       try {
-        const response = await fetch(`/api/cities?q=${encodeURIComponent(query)}`);
-        const body = await response.json();
-        setResults(body.cities ?? []);
+        setResults(await search(query));
       } catch {
         setResults([]);
       }
       setSearched(true);
     }, 140);
     return () => clearTimeout(timer);
-  }, [query, value]);
+  }, [query, value, search]);
 
   return (
     <div>

@@ -8,6 +8,7 @@ import { AXIS_IDS, AXIS_LABELS } from '@/lib/astro/transits';
 import { formatLongitude, formatOrb } from '@/lib/astro/angles';
 import { ASPECT_PLAIN, notation, transitPhrase } from '@/lib/astro/labels';
 import { ASPECTS } from '@/lib/astro/aspects';
+import { buildPhrase, violatesContentRules } from '@/lib/copy/phrase';
 import { longitudeOf } from '@/lib/astro/ephemeris';
 import { signOf } from '@/lib/astro/angles';
 import { localNoonInstant } from '@/lib/astro/zone';
@@ -103,6 +104,8 @@ export interface ReadingPayload {
        * la personne.
        */
       peakSign: number | null;
+      /** Phrase du jour, par gabarit déterministe, vérifiée en sortie. */
+      phrase: string;
     }>;
   }>;
   rare: RarePayload[];
@@ -126,8 +129,17 @@ export function buildReading(input: ReadingInput): ReadingPayload {
     for (const axis of AXIS_IDS) {
       const d = reading.axes[axis].days[i];
       const top = d.explaining[0];
+      const explaining = d.explaining.map((a) => ({
+        phrase: transitPhrase(a.transit, a.aspect, a.natal),
+        sign: a.contribution >= 0 ? '+' as const : '−' as const,
+      }));
+      const draft = buildPhrase(axis, explaining);
+      // Vérification en sortie, comme l'exige le brief : rien ne sort sans être relu,
+      // même un gabarit. Le repli est neutre et ne promet rien.
+      const violation = violatesContentRules(axis, draft);
       axes[axis] = {
         score: Math.round(d.score),
+        phrase: violation ? 'Journée sans aspect marquant sur cet axe.' : draft,
         peakSign: top
           ? signOf(longitudeOf(top.transit, new Date(localNoonInstant(zone, d.date))))
           : null,

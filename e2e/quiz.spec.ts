@@ -35,7 +35,11 @@ test.describe('le quiz', () => {
     await page.getByRole('button', { name: 'Calculer mes jours' }).click();
 
     await page.waitForURL('**/calcul');
-    const draft = JSON.parse(await page.getByTestId('draft').innerText());
+    // L'écran de calcul fait désormais le vrai travail : on lit la demande là où
+    // le quiz l'a déposée, plutôt que dans un affichage de mise au point.
+    const draft = JSON.parse(
+      await page.evaluate(() => sessionStorage.getItem('bien-lune:draft') ?? '{}'),
+    );
     expect(draft.firstName).toBe('Elioth');
     expect(draft.birthDate).toBe('1993-08-06');
     expect(draft.birthTime).toBe('20:40');

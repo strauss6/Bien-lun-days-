@@ -6,7 +6,10 @@ const filled = {
   birthDate: '1993-08-06',
   birthTime: '20:40',
   timeKnown: true,
-  city: { name: 'Boulogne-Billancourt', country: 'FR', admin: '11', lat: 48.8352, lng: 2.2409, population: 108782 },
+  city: {
+    name: 'Boulogne-Billancourt', country: 'FR', admin: '11',
+    lat: 48.8352, lng: 2.2409, population: 108782, zone: 'Europe/Paris',
+  },
   priorityAxis: 'business' as const,
 };
 
@@ -66,6 +69,7 @@ describe('passage à la demande de calcul', () => {
     expect(request.birthTime).toBe('20:40');
     expect(request.timeKnown).toBe(true);
     expect(request.startDate).toBe('2026-09-10');
+    expect(request.zone).toBe('Europe/Paris');
   });
 
   /** Heure inconnue : le champ part à `null`, jamais une heure inventée. */

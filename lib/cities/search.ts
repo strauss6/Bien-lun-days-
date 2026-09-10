@@ -17,10 +17,12 @@ export interface City {
   lat: number;
   lng: number;
   population: number;
+  /** Fuseau IANA, résolu à la construction de l'index. */
+  zone: string;
 }
 
-/** `[nom affiché, pays, code admin, lat×1e4, lng×1e4, population, nom d'origine ?]` */
-type Row = [string, string, string, number, number, number, string?];
+/** `[nom affiché, pays, code admin, lat×1e4, lng×1e4, population, fuseau, nom d'origine ?]` */
+type Row = [string, string, string, number, number, number, string, string?];
 
 const ROWS = raw as unknown as Row[];
 
@@ -48,7 +50,7 @@ function index(): string[][][] {
   if (!tokenized) {
     tokenized = ROWS.map((r) => {
       const forms = [normalize(r[0]).split(' ')];
-      if (r[6]) forms.push(normalize(r[6]).split(' '));
+      if (r[7]) forms.push(normalize(r[7]).split(' '));
       return forms;
     });
   }
@@ -56,7 +58,10 @@ function index(): string[][][] {
 }
 
 function toCity(r: Row): City {
-  return { name: r[0], country: r[1], admin: r[2], lat: r[3] / 1e4, lng: r[4] / 1e4, population: r[5] };
+  return {
+    name: r[0], country: r[1], admin: r[2],
+    lat: r[3] / 1e4, lng: r[4] / 1e4, population: r[5], zone: r[6],
+  };
 }
 
 /**

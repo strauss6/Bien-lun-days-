@@ -12,6 +12,7 @@
 import { writeFileSync } from 'node:fs';
 import cities from 'all-the-cities';
 import { FRENCH_EXONYMS } from '../lib/cities/aliases';
+import tzlookup from 'tz-lookup';
 
 /** Pays où l'on descend au seuil de mille habitants : le marché visé. */
 const FRANCOPHONE = new Set([
@@ -52,6 +53,10 @@ const kept = selected.map((c) => {
     Math.round(c.loc.coordinates[1] * 1e4),
     Math.round(c.loc.coordinates[0] * 1e4),
     c.population,
+    // Le fuseau est une propriété de la ville, pas un calcul d'exécution : le
+    // résoudre ici retire `tz-lookup` du chemin critique et rend le moteur
+    // utilisable dans un navigateur sans embarquer une base de polygones.
+    tzlookup(c.loc.coordinates[1], c.loc.coordinates[0]),
     // Le nom d'origine reste cherchable pour qui tape « Brussels ».
     ...(french ? [c.name] : []),
   ];

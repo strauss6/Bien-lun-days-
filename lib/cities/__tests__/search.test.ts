@@ -35,11 +35,14 @@ describe('recherche de ville', () => {
     expect(searchCities('a').length).toBeLessThanOrEqual(10);
   });
 
-  it('porte les coordonnées nécessaires au calcul du thème', () => {
+  it('porte les coordonnées et le fuseau nécessaires au calcul du thème', () => {
     const [paris] = searchCities('paris');
     expect(paris.name).toBe('Paris');
     expect(paris.lat).toBeCloseTo(48.85, 1);
     expect(paris.lng).toBeCloseTo(2.35, 1);
+    // Résolu à la construction : le moteur n'a plus besoin de tz-lookup à l'exécution.
+    expect(paris.zone).toBe('Europe/Paris');
+    expect(searchCities('montréal')[0].zone).toBe('America/Toronto');
   });
 
   it('couvre les petites communes françaises, pas seulement les grandes villes', () => {

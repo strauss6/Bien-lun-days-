@@ -58,6 +58,7 @@ describe('calcul complet', () => {
         expect(a.score).toBeGreaterThanOrEqual(0);
         expect(a.score).toBeLessThanOrEqual(100);
         expect(a.explaining.length).toBeLessThanOrEqual(2);
+        expect(a.phrase.length).toBeGreaterThan(10);
         // Le glyphe du pic dit où est la planète, donc il faut son signe.
         if (a.explaining.length) {
           expect(a.peakSign).toBeGreaterThanOrEqual(0);

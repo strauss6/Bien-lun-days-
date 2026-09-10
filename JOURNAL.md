@@ -187,3 +187,23 @@ réparé, ce qui reste incertain.
 - **Incertain** : la carte du quiz est très haute sur un grand écran, avec beaucoup de vide
   sous le bouton. Acceptable sur téléphone, à revoir si le parcours se joue aussi sur
   ordinateur.
+
+## T08, T09, T10 — Le tunnel complet
+
+- **Fait** : l'écran de calcul affiche les **vraies valeurs** renvoyées par le calcul —
+  position du Soleil à l'heure de naissance, conversion en UTC, Ascendant, nombre réel de
+  combinaisons testées et d'aspects retenus — et ne dure pas plus longtemps que le calcul.
+  La carte de jour montre un seul grand nombre, celui de l'axe choisi au quiz, et une seule
+  phrase. Les jours rares donnent l'âge à la dernière occurrence. Le constructeur de phrases
+  est déterministe et vérifié en sortie : formules de voyance et lexique médical sur l'axe
+  Énergie déclenchent un repli neutre. Quatre écrans extraits en composants partagés, les
+  pages Next n'en sont plus que des enrobages.
+- **Cassé / réparé** : un test a montré que la carte citait les deux aspects **deux fois**,
+  une fois en liste technique et une fois dans la phrase. Le brief demande que la phrase les
+  cite : la liste passe derrière un « Le détail », avec l'orbe et la traduction de l'aspect,
+  comme l'exige le budget de densité. Deux attentes de test corrigées : la demande se lit
+  désormais dans la session et non dans un affichage de mise au point, et l'espace des
+  milliers de `toLocaleString('fr-FR')` est une espace insécable étroite qu'un espace
+  ordinaire ne peut pas apparier.
+- **Incertain** : le fuseau de résidence est celui de la ville de naissance. C'est presque
+  toujours vrai, jamais garanti — à demander explicitement le jour où ça compte.

@@ -104,7 +104,7 @@ produit vendable.
       *Fini quand* : parcours complet au clavier seul, focus visible, et un test e2e qui
       remplit les cinq écrans.
 
-- [ ] **T08 — L'écran de calcul honnête.** (60 min)
+- [x] **T08 — L'écran de calcul honnête.** (60 min)
       Les vraies étapes avec les vraies valeurs renvoyées par le calcul : position du
       Soleil à l'heure de naissance, Ascendant, fenêtre de transits, nombre réel de
       combinaisons testées et d'aspects retenus. Dure le temps du calcul, jamais une fausse
@@ -112,7 +112,7 @@ produit vendable.
       *Fini quand* : un test e2e vérifie qu'au moins une valeur affichée provient bien de la
       réponse d'API et non d'une constante.
 
-- [ ] **T09 — La carte de jour.** (90 min)
+- [x] **T09 — La carte de jour.** (90 min)
       Date en registre technique, axe prioritaire déplié avec ses deux aspects et sa phrase,
       les deux autres axes repliés à leur score. Phrases par **gabarits déterministes**
       montés sur `lib/copy/blocks.ts` — voir Q6. Signe de contribution affiché, jamais la
@@ -123,7 +123,7 @@ produit vendable.
       maximum, orbes et signes masqués jusqu'au tap. Test de bout en bout sur les règles 3
       et 4.
 
-- [ ] **T10 — L'écran « Les jours rares ».** (75 min)
+- [x] **T10 — L'écran « Les jours rares ».** (75 min)
       Uniquement les aspects classés rares ou au-dessus. Pour chacun : les deux planètes et
       l'aspect **en toutes lettres**, la date, la dernière occurrence **traduite en âge**,
       la prochaine occurrence. Si la période n'en
