@@ -7,23 +7,28 @@ import { signOf } from './angles';
 /**
  * Planètes en transit retenues par axe.
  *
- * L'axe Amour porte le Soleil en plus de Vénus, Mars, Jupiter et la Lune, et
- * vise aussi le Mars natal. Ce n'est pas un élargissement gratuit : sur 90 jours
- * Vénus parcourt ~110°, Mars ~50° et Jupiter ~8°, ce qui ne produit pas cinq
- * événements *distincts* vers quatre points natals — deux thèmes de contrôle sur
- * huit ne pouvaient pas livrer cinq dates Amour. Le Soleil sur le Vénus ou le
- * Descendant natal est par ailleurs une configuration relationnelle classique,
- * et le couple Vénus–Mars est le cœur du sujet.
+ * Amour et Business portent chacun cinq planètes en transit et cinq points
+ * natals, contre quatre au périmètre initial. Ce n'est pas un élargissement
+ * gratuit : sur 90 jours Jupiter parcourt ~8° et Saturne ~3°, Vénus ~110° et
+ * Mars ~50°. Quatre transits vers quatre points natals ne produisent donc pas
+ * cinq événements *distincts* sur la fenêtre, et le rapport ne pouvait pas
+ * toujours livrer les cinq dates que le paywall promet.
+ *
+ * Les ajouts sont ceux qui se défendent le mieux astrologiquement : le Soleil
+ * sur le Vénus ou le Descendant natal est une configuration relationnelle
+ * classique et Vénus–Mars est le cœur du sujet ; Vénus est la planète de la
+ * valeur, du prix et du contrat, et les transits au Saturne natal parlent
+ * d'engagement et de structure — donc de business.
  */
 export const AXIS_TRANSITS: Record<AxisId, PlanetId[]> = {
-  business: ['jupiter', 'saturn', 'mercury', 'sun'],
+  business: ['jupiter', 'saturn', 'mercury', 'sun', 'venus'],
   love: ['venus', 'mars', 'jupiter', 'moon', 'sun'],
   energy: ['mars', 'saturn', 'sun', 'moon'],
 };
 
 /** Points natals visés par axe. */
 export const AXIS_NATALS: Record<AxisId, PointId[]> = {
-  business: ['sun', 'mc', 'mercury', 'jupiter'],
+  business: ['sun', 'mc', 'mercury', 'jupiter', 'saturn'],
   love: ['venus', 'moon', 'dsc', 'sun', 'mars'],
   energy: ['asc', 'sun', 'mars', 'moon'],
 };

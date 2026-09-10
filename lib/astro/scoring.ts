@@ -5,14 +5,14 @@ import { AXIS_IDS, AXIS_NATALS, AXIS_TRANSITS, buildTransitGrid, pairKey } from 
 
 /** Poids des planètes en transit, par axe. */
 export const TRANSIT_WEIGHTS: Record<AxisId, Partial<Record<PlanetId, number>>> = {
-  business: { jupiter: 1.0, saturn: 0.9, mercury: 0.6, sun: 0.7 },
+  business: { jupiter: 1.0, saturn: 0.9, sun: 0.7, mercury: 0.6, venus: 0.55 },
   love: { venus: 1.0, mars: 0.7, jupiter: 0.65, sun: 0.55, moon: 0.45 },
   energy: { mars: 1.0, saturn: 0.85, sun: 0.8, moon: 0.5 },
 };
 
 /** Poids des points natals visés, par axe. */
 export const NATAL_WEIGHTS: Record<AxisId, Partial<Record<PointId, number>>> = {
-  business: { sun: 1.0, mc: 0.95, mercury: 0.7, jupiter: 0.6 },
+  business: { sun: 1.0, mc: 0.95, mercury: 0.7, saturn: 0.65, jupiter: 0.6 },
   love: { venus: 1.0, moon: 0.8, dsc: 0.75, mars: 0.7, sun: 0.6 },
   energy: { asc: 1.0, sun: 0.85, mars: 0.8, moon: 0.55 },
 };

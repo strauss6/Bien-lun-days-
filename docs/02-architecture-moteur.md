@@ -153,8 +153,8 @@ Un aspect large existe sans peser ; un aspect serré domine la journée.
 - Chaque jour renvoie la liste brute des aspects trouvés `{ transit, aspect, natal, orb, e }`,
   conservée jusqu'au rapport : c'est elle qui alimente les textes et l'affichage des orbes.
 
-Volume : 57 couples (16 Business + 25 Amour + 16 Énergie) × 5 aspects × 90 jours =
-**25 650 combinaisons testées**, environ **200 aspects retenus** sur les thèmes de contrôle
+Volume : 66 couples (25 Business + 25 Amour + 16 Énergie) × 5 aspects × 90 jours =
+**29 700 combinaisons testées**, environ **200 aspects retenus** sur les thèmes de contrôle
 (un « aspect retenu » est un événement continu, pas un jour : Vénus qui reste deux semaines
 dans l'orbe d'un trigone compte pour un). Ce sont ces nombres réels qui s'affichent sur
 l'écran de calcul.
@@ -184,13 +184,22 @@ Points natals visés :
 | Amour | Vénus 1,00 · Lune 0,80 · DSC 0,75 · Mars 0,70 · Soleil 0,60 |
 | Énergie | ASC 1,00 · Soleil 0,85 · Mars 0,80 · Lune 0,55 |
 
-**Écart assumé au périmètre initial.** L'axe Amour porte le Soleil en transit et le Mars
-natal en plus de la liste prévue. Sur 90 jours Vénus parcourt ~110°, Mars ~50° et Jupiter
-~8° : cela ne produit pas cinq événements **distincts** vers quatre points natals, et deux
-thèmes de contrôle sur huit ne pouvaient pas livrer cinq dates Amour. Le paywall promet
-cinq dates par axe ; la promesse est donc une contrainte de moteur. Le Soleil sur le Vénus
-ou le Descendant natal est par ailleurs une configuration relationnelle classique, et
-Vénus–Mars est le cœur du sujet. Un test tient la promesse sur dix thèmes quelconques.
+**Écart assumé au périmètre initial.** Amour et Business portent cinq planètes en transit
+et cinq points natals, contre quatre. Sur 90 jours Jupiter parcourt ~8° et Saturne ~3° :
+quatre transits vers quatre points natals ne produisent pas cinq événements **distincts**
+sur la fenêtre. Mesuré sur 10 thèmes × 24 fenêtres glissantes, **18 axes sur 720**
+n'atteignaient pas cinq dates, dont 17 sur Business. Le paywall promet cinq dates par axe :
+la promesse est donc une contrainte de moteur, pas une formule marketing.
+
+Ajouts retenus, choisis pour leur défendabilité astrologique : Vénus en transit sur
+Business — planète de la valeur, du prix et du contrat — et le Saturne natal comme cible,
+qui parle d'engagement et de structure ; le Soleil en transit sur Amour, configuration
+relationnelle classique sur le Vénus ou le Descendant natal, et le Mars natal, puisque
+Vénus–Mars est le cœur du sujet. Après élargissement : **4 axes sur 720**, soit 0,55 %.
+Un test rejoue ce balayage et échoue au-delà de 2 %.
+
+**Le repli ne bourre jamais.** Sous le seuil de qualité, un axe rend quatre dates fortes
+plutôt que cinq dont une tiède ; il ne descend jamais sous trois.
 
 Polarité de l'aspect, modulée par la nature du transitant :
 

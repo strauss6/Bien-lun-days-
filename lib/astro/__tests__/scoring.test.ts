@@ -8,6 +8,7 @@ import { exactness, findAspect } from '../aspects';
 import { computeNatalChart } from '../natal';
 import { resolveBirthInstant } from '../time';
 import { AXIS_IDS } from '../transits';
+import { addCivilDays } from '../zone';
 
 const BIRTH = { date: '1993-08-06', time: '20:50', lat: 48.8352, lng: 2.2409 };
 const chart = computeNatalChart(resolveBirthInstant(BIRTH), BIRTH.lat, BIRTH.lng);
@@ -138,8 +139,8 @@ describe('rapport complet', () => {
   });
 
   it('annonce le nombre exact de combinaisons testées', () => {
-    // 16 paires Business + 25 Amour + 16 Énergie, cinq aspects, quatre-vingt-dix jours.
-    expect(reading.stats.comparisonsTested).toBe(57 * 5 * 90);
+    // 25 paires Business + 25 Amour + 16 Énergie, cinq aspects, quatre-vingt-dix jours.
+    expect(reading.stats.comparisonsTested).toBe(66 * 5 * 90);
     expect(reading.stats.aspectEvents).toBeGreaterThan(20);
     expect(reading.stats.aspectDays).toBeGreaterThan(reading.stats.aspectEvents);
   });
@@ -209,8 +210,7 @@ describe('qualité des dates citées', () => {
  * moteur : elle doit tenir sur des thèmes quelconques, pas seulement sur celui
  * qui a servi au développement.
  */
-describe('robustesse sur dix thèmes quelconques', () => {
-  const SAMPLES: Array<[string, string, number, number]> = [
+const SAMPLES: Array<[string, string, number, number]> = [
     ['1993-08-06', '20:50', 48.8352, 2.2409],
     ['1991-03-14', '14:07', 48.8566, 2.3522],
     ['1970-01-01', '04:15', -33.8688, 151.2093],
@@ -220,9 +220,10 @@ describe('robustesse sur dix thèmes quelconques', () => {
     ['1978-09-30', '16:20', -23.5505, -46.6333],
     ['2004-12-25', '01:05', 48.8566, 2.3522],
     ['1999-06-17', '09:40', 52.52, 13.405],
-    ['1988-02-29', '21:10', 41.9028, 12.4964],
-  ];
+  ['1988-02-29', '21:10', 41.9028, 12.4964],
+];
 
+describe('robustesse sur dix thèmes quelconques', () => {
   it.each(SAMPLES)('%s %s — cinq dates par axe, cinq événements distincts', (date, time, lat, lng) => {
     const c = computeNatalChart(resolveBirthInstant({ date, time, lat, lng }), lat, lng);
     const reading = computeReading({ chart: c, zone: 'Europe/Paris', startDate: '2026-09-09' });
@@ -236,5 +237,35 @@ describe('robustesse sur dix thèmes quelconques', () => {
       const scores = days.map((d) => d.score);
       expect(Math.max(...scores) - Math.min(...scores)).toBeCloseTo(94, 5);
     }
+  });
+});
+
+/**
+ * La promesse commerciale — cinq dates par axe — mesurée sur des fenêtres
+ * glissantes et non sur la seule date de développement. Décaler la fenêtre d'un
+ * jour suffisait à faire tomber un axe à quatre dates ; c'est ce balayage qui
+ * a conduit à élargir les axes Business et Amour.
+ */
+describe('la promesse de cinq dates tient sur des fenêtres glissantes', () => {
+  it('moins de 2 % des axes descendent sous cinq dates', () => {
+    const starts = Array.from({ length: 6 }, (_, i) => addCivilDays('2026-09-10', i * 60));
+    let total = 0;
+    let short = 0;
+
+    for (const [date, time, lat, lng] of SAMPLES) {
+      const c = computeNatalChart(resolveBirthInstant({ date, time, lat, lng }), lat, lng);
+      for (const startDate of starts) {
+        const reading = computeReading({ chart: c, zone: 'Europe/Paris', startDate });
+        for (const axis of AXIS_IDS) {
+          total += 1;
+          const n = reading.axes[axis].best.length;
+          // Un axe ne descend jamais sous trois dates, quoi qu'il arrive.
+          expect(n).toBeGreaterThanOrEqual(MIN_DATES);
+          if (n < 5) short += 1;
+        }
+      }
+    }
+
+    expect(short / total).toBeLessThan(0.02);
   });
 });
