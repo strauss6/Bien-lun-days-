@@ -89,7 +89,7 @@ produit vendable.
       *Fini quand* : un test d'API couvre le cas nominal, l'heure inconnue et trois entrées
       invalides.
 
-- [ ] **T06 — Le ruban, en composant isolé.** (90 min)
+- [x] **T06 — Le ruban, en composant isolé.** (90 min)
       Trois bandes, trois tracés distincts, lavis saisonnier continu calé sur les équinoxes
       réels, graduation, glyphe minuscule sur les pics, révélation par `clip-path` une fois
       par session. Page de démonstration alimentée par un vrai rapport.

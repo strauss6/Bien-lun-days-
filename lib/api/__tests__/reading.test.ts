@@ -58,6 +58,13 @@ describe('calcul complet', () => {
         expect(a.score).toBeGreaterThanOrEqual(0);
         expect(a.score).toBeLessThanOrEqual(100);
         expect(a.explaining.length).toBeLessThanOrEqual(2);
+        // Le glyphe du pic dit où est la planète, donc il faut son signe.
+        if (a.explaining.length) {
+          expect(a.peakSign).toBeGreaterThanOrEqual(0);
+          expect(a.peakSign).toBeLessThan(12);
+        } else {
+          expect(a.peakSign).toBeNull();
+        }
         for (const e of a.explaining) {
           expect(e.notation).toMatch(/\S \S \S/);
           // Le possessif s'accorde : « ton Soleil », « ta Lune », « ta Vénus ».

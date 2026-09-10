@@ -114,3 +114,22 @@ surcouche, et remplit la même table de cache. C'est l'option la plus réversibl
 d'interface est identique, seule la source du texte change.
 
 **Pour trancher** : fournir `ANTHROPIC_API_KEY` dans `.env.local` pour activer la surcouche.
+
+---
+
+## Q7 — Le symbole de conjonction reste proche de celui de Mars
+
+**Constat** : les symboles d'aspect étaient composés en Unicode. Une capture de conformité
+a montré que `☌` n'existe pas dans Geist Mono et que la police de repli lui substituait un
+signe ressemblant à Mars : « Jupiter conjonction Soleil » se lisait « Jupiter Mars Soleil ».
+
+**Retenu** : les cinq aspects sont désormais **dessinés en polylignes**, comme les douze
+signes, ce qui supprime la dépendance à la couverture d'une police. Le symbole de
+conjonction garde sa forme traditionnelle — le disque et son rayon — qui reste
+graphiquement proche de Mars à treize pixels. La notation porte la phrase en clair comme
+étiquette accessible, et la carte de jour affichera la phrase juste à côté, ce qui lève
+l'ambiguïté pour qui ne connaît pas les symboles.
+
+**Pour trancher** : c'est une décision de design, donc pas prise seul. Deux options si la
+proximité gêne — un simple disque sans rayon, plus lisible mais non traditionnel, ou le
+maintien de la forme classique.

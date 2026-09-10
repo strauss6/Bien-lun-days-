@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { ZODIAC_ORDER, ZODIAC_PATHS, ZODIAC_LABELS } from '../zodiac-paths';
+import { ASPECT_PATHS } from '../aspect-paths';
+import { ASPECT_IDS } from '../../astro/aspects';
 
 describe('glyphes du zodiaque', () => {
   it('les douze signes sont présents et nommés', () => {
@@ -56,6 +58,36 @@ describe('glyphes du zodiaque', () => {
       const centre = (a: number[]) => (Math.min(...a) + Math.max(...a)) / 2;
       expect(Math.abs(centre(xs) - 12), `${key} décentré en x`).toBeLessThan(1.6);
       expect(Math.abs(centre(ys) - 12), `${key} décentré en y`).toBeLessThan(1.6);
+    }
+  });
+});
+
+describe('symboles d\'aspect', () => {
+  /**
+   * Ils étaient composés en Unicode jusqu'à ce qu'une capture montre que `☌`
+   * n'existe pas dans Geist Mono et que la police de repli lui substitue un signe
+   * ressemblant à Mars. Dessinés, ils suivent la même règle que les douze signes.
+   */
+  it('les cinq aspects sont dessinés, sans aucune courbe', () => {
+    for (const aspect of ASPECT_IDS) {
+      const paths = ASPECT_PATHS[aspect];
+      expect(paths.length).toBeGreaterThan(0);
+      for (const d of paths) {
+        expect(d, `${aspect} : ${d}`).not.toMatch(/[CcSsQqTt]/);
+        expect(d, `${aspect} : ${d}`).not.toMatch(/[Aa]\s*\d/);
+        expect(d).toMatch(/^M/);
+      }
+    }
+  });
+
+  it('tiennent dans la même grille que les signes', () => {
+    for (const aspect of ASPECT_IDS) {
+      for (const d of ASPECT_PATHS[aspect]) {
+        for (const n of d.match(/-?\d+(\.\d+)?/g) ?? []) {
+          expect(Number(n), `${aspect} déborde : ${n}`).toBeGreaterThanOrEqual(4);
+          expect(Number(n), `${aspect} déborde : ${n}`).toBeLessThanOrEqual(20);
+        }
+      }
     }
   });
 });

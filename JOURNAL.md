@@ -113,3 +113,20 @@ réparé, ce qui reste incertain.
   corrigée, pas le code — l'accord est lui-même couvert par un test dédié.
 - **Incertain** : l'axe prioritaire ordonne l'affichage via `axisOrder`, mais rien ne dit
   encore comment l'interface présente un axe sans date citable. À trancher en T09.
+
+## T06 — Le ruban, en composant isolé
+
+- **Fait** : géométrie pure et testée dans `lib/design/ribbon-geometry.ts`, composant
+  `TideRibbon`, page de démonstration alimentée par un vrai calcul, six tests de bout en
+  bout dont un qui vérifie qu'aucune teinte hors palette n'apparaît dans le SVG.
+- **Cassé / réparé** : quatre défauts que seule la capture a montrés. Les libellés d'axe
+  passaient sous les colonnes et le curseur traversait le « B » de BUSINESS — une gouttière
+  de gauche a été ajoutée à la géométrie. Les glyphes de pic débordaient de la bande, ils
+  sont bornés. Le curseur de la démonstration était un `input range` **bleu**, couleur hors
+  palette, passé à l'encre. Et surtout : les symboles d'aspect composés en Unicode
+  s'affichaient faux — `☌` n'existe pas dans Geist Mono et la police de repli lui
+  substituait un signe ressemblant à Mars, si bien que « Jupiter conjonction Soleil » se
+  lisait « Jupiter Mars Soleil ». Les cinq aspects sont maintenant dessinés en polylignes,
+  sur la même grille que les douze signes, avec les mêmes tests.
+- **Incertain** : le symbole de conjonction, même dessiné, reste graphiquement proche de
+  Mars à treize pixels. Question de design, donc non tranchée seul — Q7.

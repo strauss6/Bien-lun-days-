@@ -8,6 +8,9 @@ import { AXIS_IDS, AXIS_LABELS } from '@/lib/astro/transits';
 import { formatLongitude, formatOrb } from '@/lib/astro/angles';
 import { ASPECT_PLAIN, notation, transitPhrase } from '@/lib/astro/labels';
 import { ASPECTS } from '@/lib/astro/aspects';
+import { longitudeOf } from '@/lib/astro/ephemeris';
+import { signOf } from '@/lib/astro/angles';
+import { localNoonInstant } from '@/lib/astro/zone';
 
 /**
  * Contrat entre le formulaire et le calcul.
@@ -44,8 +47,12 @@ export const ReadingRequest = z.object({
 export type ReadingInput = z.infer<typeof ReadingRequest>;
 
 export interface ExplainingAspect {
-  /** Notation technique : « ♃ △ ☉ ». */
+  /** Notation technique : « ♃ △ ☉ ». Forme textuelle, pour l'accessibilité et les tests. */
   notation: string;
+  /** Composants de la notation, pour que l'interface dessine le symbole d'aspect. */
+  transit: string;
+  aspect: string;
+  natal: string;
   /** Libellé en clair : « Jupiter en trigone à ton Soleil ». */
   phrase: string;
   /** Traduction de l'aspect, pour son premier emploi dans l'écran. */
@@ -87,7 +94,16 @@ export interface ReadingPayload {
   days: Array<{
     date: string;
     season: string;
-    axes: Record<AxisId, { score: number; explaining: ExplainingAspect[] }>;
+    axes: Record<AxisId, {
+      score: number;
+      explaining: ExplainingAspect[];
+      /**
+       * Signe où se trouve la planète qui porte le jour. C'est ce que le glyphe
+       * posé sur un pic du ruban indique : **où est la planète**, jamais qui est
+       * la personne.
+       */
+      peakSign: number | null;
+    }>;
   }>;
   rare: RarePayload[];
   stats: { comparisonsTested: number; aspectEvents: number };
@@ -109,10 +125,17 @@ export function buildReading(input: ReadingInput): ReadingPayload {
     const axes = {} as ReadingPayload['days'][number]['axes'];
     for (const axis of AXIS_IDS) {
       const d = reading.axes[axis].days[i];
+      const top = d.explaining[0];
       axes[axis] = {
         score: Math.round(d.score),
+        peakSign: top
+          ? signOf(longitudeOf(top.transit, new Date(localNoonInstant(zone, d.date))))
+          : null,
         explaining: d.explaining.map((a) => ({
           notation: notation(a.transit, a.aspect, a.natal),
+          transit: a.transit,
+          aspect: a.aspect,
+          natal: a.natal,
           phrase: transitPhrase(a.transit, a.aspect, a.natal),
           plain: ASPECT_PLAIN[a.aspect],
           orb: formatOrb(a.orb),
