@@ -49,3 +49,15 @@ réparé, ce qui reste incertain.
 - **Incertain** : à 30 jours, trois axes sur 360 ne rendent qu'une seule date. C'est la
   réponse juste, mais l'interface devra afficher un axe pauvre sans donner l'impression
   d'un bug — à traiter en T09.
+
+## T02 — Les deux aspects qui expliquent le score
+
+- **Fait** : `AxisDay.explaining` porte les deux plus fortes contributions **en valeur
+  absolue**, et `lib/astro/labels.ts` compose les libellés — « Jupiter en trigone à ton
+  Soleil », la notation « ♃ △ ☉ », le possessif accordé au genre du point, et la
+  traduction en clair de chaque aspect pour son premier emploi.
+- **Cassé / réparé** : rien. Le tri par valeur absolue existait déjà dans `aspects` ;
+  l'exposer explicitement évite qu'un appelant reprenne les deux premiers positifs par
+  commodité, ce que le brief signale comme le raté habituel.
+- **Incertain** : rien. Un test parcourt toutes les combinaisons planète × aspect × point
+  et vérifie qu'aucun libellé ne contient jamais un nom de signe.

@@ -37,7 +37,7 @@ produit vendable.
       *Fini quand* : les tests de scoring passent sur 30 jours, la mesure d'élargissement
       reste documentée, et `comparisonsTested` reflète la nouvelle table.
 
-- [ ] **T02 — Les deux aspects explicatifs, exposés proprement.** (60 min)
+- [x] **T02 — Les deux aspects explicatifs, exposés proprement.** (60 min)
       `AxisDay` expose `explaining: [DayAspect, DayAspect]` — les deux plus fortes
       contributions **en valeur absolue**, pas les deux plus positives. Chacun porte planète
       en transit, aspect, point natal, orbe, contribution signée, et un libellé en clair

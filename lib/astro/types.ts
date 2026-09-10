@@ -105,6 +105,14 @@ export interface AxisDay {
   significance: number;
   /** Aspects du jour, du plus contributif au moins contributif en valeur absolue. */
   aspects: DayAspect[];
+  /**
+   * Les deux aspects qui expliquent le score, quel qu'il soit.
+   *
+   * Ce sont les deux plus fortes contributions **en valeur absolue**, et non les
+   * deux plus favorables : un jour à 12 sur 100 doit afficher les deux aspects
+   * durs qui l'ont fait tomber si bas, pas les deux moins mauvais.
+   */
+  explaining: DayAspect[];
 }
 
 export interface AxisReading {

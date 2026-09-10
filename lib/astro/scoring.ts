@@ -290,14 +290,19 @@ export function computeReading(options: ScoreOptions): Reading {
     const rawWindow = window(raw);
     const aspectsWindow = window(perDay);
 
-    const dayList: AxisDay[] = window(grid.dates).map((date, d) => ({
-      day: d,
-      date,
-      score: scores[d],
-      raw: rawWindow[d],
-      significance: significance[d],
-      aspects: aspectsWindow[d].sort((a, b) => Math.abs(b.contribution) - Math.abs(a.contribution)),
-    }));
+    const dayList: AxisDay[] = window(grid.dates).map((date, d) => {
+      const aspects = aspectsWindow[d]
+        .sort((a, b) => Math.abs(b.contribution) - Math.abs(a.contribution));
+      return {
+        day: d,
+        date,
+        score: scores[d],
+        raw: rawWindow[d],
+        significance: significance[d],
+        aspects,
+        explaining: aspects.slice(0, 2),
+      };
+    });
 
     axes[axis] = {
       axis,
