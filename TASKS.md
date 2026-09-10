@@ -51,9 +51,25 @@ produit vendable.
       ans autour de la naissance, affinage au jour, **dernière occurrence convertie en âge
       de la personne**, prochaine occurrence en année. Cache mémoire par clé
       `thème + aspect`.
-      *Fini quand* : sur le thème de référence, Jupiter conjonction Soleil rend un âge
-      cohérent avec la périodicité de 12 ans, et un test vérifie qu'aucune rareté n'est
-      inventée quand la période n'en contient pas.
+
+      **Regroupement des passages rétrogrades — exigence, pas détail.** Une planète lente
+      repasse deux ou trois fois sur le même degré en quelques mois pendant sa
+      rétrogradation. Ce sont des passages du **même** événement. Le prototype de la
+      planche de validation les comptait séparément et annonçait « la dernière fois, tu
+      avais 31 ans » pour un Pluton sur l'Ascendant qui n'est en réalité arrivé qu'une
+      seule fois — le mensonge exact que le brief interdit, sur la fonctionnalité la plus
+      vendeuse du produit. Fenêtre de regroupement retenue dans le prototype : 6 ans
+      au-delà de 60 ans de période orbitale, 4 ans au-delà de 20, 2 ans en deçà.
+
+      Quand le balayage ne trouve rien avant, on écrit **« jamais auparavant »**, on
+      n'extrapole pas.
+
+      *Fini quand* : sur le thème de référence, Jupiter conjonction Soleil rend 2015 et
+      l'âge de 21 ans, Saturne trigone Soleil rend 2016 et 23 ans, Saturne opposition
+      Jupiter rend 1997 et 3 ans ; Neptune conjonction Lune et Pluton sextile Ascendant
+      sont marqués « une seule fois dans une vie » sans date antérieure ; et un test
+      vérifie que deux passages rétrogrades du même transit ne comptent jamais pour deux
+      événements.
 
 - [ ] **T04 — Base de villes et recherche.** (75 min)
       Script de construction : `all-the-cities` → index compact (francophonie ≥ 1 000 hab,
