@@ -100,3 +100,16 @@ réparé, ce qui reste incertain.
   trouvée. L'impact astrologique est nul — un dixième de degré de longitude déplace
   l'Ascendant de six minutes d'arc — mais l'interface devra le dire franchement en T07
   plutôt que de laisser l'utilisateur devant une liste vide.
+
+## T05 — Contrat d'API et calcul serveur
+
+- **Fait** : schéma `zod` du formulaire avec un message par erreur, directement affichable ;
+  `buildReading` compose thème, trente jours et jours rares en un objet sérialisable et
+  prêt pour l'interface — notation technique, phrase en clair, traduction de l'aspect, orbe,
+  et **signe** de la contribution plutôt que sa valeur, comme l'impose le budget de densité.
+  Deux routes : `POST /api/reading` et `GET /api/cities`. Cinq tests de bout en bout.
+- **Cassé / réparé** : une attente de test trop étroite exigeait « ton » dans chaque phrase,
+  alors que le possessif s'accorde et que « ta Vénus » est correct. L'attente a été
+  corrigée, pas le code — l'accord est lui-même couvert par un test dédié.
+- **Incertain** : l'axe prioritaire ordonne l'affichage via `axisOrder`, mais rien ne dit
+  encore comment l'interface présente un axe sans date citable. À trancher en T09.

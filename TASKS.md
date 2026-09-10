@@ -81,7 +81,7 @@ produit vendable.
 
 ## Phase 2 — le chemin complet, de bout en bout
 
-- [ ] **T05 — Contrat d'API et calcul serveur.** (60 min)
+- [x] **T05 — Contrat d'API et calcul serveur.** (60 min)
       Schéma `zod` du formulaire, route `POST /api/reading` qui résout l'instant de
       naissance, calcule le thème, le rapport sur 30 jours et les raretés, et rend un objet
       sérialisable unique. Erreurs explicites — ville inconnue, date invalide, heure
