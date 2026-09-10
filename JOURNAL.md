@@ -170,6 +170,11 @@ réparé, ce qui reste incertain.
   Il lui faut deux mots — ÉTÉ, AUTOMNE — pour que l'idée « on lit le temps passer » se
   comprenne. À traiter avec la carte de jour en T09.
 
+## 10 septembre 2026 — R01, revue et design (en cours de validation)
+
+- Accueil relié à la démonstration ; hiérarchie commune, navigation des jours, sélection d’axe, un grand score et détails dépliables, sans nouvelle palette ni dépendance.
+- Corrigés : variables de polices non utilisées, dates civiles/fuseaux invalides acceptés, dates fixes qualifiées d’aujourd’hui, ruban invisible lors du double montage React ; tests de validation reproduits en échec avant correction.
+- Restent : tests UI Playwright bloqués par Chromium absent, contrôle mobile et limites fonctionnelles documentées dans docs/03-revue-design.md ; aucune fusion ni mise en production.
 ## T07 — Le quiz, cinq écrans
 
 - **Fait** : logique de validation pure et testée dans `lib/quiz/steps.ts`, cinq écrans à
@@ -187,3 +192,5 @@ réparé, ce qui reste incertain.
 - **Incertain** : la carte du quiz est très haute sur un grand écran, avec beaucoup de vide
   sous le bouton. Acceptable sur téléphone, à revoir si le parcours se joue aussi sur
   ordinateur.
+
+- Intégration du commit concurrent 98534ed : questionnaire conservé, titres remis en mono conformément à la nouvelle consigne ; 165 tests après intégration.

@@ -139,3 +139,14 @@ et les nombres.
 
 Les tracés restent dans le dépôt, non supprimés : ils resserviront pour le document destiné
 à l'astrologue, dont le lecteur sait les lire.
+
+## Revue Codex — 10 septembre 2026
+
+- La demande porte sur la vérification et le design de l’existant, pas sur la réalisation de T08–T16. Le quiz T07 ajouté en parallèle a été conservé.
+  Proposition sur une branche séparée ; les polices, couleurs et glyphes validés restent.
+- La révision couleur du 10 septembre dans DESIGN.md §1 et CLAUDE.md contredit encore
+  BRIEF.md §3 et plusieurs anciennes sections de DESIGN.md. La proposition conserve
+  les jetons déjà présents, sans choisir une nouvelle palette.
+- Le navigateur local attendu par Playwright n’est pas installé ici. Les tests UI de
+  la commande e2e ne peuvent pas démarrer ; le contrôle interactif distant ne remplace
+  pas cette suite. La revue reste en attente de ce dernier contrôle, PR en brouillon.

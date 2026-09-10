@@ -37,7 +37,7 @@ test.describe('le ruban des trente jours', () => {
     const before = await cursor.getAttribute('x1');
 
     await page.locator('#ribbon-day').fill('20');
-    await expect(page.getByText('AUJOURD’HUI + 20')).toBeVisible();
+    await expect(page.getByText('Jour 21 / 30')).toBeVisible();
 
     const after = await cursor.getAttribute('x1');
     expect(Number(after)).toBeGreaterThan(Number(before));
@@ -98,4 +98,39 @@ test('aucun symbole d\'aspect ni de planète dans l\'interface', async ({ page }
   // Le même aspect peut porter deux axes le même jour : on vérifie qu'il est écrit,
   // pas qu'il est unique.
   await expect(page.getByText('Jupiter en conjonction à ton Soleil').first()).toBeVisible();
+});
+
+test('change d’axe au clavier et réserve les mesures au dépliage', async ({ page }) => {
+  await page.goto('/demo/ruban');
+  const love = page.getByRole('button', { name: /Amour/ });
+  await love.focus();
+  await page.keyboard.press('Enter');
+  await expect(love).toHaveAttribute('aria-pressed', 'true');
+  const firstAspect = page.locator('.aspect-detail').first();
+  await expect(firstAspect.locator('.aspect-measure')).not.toBeVisible();
+  await firstAspect.locator('summary').click();
+  await expect(firstAspect.locator('.aspect-measure')).toBeVisible();
+  await page.getByRole('button', { name: 'Jour suivant' }).click();
+  await expect(page.getByText('Jour 2 / 30')).toBeVisible();
+  await expect(page.locator('.aspect-detail').first()).not.toHaveAttribute('open', '');
+});
+
+test('la démonstration date son exemple et ne le présente pas comme aujourd’hui', async ({ page }) => {
+  await page.goto('/demo/ruban');
+  await expect(page.getByText('Démonstration', { exact: true })).toBeVisible();
+  await expect(page.locator('time')).toHaveAttribute('datetime', '2026-09-10');
+  await expect(page.getByText(/aujourd’hui/i)).toHaveCount(0);
+});
+
+test('charge les deux polices déclarées et garde un seul grand score', async ({ page }) => {
+  await page.goto('/demo/ruban');
+  const fonts = await page.evaluate(() => ({
+    actual: getComputedStyle(document.querySelector('.score-number')!).fontFamily,
+    expected: getComputedStyle(document.documentElement).getPropertyValue('--font-geist-mono').trim(),
+  }));
+  expect(fonts.actual).toContain(fonts.expected.split(',')[0].replaceAll('"', '').trim());
+  const largeNumbers = await page.locator('.score-number, .axis-small-score').evaluateAll((els) =>
+    els.filter((el) => parseFloat(getComputedStyle(el).fontSize) > 24).length,
+  );
+  expect(largeNumbers).toBe(1);
 });

@@ -94,7 +94,7 @@ describe('graduation', () => {
   it('marque une semaine sur sept et étiquette le premier jour', () => {
     const ticks = tickPositions(30);
     expect(ticks.filter((t) => t.labelled)).toHaveLength(Math.ceil(30 / 7));
-    expect(ticks[0].label).toBe('AUJ.');
+    expect(ticks[0].label).toBe('J1');
     expect(ticks.find((t) => t.day === 7)?.label).toBe('+7');
     expect(ticks).toHaveLength(30);
   });

@@ -48,7 +48,12 @@ export function TideRibbon({ days, selected, labels, className }: Props) {
   const [drawn, setDrawn] = useState(true);
 
   useEffect(() => {
-    if (revealed.current) return;
+    if (revealed.current) {
+      // Strict Mode rejoue l’effet après avoir annulé la première frame.
+      // Sans remise en état final, le clip reste à zéro et masque tout le ruban.
+      setDrawn(true);
+      return;
+    }
     revealed.current = true;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const seen = (() => {

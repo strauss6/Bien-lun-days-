@@ -152,7 +152,7 @@ export function tickPositions(days: number): Tick[] {
       day,
       x: columnCenter(day, days),
       labelled,
-      label: labelled ? (day === 0 ? 'AUJ.' : `+${day}`) : null,
+      label: labelled ? (day === 0 ? 'J1' : `+${day}`) : null,
     };
   });
 }
