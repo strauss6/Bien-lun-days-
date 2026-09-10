@@ -4,9 +4,10 @@ import { chartRuler, rulerOfHouse, rulerOfSign, signOfHouse } from '../rulers';
 import { computeNatalChart } from '../natal';
 import { resolveBirthInstant } from '../time';
 import { ASPECTS } from '../aspects';
+import { REFERENCE_BIRTH, referenceChart } from './fixtures';
 
-const BIRTH = { date: '1993-08-06', time: '20:50', lat: 48.8352, lng: 2.2409 };
-const chart = computeNatalChart(resolveBirthInstant(BIRTH), BIRTH.lat, BIRTH.lng);
+const BIRTH = REFERENCE_BIRTH;
+const chart = referenceChart();
 const long = computeLongTransits({ chart, startDate: '2026-09-10' });
 
 describe('transits longs', () => {
@@ -32,9 +33,13 @@ describe('transits longs', () => {
     const find = (transit: string, aspect: string, natal: string) =>
       long.find((t) => t.transit === transit && t.aspect === aspect && t.natal === natal);
 
+    // L'orbe dépend de la minute de naissance — 2°19' à 20h40, 0°55' à 20h50 —
+    // ce qui est exactement la thèse du produit. L'aspect, lui, tient dans les
+    // deux cas : c'est pour ça qu'on l'assortit à l'orbe de la conjonction.
     const pluto = find('pluto', 'conjunction', 'asc');
     expect(pluto).toBeDefined();
-    expect(pluto!.orbInWindow).toBeLessThan(1.5);
+    expect(pluto!.orbInWindow).toBeLessThan(ASPECTS.conjunction.orb);
+    expect(pluto!.orbInWindow).toBeLessThan(3);
     expect(pluto!.rarity).toBe('once');
 
     const saturn = find('saturn', 'trine', 'sun');

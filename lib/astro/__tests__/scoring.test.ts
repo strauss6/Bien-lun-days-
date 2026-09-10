@@ -9,9 +9,10 @@ import { computeNatalChart } from '../natal';
 import { resolveBirthInstant } from '../time';
 import { AXIS_IDS } from '../transits';
 import { addCivilDays } from '../zone';
+import { REFERENCE_BIRTH, referenceChart } from './fixtures';
 
-const BIRTH = { date: '1993-08-06', time: '20:50', lat: 48.8352, lng: 2.2409 };
-const chart = computeNatalChart(resolveBirthInstant(BIRTH), BIRTH.lat, BIRTH.lng);
+const BIRTH = REFERENCE_BIRTH;
+const chart = referenceChart();
 
 describe('aspects', () => {
   it('un aspect serré pèse ~34 fois un aspect large', () => {
@@ -116,7 +117,7 @@ describe('heure de naissance inconnue', () => {
 
   it('produit malgré tout un rapport avec du relief', () => {
     const noon = computeNatalChart(
-      resolveBirthInstant({ ...BIRTH, time: null }), BIRTH.lat, BIRTH.lng,
+      resolveBirthInstant({ ...BIRTH, time: null }), BIRTH.lat!, BIRTH.lng!,
     );
     const reading = computeReading({ chart: noon, zone: 'Europe/Paris', startDate: '2026-09-09' });
     for (const axis of AXIS_IDS) {
@@ -211,7 +212,7 @@ describe('qualité des dates citées', () => {
  * qui a servi au développement.
  */
 const SAMPLES: Array<[string, string, number, number]> = [
-    ['1993-08-06', '20:50', 48.8352, 2.2409],
+    ['1993-08-06', '20:40', 48.8352, 2.2409],
     ['1991-03-14', '14:07', 48.8566, 2.3522],
     ['1970-01-01', '04:15', -33.8688, 151.2093],
     ['1985-11-22', '12:00', 40.7128, -74.006],

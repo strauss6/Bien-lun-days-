@@ -57,7 +57,7 @@ export interface LongTransit {
   activeInWindow: boolean;
 }
 
-const SEARCH_YEARS = 4;
+const DEFAULT_SEARCH_YEARS = 4;
 
 /**
  * Transits longs actifs sur la fenêtre, ordonnés du plus rare au plus courant,
@@ -73,15 +73,22 @@ export function computeLongTransits(options: {
   startDate: string;
   days?: number;
   targets?: PointId[];
+  /**
+   * Amplitude de la recherche de la date d'exactitude, en années de part et
+   * d'autre de la fenêtre. Réduite pour les simulations de masse, où seule
+   * compte la présence de l'aspect et non sa date exacte.
+   */
+  searchYears?: number;
 }): LongTransit[] {
   const { chart, startDate } = options;
   const days = options.days ?? 90;
+  const searchYears = options.searchYears ?? DEFAULT_SEARCH_YEARS;
   const targets = options.targets
     ?? (['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'asc', 'mc'] as PointId[])
       .filter((p) => chart.anglesReliable || (p !== 'asc' && p !== 'mc'));
 
-  const spanDays = Math.round(SEARCH_YEARS * 2 * 365.25);
-  const firstDate = addCivilDays(startDate, -Math.round(SEARCH_YEARS * 365.25));
+  const spanDays = Math.round(searchYears * 2 * 365.25) + days;
+  const firstDate = addCivilDays(startDate, -Math.round(searchYears * 365.25));
   const baseMs = Date.UTC(
     Number(firstDate.slice(0, 4)), Number(firstDate.slice(5, 7)) - 1, Number(firstDate.slice(8, 10)), 12,
   );
@@ -95,7 +102,7 @@ export function computeLongTransits(options: {
     track.set(body, series);
   }
 
-  const windowStart = Math.round(SEARCH_YEARS * 365.25);
+  const windowStart = Math.round(searchYears * 365.25);
   const out: LongTransit[] = [];
 
   for (const body of LONG_BODIES) {
