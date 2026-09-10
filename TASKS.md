@@ -71,7 +71,7 @@ produit vendable.
       vérifie que deux passages rétrogrades du même transit ne comptent jamais pour deux
       événements.
 
-- [ ] **T04 — Base de villes et recherche.** (75 min)
+- [x] **T04 — Base de villes et recherche.** (75 min)
       Script de construction : `all-the-cities` → index compact (francophonie ≥ 1 000 hab,
       reste du monde ≥ 50 000), écrit dans `data/`. Recherche côté serveur : insensible aux
       accents et à la casse, tolérante au tiret, classée par population, dix résultats.

@@ -79,3 +79,24 @@ réparé, ce qui reste incertain.
   antérieure ni suivante — ils n'ont rien à raconter au-delà de leur nom. L'écran des jours
   rares devra les classer et n'en montrer que quelques-uns, sinon le budget de densité
   saute. À traiter en T10.
+
+## T04 — Base de villes et recherche
+
+- **Fait** : `scripts/build-cities.ts` construit `data/cities.json` — 21 792 villes,
+  950 Ko, francophonie au seuil de mille habitants et reste du monde à cinquante mille.
+  `lib/cities/search.ts` cherche sans accent ni casse, tolère tirets et apostrophes, exige
+  que chaque mot de la requête soit le début d'un mot de la ville dans l'ordre, et s'arrête
+  à dix résultats — l'index étant trié par population, le premier trouvé est déjà le plus
+  peuplé. `all-the-cities` passe en dépendance de développement : seul l'index construit
+  est nécessaire à l'exécution.
+- **Cassé / réparé** : la base nomme les villes sans cohérence — Genève et Montréal en
+  français, Brussels et London non. Table d'exonymes français ajoutée, le nom français
+  devient le nom affiché et le nom d'origine reste cherchable. Le garde-fou de
+  construction, qui fait échouer le script sur un alias non résolu, a immédiatement
+  attrapé six entrées inutiles : Munich, Milan, Turin, Florence, Naples et Fès portent
+  déjà leur nom français dans la base. Vitest ignorait aussi l'alias `@/`, ajouté à sa
+  configuration pour que les tests importent comme l'application.
+- **Incertain** : une naissance dans une commune de moins de mille habitants ne sera pas
+  trouvée. L'impact astrologique est nul — un dixième de degré de longitude déplace
+  l'Ascendant de six minutes d'arc — mais l'interface devra le dire franchement en T07
+  plutôt que de laisser l'utilisateur devant une liste vide.
