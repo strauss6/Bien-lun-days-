@@ -118,6 +118,22 @@ Ce qui est interdit, et qui fait échouer un texte à la relecture :
 Le ton visé : quelqu'un qui sait de quoi il parle et qui parle à un adulte pressé. Pas un
 oracle, pas un coach.
 
+**Mais on demande du fond, pas de la forme.** La mise en forme est le travail du modèle et
+la relecture est la nôtre : rythme des phrases, longueur, vocabulaire, cohérence d'un texte
+à l'autre. Ce qu'aucun outil ne sait produire, c'est la matière — ce que la Lune fait
+vraiment quand elle passe, ce qui sépare un trigone d'un sextile à l'usage, ce qui est
+touché quand un transit vient sur le Soleil natal. Un rédacteur qui cherche à bien écrire
+écrit lentement et rend de la prose d'astrologie générique. Un rédacteur qui vide ce qu'il
+sait, en style télégraphique s'il le faut, rend ce qui fait la différence.
+
+Donc : dense plutôt que joli. Notes en vrac acceptées. Note vocale acceptée. Les quarante
+mots sont une cible de sortie, pas une contrainte de rédaction — on coupe nous-mêmes.
+
+**Une exception, et elle vaut de l'or.** Là où une image concrète vient naturellement — la
+tournure qu'on emploierait devant un client, pas celle qu'on écrirait dans un manuel —, il
+faut la garder telle quelle. Ces tournures-là ne se fabriquent pas : elles deviennent les
+exemples rédigés en entier sur lesquels le modèle cale sa voix. Une par brique suffit.
+
 ## Comment ça revient
 
 Texte simple, numéroté de 1 à 4, une réponse par paragraphe. Message, document, note vocale
