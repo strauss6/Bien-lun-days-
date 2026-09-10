@@ -130,6 +130,12 @@ graphiquement proche de Mars à treize pixels. La notation porte la phrase en cl
 étiquette accessible, et la carte de jour affichera la phrase juste à côté, ce qui lève
 l'ambiguïté pour qui ne connaît pas les symboles.
 
-**Pour trancher** : c'est une décision de design, donc pas prise seul. Deux options si la
-proximité gêne — un simple disque sans rayon, plus lisible mais non traditionnel, ou le
-maintien de la forme classique.
+**Tranché le 10 septembre 2026, et autrement que prévu** : la question ne se pose plus,
+parce que **les symboles d'aspect sortent de l'interface**. La plupart des utilisateurs
+seront des néophytes ; un symbole qu'ils ne savent pas lire n'est pas de la précision, c'est
+le jargon non traduit que le brief reproche à Co-Star. Un aspect s'écrit désormais en toutes
+lettres — « Jupiter en trigone à ton Soleil » — et le registre technique passe par les noms
+et les nombres.
+
+Les tracés restent dans le dépôt, non supprimés : ils resserviront pour le document destiné
+à l'astrologue, dont le lecteur sait les lire.

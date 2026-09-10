@@ -67,3 +67,20 @@ test.describe('le ruban des trente jours', () => {
     expect(Number(width)).toBeGreaterThan(300);
   });
 });
+
+/**
+ * La plupart des utilisateurs seront des néophytes : un symbole qu'ils ne savent
+ * pas lire n'est pas de la précision. Les aspects s'écrivent en toutes lettres.
+ */
+test('aucun symbole d\'aspect ni de planète dans l\'interface', async ({ page }) => {
+  await page.goto('/demo/ruban');
+
+  const body = await page.locator('main').innerText();
+  for (const symbol of ['☌', '☍', '⚹', '△', '□', '♃', '♄', '☉', '☾', '♀', '♂', '☿']) {
+    expect(body, `symbole trouvé : ${symbol}`).not.toContain(symbol);
+  }
+
+  // Le même aspect peut porter deux axes le même jour : on vérifie qu'il est écrit,
+  // pas qu'il est unique.
+  await expect(page.getByText('Jupiter en conjonction à ton Soleil').first()).toBeVisible();
+});

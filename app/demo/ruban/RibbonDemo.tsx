@@ -4,8 +4,6 @@ import { useState } from 'react';
 import { TideRibbon, type RibbonDay } from '@/components/ribbon/TideRibbon';
 import type { ReadingPayload } from '@/lib/api/reading';
 import { AXIS_IDS } from '@/lib/astro/transits';
-import { Notation } from '@/components/glyphs/Notation';
-import type { AspectId, PlanetId, PointId } from '@/lib/astro/types';
 
 const MONTHS = ['janv', 'févr', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 'sept', 'oct', 'nov', 'déc'];
 const fmt = (iso: string) => `${Number(iso.slice(8, 10))} ${MONTHS[Number(iso.slice(5, 7)) - 1]}`;
@@ -44,17 +42,16 @@ export function RibbonDemo({ payload }: { payload: ReadingPayload }) {
 
       <dl className="technical mt-6 grid gap-0">
         {payload.axisOrder.map((axis) => (
-          <div key={axis} className="grid grid-cols-[3.2em_1fr_auto] items-baseline gap-4 border-t border-ink/12 py-3">
-            <dt className="text-[22px] font-medium tracking-[-0.02em] tabular-nums">{day.axes[axis].score}</dt>
-            <dd className="text-[10px] tracking-[0.1em] opacity-55">{payload.axisLabels[axis]}</dd>
-            <dd className="flex justify-end gap-4 text-[13px] opacity-70">
+          <div key={axis} className="grid grid-cols-[3.2em_1fr] items-baseline gap-x-4 gap-y-1 border-t border-ink/12 py-3">
+            <dt className="row-span-2 text-[22px] font-medium tracking-[-0.02em] tabular-nums">{day.axes[axis].score}</dt>
+            <dd className="text-[10px] tracking-[0.1em] opacity-55">{payload.axisLabels[axis].toUpperCase()}</dd>
+            {/* En toutes lettres : la plupart des lecteurs ne savent pas lire un symbole. */}
+            <dd className="text-right text-[11px] leading-relaxed opacity-70">
               {day.axes[axis].explaining.map((e) => (
-                <Notation
-                  key={e.notation}
-                  transit={e.transit as PlanetId}
-                  aspect={e.aspect as AspectId}
-                  natal={e.natal as PointId}
-                />
+                <span key={e.notation} className="block">
+                  {e.phrase}
+                  <span className="ml-2 opacity-50">{e.sign}</span>
+                </span>
               ))}
             </dd>
           </div>

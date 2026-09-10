@@ -159,10 +159,9 @@ aussi « une seule idée par écran ». Les deux tiennent ensemble à une condit
 │   87                                    │ ← mono 500, 72 px, compteur qui monte
 │   BUSINESS                              │
 │   ────────────────────────────────────  │
-│   ♃ △ ☉   trigone Jupiter → ton Soleil  │ ← mono 12 ; « trigone » traduit
-│           0°18'                    +    │   une seule fois, puis employé seul
-│   ☿ ⚹ MC  sextile Mercure → ton MC      │
-│           1°02'                    +    │
+│   Jupiter en trigone à ton Soleil    +  │ ← mono 12, aucun symbole à déchiffrer
+│   Mercure en sextile à ton Milieu       │
+│   du Ciel                            +  │
 │                                         │
 │   Jupiter en trigone à ton Soleil, et   │ ← Garamond 19/1.62
 │   Mercure en sextile à ton Milieu du    │
@@ -217,10 +216,32 @@ vérifiables par un test de bout en bout.
 5. **Le produit ne s'explique pas à l'intérieur de lui-même.** Pas de légende sous le
    ruban, pas de tableau des données de naissance, pas de compteur de statistiques. Ces
    informations passent une fois, sur l'écran de calcul, puis disparaissent.
-6. **La notation d'un aspect s'écrit une fois, pas trois.** Les glyphes et le libellé en
-   clair, c'est tout. L'orbe et la contribution signée existent dans la donnée et
-   s'affichent au tap — jamais par défaut.
+6. **Aucun symbole à déchiffrer.** Un aspect s'écrit en toutes lettres — « Jupiter en
+   trigone à ton Soleil » — jamais « ♃ △ ☉ ». La plupart des utilisateurs ne connaissent
+   rien à l'astrologie, et un symbole illisible n'est pas de la précision : c'est le
+   jargon non traduit que le brief reproche à Co-Star. Le registre technique passe par les
+   **noms et les nombres** — planètes nommées, degrés, minutes d'arc, dates —, ce qui le
+   rend plus convaincant, pas moins. L'orbe et le sens de la contribution s'affichent au
+   tap, jamais par défaut.
 
 Ce qui disparaît donc de la planche quand elle devient produit : le bloc d'identité de
 naissance, la ligne de statistiques, la légende des trois modes de tracé, les orbes et les
 signes affichés d'office, et les libellés d'axe répétés sur le ruban **et** dans la carte.
+
+## 9. Ce que les glyphes disent, et ce qu'ils ne disent plus
+
+Décision du 10 septembre 2026 : **les symboles de planètes et d'aspects sortent de
+l'interface.** La plupart des utilisateurs seront des néophytes complets, et un symbole
+qu'ils ne savent pas lire ne produit pas de la précision, il produit du jargon.
+
+Ce qui reste, et qui porte le registre technique bien mieux : les **noms** — Jupiter,
+trigone, ton Soleil —, les **nombres** — 0°18' d'orbe, 97 sur 100, la date exacte — et la
+mise en page tabulaire. C'est plus convaincant que des symboles, parce que ça se lit.
+
+Les douze glyphes du zodiaque restent, à un seul endroit : posés sur les pics du ruban.
+Là, ils marquent **une position sur le ciel** et rien n'oblige à les déchiffrer — c'est
+exactement le rôle que le brief leur assigne, une graduation sur une règle. Ils ne servent
+jamais d'étiquette.
+
+Les cinq symboles d'aspect dessinés en polylignes restent dans le dépôt : ils resserviront
+pour le document que relira l'astrologue, où le lecteur, lui, sait les lire.

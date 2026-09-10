@@ -124,8 +124,9 @@ produit vendable.
       et 4.
 
 - [ ] **T10 — L'écran « Les jours rares ».** (75 min)
-      Uniquement les aspects classés rares ou au-dessus. Pour chacun : notation technique,
-      date, dernière occurrence **traduite en âge**, prochaine occurrence. Si la période n'en
+      Uniquement les aspects classés rares ou au-dessus. Pour chacun : les deux planètes et
+      l'aspect **en toutes lettres**, la date, la dernière occurrence **traduite en âge**,
+      la prochaine occurrence. Si la période n'en
       contient aucun, le dire franchement et afficher le prochain à venir.
       *Fini quand* : un test couvre le cas « aucune rareté sur la période » et vérifie
       qu'aucune rareté n'est fabriquée.

@@ -114,7 +114,11 @@ justification dans `DESIGN.md` §8.
 4. Quarante-cinq mots de texte courant au maximum par écran.
 5. Le produit ne s'explique pas à l'intérieur de lui-même : pas de légende, pas de tableau
    de données de naissance, pas de compteur de statistiques dans l'interface.
-6. La notation d'un aspect s'écrit une fois : glyphes et libellé en clair. L'orbe et la
+6. **Aucun symbole à déchiffrer dans l'interface.** Un aspect s'écrit en toutes lettres —
+   « Jupiter en trigone à ton Soleil » — jamais « ♃ △ ☉ ». La plupart des utilisateurs ne
+   connaissent rien à l'astrologie : un symbole qu'ils ne savent pas lire n'est pas de la
+   précision, c'est du jargon non traduit. Le registre technique passe par les **noms et
+   les nombres** : planètes nommées, degrés, minutes d'arc, dates. L'orbe et le sens de la
    contribution s'affichent au tap, jamais par défaut.
 
 Les règles 3 et 4 sont vérifiées par un test de bout en bout.

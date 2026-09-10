@@ -130,3 +130,20 @@ réparé, ce qui reste incertain.
   sur la même grille que les douze signes, avec les mêmes tests.
 - **Incertain** : le symbole de conjonction, même dessiné, reste graphiquement proche de
   Mars à treize pixels. Question de design, donc non tranchée seul — Q7.
+
+## T06 bis — Les symboles sortent de l'interface
+
+- **Fait** : décision du commanditaire, et elle corrige une dérive. La plupart des
+  utilisateurs seront des néophytes : un symbole qu'ils ne savent pas lire n'est pas de la
+  précision, c'est le jargon non traduit que le brief reproche à Co-Star. Un aspect s'écrit
+  désormais en toutes lettres — « Jupiter en trigone à ton Soleil ». La règle 6 du budget de
+  densité change de nature dans `CLAUDE.md` et `DESIGN.md`, et un test de bout en bout
+  échoue si un seul symbole de planète ou d'aspect réapparaît dans l'interface.
+- **Cassé / réparé** : rien. Le registre technique tient toujours, porté par les noms et les
+  nombres — planètes nommées, minutes d'arc, dates —, ce qui le rend plus convaincant, pas
+  moins.
+- **Incertain** : les douze glyphes du zodiaque restent, à un seul endroit, posés sur les
+  pics du ruban, où ils marquent une position sans qu'on ait à les déchiffrer. Les cinq
+  tracés d'aspect restent dans le dépôt sans être utilisés — non supprimés, parce que la
+  suppression de fichier n'est pas une décision à prendre seul, et parce qu'ils resserviront
+  pour le document destiné à l'astrologue.
