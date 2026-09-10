@@ -207,3 +207,17 @@ réparé, ce qui reste incertain.
   ordinaire ne peut pas apparier.
 - **Incertain** : le fuseau de résidence est celui de la ville de naissance. C'est presque
   toujours vrai, jamais garanti — à demander explicitement le jour où ça compte.
+
+## Recette — la page autonome
+
+- **Fait** : `npm run standalone` produit un unique fichier HTML de 2,1 Mo qui fait tourner
+  le tunnel entier dans le navigateur — moteur d'éphémérides, index de villes et leurs
+  fuseaux, scoring, jours rares. Aucun appel réseau, donc rien de simulé : c'est le même
+  code que la version servie, à travers les mêmes composants d'écran. Vérifié de bout en
+  bout sous Playwright, du prénom aux jours rares, sans une seule erreur de console.
+- **Cassé / réparé** : la mise en commun a été faite avant l'emballage plutôt qu'après —
+  les quatre écrans sont des composants partagés et les pages Next n'en sont que des
+  enrobages, ce qui évite deux versions du tunnel qui divergent.
+- **Incertain** : le paquet embarque React et l'index complet des villes. Deux mégaoctets
+  conviennent à une recette, pas à une page servie sur mobile : la version en production
+  garde ses routes serveur.

@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "e2e": "playwright test",
-    "build:cities": "tsx scripts/build-cities.ts"
+    "build:cities": "tsx scripts/build-cities.ts",
+    "standalone": "node scripts/build-standalone.mjs"
   },
   "dependencies": {
     "astronomy-engine": "^2.1.19",
@@ -25,11 +26,13 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",
     "@playwright/test": "^1.63.0",
+    "@tailwindcss/cli": "^4.3.3",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^22.20.2",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "all-the-cities": "^3.1.0",
+    "esbuild": "^0.28.2",
     "eslint": "^9.39.5",
     "eslint-config-next": "^15.5.25",
     "postcss": "^8.5.28",
