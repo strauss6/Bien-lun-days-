@@ -1,84 +1,97 @@
 'use client';
 
-import { useState } from 'react';
+import Link from 'next/link';
+import { useMemo, useState } from 'react';
 import { TideRibbon, type RibbonDay } from '@/components/ribbon/TideRibbon';
 import type { ReadingPayload } from '@/lib/api/reading';
 import { AXIS_IDS } from '@/lib/astro/transits';
 
-const MONTHS = ['janv', 'févr', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 'sept', 'oct', 'nov', 'déc'];
-const fmt = (iso: string) => `${Number(iso.slice(8, 10))} ${MONTHS[Number(iso.slice(5, 7)) - 1]}`;
+const dateFormat = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'long', timeZone: 'UTC' });
+const fmt = (iso: string) => dateFormat.format(new Date(`${iso}T12:00:00Z`));
 
 export function RibbonDemo({ payload }: { payload: ReadingPayload }) {
   const [selected, setSelected] = useState(0);
-
-  const days: RibbonDay[] = payload.days.map((d) => ({
+  const [activeAxis, setActiveAxis] = useState(payload.axisOrder[0]);
+  const days = useMemo<RibbonDay[]>(() => payload.days.map((d) => ({
     date: d.date,
     season: d.season as RibbonDay['season'],
     scores: Object.fromEntries(AXIS_IDS.map((a) => [a, d.axes[a].score])) as RibbonDay['scores'],
     peakSign: Object.fromEntries(AXIS_IDS.map((a) => [a, d.axes[a].peakSign])) as RibbonDay['peakSign'],
-  }));
-
+  })), [payload]);
   const day = payload.days[selected];
+  const current = day.axes[activeAxis];
 
   return (
-    <main className="mx-auto max-w-[560px] px-5 py-8">
-      <div className="surface p-4">
-        <TideRibbon days={days} selected={selected} labels={payload.axisLabels} />
+    <main className="app-shell">
+      <header className="app-header">
+        <Link href="/" className="wordmark" aria-label="Bien.Luné, accueil">Bien.Luné</Link>
+        <span className="technical secondary">Démonstration</span>
+      </header>
+
+      <div className="report-heading">
+        <h1 className="technical report-title">Le fil de tes jours.</h1>
+        <p className="technical secondary">{fmt(days[0].date)} — {fmt(days[days.length - 1].date)} {day.date.slice(0, 4)}</p>
       </div>
 
-      <p className="technical mt-5 flex items-baseline justify-between text-[12px]">
-        <strong className="text-[15px] font-semibold tracking-[0.02em]">{fmt(day.date).toUpperCase()}</strong>
-        <span className="opacity-50">{selected === 0 ? 'AUJOURD’HUI' : `AUJOURD’HUI + ${selected}`}</span>
-      </p>
-
-      <input
-        id="ribbon-day"
-        className="mt-4 w-full accent-ink"
-        type="range"
-        min={0}
-        max={payload.days.length - 1}
-        value={selected}
-        aria-label="Jour affiché"
-        onChange={(e) => setSelected(Number(e.target.value))}
-      />
-
-      <dl className="technical surface mt-6 grid gap-0 px-5">
-        {payload.axisOrder.map((axis, rank) => (
-          <div
-            key={axis}
-            className="grid grid-cols-[3.4em_1fr] items-baseline gap-x-4 gap-y-1 py-4 [&:not(:first-child)]:border-t [&:not(:first-child)]:border-ink/8"
-          >
-            {/*
-              Un seul nombre au-dessus de 24 px par écran — règle 3 du budget de
-              densité. L'axe qui compte pour la personne le porte ; les deux autres
-              sont des lignes, pas des blocs.
-            */}
-            <dt
-              className={`row-span-2 font-semibold tabular-nums tracking-[-0.03em] ${
-                rank === 0 ? 'text-[30px]' : 'text-[20px]'
-              }`}
-              style={{ color: `var(--axis-${axis})` }}
-            >
-              {day.axes[axis].score}
-            </dt>
-            <dd
-              className="text-[10px] font-semibold tracking-[0.1em]"
-              style={{ color: `var(--axis-${axis}-text)` }}
-            >
-              {payload.axisLabels[axis].toUpperCase()}
-            </dd>
-            {/* En toutes lettres : la plupart des lecteurs ne savent pas lire un symbole. */}
-            <dd className="text-[11.5px] leading-relaxed opacity-70">
-              {day.axes[axis].explaining.map((e) => (
-                <span key={e.notation} className="block">
-                  {e.phrase}
-                  <span className="ml-1.5 opacity-50">{e.sign}</span>
-                </span>
-              ))}
-            </dd>
+      <div className="report-layout">
+        <section className="ribbon-panel" aria-label="Calendrier de démonstration">
+          <div className="surface ribbon-surface">
+            <TideRibbon days={days} selected={selected} labels={payload.axisLabels} firstLabel="J1" />
+            <label htmlFor="ribbon-day" className="sr-only">Jour affiché</label>
+            <input
+              id="ribbon-day"
+              className="day-range"
+              type="range"
+              min={0}
+              max={payload.days.length - 1}
+              value={selected}
+              aria-valuetext={fmt(day.date)}
+              onChange={(e) => setSelected(Number(e.target.value))}
+            />
           </div>
-        ))}
-      </dl>
+          <nav className="day-navigation" aria-label="Choisir un jour">
+            <button type="button" className="quiet-button" disabled={selected === 0} onClick={() => setSelected(selected - 1)} aria-label="Jour précédent">‹</button>
+            <span className="technical secondary">Jour {selected + 1} / {days.length}</span>
+            <button type="button" className="quiet-button" disabled={selected === days.length - 1} onClick={() => setSelected(selected + 1)} aria-label="Jour suivant">›</button>
+          </nav>
+        </section>
+
+        <section className="surface day-card" aria-label="Détail du jour">
+          <div className="day-card-heading">
+            <time className="technical" dateTime={day.date}>{fmt(day.date)}</time>
+            <button type="button" className="text-button" onClick={() => setSelected(0)} disabled={selected === 0}>Début</button>
+          </div>
+          <div className="axis-options" role="group" aria-label="Axe à explorer">
+            {payload.axisOrder.map((axis) => (
+              <button
+                key={axis} type="button" className="axis-option" aria-pressed={activeAxis === axis}
+                style={{ '--axis-tone': `var(--axis-${axis}-text)` } as React.CSSProperties}
+                onClick={() => setActiveAxis(axis)}
+              >
+                <span>{payload.axisLabels[axis]}</span>
+                <span className="axis-small-score">{day.axes[axis].score}</span>
+              </button>
+            ))}
+          </div>
+          <div className="score-block" style={{ color: `var(--axis-${activeAxis}-text)` }} aria-live="polite" aria-atomic="true">
+            <span className="technical score-number" data-testid="primary-score">{current.score}</span>
+            <span className="technical score-scale">/ 100</span>
+            <span className="sr-only">{payload.axisLabels[activeAxis]}, {fmt(day.date)}</span>
+          </div>
+          <div className="aspects" key={`${selected}-${activeAxis}`}>
+            {current.explaining.length ? current.explaining.map((aspect) => (
+              <details className="aspect-detail" key={aspect.notation}>
+                <summary>
+                  <span className="technical aspect-name">{aspect.phrase}</span>
+                  <span className="reading aspect-plain">{aspect.plain}</span>
+                </summary>
+                <p className="technical aspect-measure">Orbe {aspect.orb} · Contribution {aspect.sign}</p>
+              </details>
+            )) : <p className="reading">Aucun aspect retenu pour cet axe ce jour-là.</p>}
+          </div>
+        </section>
+      </div>
+      <footer className="app-footer technical">Bien.Luné propose une lecture astrologique à visée de divertissement et de réflexion personnelle.</footer>
     </main>
   );
 }

@@ -170,3 +170,10 @@ produit vendable.
 ## Hors périmètre de cette session
 
 Paywall, Stripe, Resend, PDF, fenêtre de 90 jours, landing, compte utilisateur.
+
+## Revue demandée le 10 septembre 2026
+
+- [ ] **R01 — Vérifier l’existant et améliorer son design.** Implémentation et vérification
+      des types, lint, 165 tests et build effectués ; contrôles interactifs distants.
+      Reste : suite e2e complète sur un environnement équipé de Chromium, validation
+      visuelle mobile. T07 a été livré par Claude pendant la revue ; T08–T16 restent ouverts.

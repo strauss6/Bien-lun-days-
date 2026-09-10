@@ -1,37 +1,35 @@
+import Link from 'next/link';
 import { ZodiacGlyph } from '@/components/glyphs/ZodiacGlyph';
 import { ZODIAC_LABELS, ZODIAC_ORDER } from '@/lib/design/zodiac-paths';
 
-/**
- * Page d'attente le temps que le tunnel soit construit. Elle sert de cible au
- * test de fumée et vérifie que les deux registres typographiques et les glyphes
- * se chargent réellement en production.
- */
 export default function Home() {
   return (
-    <main className="mx-auto max-w-3xl px-4 py-16">
-      <p className="technical text-[11px] uppercase text-ink/55">Bien.Luné</p>
-
-      <h1 className="reading mt-6 text-[clamp(2.375rem,8.4vw,5.125rem)] leading-[1.02] font-medium">
-        Tes 30 prochains jours ne se valent pas.
-      </h1>
-
-      <p className="reading mt-6 text-ink/80">
-        Calculé sur l&apos;heure et la ville exactes de ta naissance. Pas sur ton signe.
-      </p>
-
-      <ul className="mt-14 grid grid-cols-6 gap-4" aria-label="Les douze repères du zodiaque">
+    <main className="app-shell home-shell">
+      <header className="app-header">
+        <span className="wordmark">Bien.Luné</span>
+        <span className="technical secondary">En développement</span>
+      </header>
+      <section className="home-intro">
+        <h1 className="technical home-title">Tes 30 prochains jours ne se valent pas.</h1>
+        <p className="reading home-description">Calculé sur l&apos;heure et la ville exactes de ta naissance. Pas sur ton signe.</p>
+        {/*
+          L'entrée du produit est le questionnaire, pas la démonstration : celle-ci
+          tourne sur des données fixes et ne sert qu'à montrer le ruban.
+        */}
+        <span className="home-actions">
+          <Link href="/quiz" className="primary-link technical">Calculer mes jours</Link>
+          <Link href="/demo/ruban" className="text-button technical secondary">Voir la démonstration</Link>
+        </span>
+      </section>
+      <ul className="zodiac-index" aria-label="Les douze repères du zodiaque">
         {ZODIAC_ORDER.map((sign) => (
-          <li key={sign} className="flex flex-col items-center gap-2">
-            <ZodiacGlyph sign={sign} size={32} tone="season" />
-            <span className="technical text-[9px] text-ink/50">{ZODIAC_LABELS[sign]}</span>
+          <li key={sign}>
+            <ZodiacGlyph sign={sign} size={28} tone="season" />
+            <span className="technical">{ZODIAC_LABELS[sign]}</span>
           </li>
         ))}
       </ul>
-
-      <footer className="reading mt-20 text-sm text-ink/55">
-        Bien.Luné propose une lecture astrologique à visée de divertissement et de
-        réflexion personnelle.
-      </footer>
+      <footer className="app-footer technical">Bien.Luné propose une lecture astrologique à visée de divertissement et de réflexion personnelle.</footer>
     </main>
   );
 }

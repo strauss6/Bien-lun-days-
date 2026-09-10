@@ -144,15 +144,21 @@ export interface Tick {
   label: string | null;
 }
 
-/** Une graduation par jour, appuyée et étiquetée une semaine sur sept. */
-export function tickPositions(days: number): Tick[] {
+/**
+ * Une graduation par jour, appuyée et étiquetée une semaine sur sept.
+ *
+ * Le premier jour se nomme selon ce que la fenêtre représente : « AUJ. » dans le
+ * produit, où elle commence aujourd'hui, « J1 » sur une démonstration à dates
+ * fixes, où prétendre qu'il s'agit d'aujourd'hui devient faux dès le lendemain.
+ */
+export function tickPositions(days: number, firstLabel = 'AUJ.'): Tick[] {
   return Array.from({ length: days }, (_, day) => {
     const labelled = day % 7 === 0;
     return {
       day,
       x: columnCenter(day, days),
       labelled,
-      label: labelled ? (day === 0 ? 'AUJ.' : `+${day}`) : null,
+      label: labelled ? (day === 0 ? firstLabel : `+${day}`) : null,
     };
   });
 }

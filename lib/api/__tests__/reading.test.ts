@@ -104,3 +104,20 @@ describe('calcul complet', () => {
     expect(love.axisOrder).toHaveLength(3);
   });
 });
+
+describe('dates civiles et fuseau de résidence', () => {
+  it.each(['2026-02-31', '2025-02-29', '2026-04-31', '2026-00-10'])('refuse la date impossible %s', (date) => {
+    for (const field of ['birthDate', 'startDate']) {
+      expect(ReadingRequest.safeParse({ ...NOMINAL, [field]: date }).success).toBe(false);
+    }
+  });
+
+  it('accepte le 29 février pendant une année bissextile', () => {
+    expect(ReadingRequest.safeParse({ ...NOMINAL, birthDate: '2000-02-29' }).success).toBe(true);
+  });
+
+  it('refuse un fuseau inconnu avant le calcul', () => {
+    expect(ReadingRequest.safeParse({ ...NOMINAL, zone: 'Paris/inconnu' }).success).toBe(false);
+    expect(ReadingRequest.safeParse({ ...NOMINAL, zone: 'Europe/Paris' }).success).toBe(true);
+  });
+});

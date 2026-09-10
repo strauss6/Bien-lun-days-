@@ -13,6 +13,21 @@ import { longitudeOf } from '@/lib/astro/ephemeris';
 import { signOf } from '@/lib/astro/angles';
 import { localNoonInstant } from '@/lib/astro/zone';
 
+/** Date civile exacte : Date.parse normalise notamment le 31 février en mars. */
+function isCivilDate(value: string): boolean {
+  const time = Date.parse(`${value}T12:00:00Z`);
+  return Number.isFinite(time) && new Date(time).toISOString().slice(0, 10) === value;
+}
+
+function isTimeZone(value: string): boolean {
+  try {
+    new Intl.DateTimeFormat('fr', { timeZone: value });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Contrat entre le formulaire et le calcul.
  *
@@ -24,7 +39,7 @@ export const ReadingRequest = z.object({
   firstName: z.string().trim().min(1, 'Il me faut ton prénom.').max(40, 'Ce prénom est trop long.'),
   birthDate: z.string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'La date doit être au format AAAA-MM-JJ.')
-    .refine((d) => !Number.isNaN(Date.parse(d)), 'Cette date n\'existe pas.')
+    .refine(isCivilDate, 'Cette date n\'existe pas.')
     .refine((d) => d <= new Date().toISOString().slice(0, 10), 'Cette date est dans le futur.'),
   birthTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'L\'heure doit être au format HH:MM.').nullable(),
   timeKnown: z.boolean(),
@@ -36,10 +51,11 @@ export const ReadingRequest = z.object({
     message: 'Choisis Business, Amour ou Énergie.',
   }),
   /** Premier jour de la fenêtre. Passé explicitement pour que le calcul reste déterministe. */
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date de départ invalide.'),
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Date de départ invalide.')
+    .refine(isCivilDate, 'Cette date de départ n’existe pas.'),
   days: z.number().int().min(1).max(120).optional(),
   /** Fuseau de résidence : celui dans lequel « le jour » a un sens pour la personne. */
-  zone: z.string().optional(),
+  zone: z.string().refine(isTimeZone, 'Ce fuseau horaire est inconnu.').optional(),
 }).refine((v) => v.timeKnown === (v.birthTime !== null), {
   message: 'Coche « je ne connais pas mon heure » ou renseigne-la.',
   path: ['birthTime'],

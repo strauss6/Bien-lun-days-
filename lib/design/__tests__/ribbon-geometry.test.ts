@@ -95,6 +95,8 @@ describe('graduation', () => {
     const ticks = tickPositions(30);
     expect(ticks.filter((t) => t.labelled)).toHaveLength(Math.ceil(30 / 7));
     expect(ticks[0].label).toBe('AUJ.');
+    // Une démonstration à dates fixes ne peut pas dire « aujourd'hui ».
+    expect(tickPositions(30, 'J1')[0].label).toBe('J1');
     expect(ticks.find((t) => t.day === 7)?.label).toBe('+7');
     expect(ticks).toHaveLength(30);
   });

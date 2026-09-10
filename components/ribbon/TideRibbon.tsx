@@ -28,6 +28,12 @@ interface Props {
   /** Jour sous le curseur. */
   selected: number;
   labels: Record<AxisId, string>;
+  /**
+   * Nom du premier jour. « AUJ. » quand la fenêtre commence aujourd'hui, « J1 »
+   * sur une démonstration à dates fixes — y écrire « aujourd'hui » deviendrait
+   * faux dès le lendemain.
+   */
+  firstLabel?: string;
   className?: string;
 }
 
@@ -41,14 +47,19 @@ interface Props {
  * Le tracé se révèle de gauche à droite une seule fois par session — au-delà, la
  * répétition devient un péage. Sous `prefers-reduced-motion`, il est là d'emblée.
  */
-export function TideRibbon({ days, selected, labels, className }: Props) {
+export function TideRibbon({ days, selected, labels, firstLabel, className }: Props) {
   const gradientId = useId();
   const clipId = useId();
   const revealed = useRef(false);
   const [drawn, setDrawn] = useState(true);
 
   useEffect(() => {
-    if (revealed.current) return;
+    if (revealed.current) {
+      // Strict Mode rejoue l’effet après avoir annulé la première frame.
+      // Sans remise en état final, le clip reste à zéro et masque tout le ruban.
+      setDrawn(true);
+      return;
+    }
     revealed.current = true;
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const seen = (() => {
@@ -71,7 +82,7 @@ export function TideRibbon({ days, selected, labels, className }: Props) {
 
   const n = days.length;
   const stops = seasonStops(days.map((d) => d.season));
-  const ticks = tickPositions(n);
+  const ticks = tickPositions(n, firstLabel);
   const bandsTop = SEASON_STRIP + 8;
   const totalHeight = bandsTop + BAND_HEIGHT * AXES.length + GRADUATION_HEIGHT;
 

@@ -139,3 +139,31 @@ et les nombres.
 
 Les tracés restent dans le dépôt, non supprimés : ils resserviront pour le document destiné
 à l'astrologue, dont le lecteur sait les lire.
+
+## Revue Codex — 10 septembre 2026
+
+- La demande porte sur la vérification et le design de l’existant, pas sur la réalisation de T08–T16. Le quiz T07 ajouté en parallèle a été conservé.
+  Proposition sur une branche séparée ; les polices, couleurs et glyphes validés restent.
+- La révision couleur du 10 septembre dans DESIGN.md §1 et CLAUDE.md contredit encore
+  BRIEF.md §3 et plusieurs anciennes sections de DESIGN.md. La proposition conserve
+  les jetons déjà présents, sans choisir une nouvelle palette.
+- Le navigateur local attendu par Playwright n’est pas installé ici. Les tests UI de
+  la commande e2e ne peuvent pas démarrer ; le contrôle interactif distant ne remplace
+  pas cette suite. La revue reste en attente de ce dernier contrôle, PR en brouillon.
+
+---
+
+## Q8 — Deux façons de styler dans le même dépôt
+
+**Constat** : la revue de Codex introduit une soixantaine de lignes de CSS écrites à la main
+— `.app-shell`, `.report-layout`, `.axis-option` — pour l'accueil et la démonstration, alors
+que le reste du produit est stylé par classes utilitaires Tailwind.
+
+**Retenu** : garder les deux pour l'instant. Le CSS est cantonné à ces deux pages, il
+fonctionne, et le réécrire serait défaire un travail correct sans bénéfice immédiat. C'est
+aussi l'option la plus réversible : convertir soixante lignes de CSS en utilitaires est un
+commit, l'inverse aussi.
+
+**Pour trancher** : avant que la seconde façon ne se répande. Le parcours réel — quiz,
+calcul, jours, rares — est entièrement en utilitaires ; si la démonstration devient une page
+de vente, il faudra choisir.

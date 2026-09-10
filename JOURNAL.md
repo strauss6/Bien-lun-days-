@@ -170,6 +170,11 @@ réparé, ce qui reste incertain.
   Il lui faut deux mots — ÉTÉ, AUTOMNE — pour que l'idée « on lit le temps passer » se
   comprenne. À traiter avec la carte de jour en T09.
 
+## 10 septembre 2026 — R01, revue et design (en cours de validation)
+
+- Accueil relié à la démonstration ; hiérarchie commune, navigation des jours, sélection d’axe, un grand score et détails dépliables, sans nouvelle palette ni dépendance.
+- Corrigés : variables de polices non utilisées, dates civiles/fuseaux invalides acceptés, dates fixes qualifiées d’aujourd’hui, ruban invisible lors du double montage React ; tests de validation reproduits en échec avant correction.
+- Restent : tests UI Playwright bloqués par Chromium absent, contrôle mobile et limites fonctionnelles documentées dans docs/03-revue-design.md ; aucune fusion ni mise en production.
 ## T07 — Le quiz, cinq écrans
 
 - **Fait** : logique de validation pure et testée dans `lib/quiz/steps.ts`, cinq écrans à
@@ -221,3 +226,32 @@ réparé, ce qui reste incertain.
 - **Incertain** : le paquet embarque React et l'index complet des villes. Deux mégaoctets
   conviennent à une recette, pas à une page servie sur mobile : la version en production
   garde ses routes serveur.
+
+- Intégration du commit concurrent 98534ed : questionnaire conservé, titres remis en mono conformément à la nouvelle consigne ; 165 tests après intégration.
+
+## Intégration de la revue de Codex — PR 2
+
+- **Fait** : fusion de `codex/design-review`, un seul conflit, sur le journal, résolu en
+  gardant les deux entrées. Trois corrections réelles reprises : `Date.parse` acceptait le
+  31 février et calculait un thème pour le 3 mars **sans rien dire** ; un fuseau inconnu
+  passait la validation pour échouer au fond du moteur ; et le double montage du mode strict
+  de React annulait la frame de révélation, laissant le clip du ruban à zéro — ruban
+  invisible en développement. L'accueil et la démonstration remaniés sont repris tels quels,
+  avec leur navigation par jour, leurs trois boutons d'axe et leurs mesures dépliables.
+  Les tests navigateur, que Codex ne pouvait pas lancer faute de Chromium, passent : 28.
+- **Cassé / réparé** : deux défauts trouvés à la vérification visuelle mobile, invisibles sur
+  ordinateur. Les noms des douze signes se **chevauchaient** à 412 px — six colonnes pour
+  des mots de dix lettres —, passés à quatre puis trois colonnes, avec un test qui compare
+  les rectangles deux à deux. Et l'accueil menait à la démonstration alors que l'entrée du
+  produit est le questionnaire : bouton principal vers `/quiz`, démonstration en lien
+  secondaire. Deux recoutures de fusion : `standalone.css` définit désormais les variables
+  de familles que `next/font` fournit côté serveur, sans quoi la typographie de la page
+  autonome retombait en bloc sur la police par défaut ; et le libellé du premier jour
+  devient un paramètre — « AUJ. » dans le produit, où la fenêtre commence aujourd'hui,
+  « J1 » sur la démonstration à dates fixes.
+- **Incertain** : la revue ajoute une soixantaine de lignes de CSS écrites à la main à côté
+  des classes utilitaires employées partout ailleurs. Ça fonctionne et c'est cantonné à deux
+  pages, mais ce sont deux façons de styler dans le même dépôt. À trancher avant que la
+  seconde ne se répande. Le diagnostic sur les polices était par ailleurs inexact ici :
+  `--font-geist-mono` résout vers `"Geist Mono"`, donc le nom littéral fonctionnait — le
+  changement reste meilleur, puisqu'il apporte la police de repli métrique.
