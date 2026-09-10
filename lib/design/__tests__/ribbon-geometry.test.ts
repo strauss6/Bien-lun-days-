@@ -58,6 +58,12 @@ describe('géométrie des colonnes', () => {
     // Pile de tirets : le nombre dépend de la hauteur, la hauteur d'une marque est fixe.
     expect(energy.length).toBeGreaterThan(60);
     expect(new Set(energy.map((m) => m.height))).toHaveLength(1);
+
+    // Toutes les marques sont des pilules : le rayon vaut la moitié de la largeur.
+    for (const m of [...business, ...love, ...energy]) {
+      expect(m.radius).toBeGreaterThan(0);
+      expect(m.radius).toBeLessThanOrEqual(Math.max(m.width, m.height) / 2 + 0.001);
+    }
   });
 });
 
@@ -78,9 +84,9 @@ describe('lavis saisonnier', () => {
     }
   });
 
-  it('la teinte est la saison posée à sept pour cent sur le papier, jamais pure', () => {
+  it('le bandeau porte la saison à pleine teinte, puisqu\'il ne concurrence plus rien', () => {
     const [stop] = seasonStops(new Array(30).fill('spring'));
-    expect(stop.color).toBe('#e1e8e2');
+    expect(stop.color).toBe('#34C759');
   });
 });
 

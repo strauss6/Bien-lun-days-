@@ -6,9 +6,12 @@ import {
   BAND_HEIGHT, BASELINE, LABEL_GUTTER, RIBBON_WIDTH, bandMarks, columnCenter,
   seasonStops, tickPositions,
 } from '@/lib/design/ribbon-geometry';
+import { AXIS_COLORS } from '@/lib/design/tokens';
 import { ZodiacGlyph } from '@/components/glyphs/ZodiacGlyph';
 
 const GRADUATION_HEIGHT = 20;
+/** Bandeau de saison : présent, jamais dominant. */
+const SEASON_STRIP = 5;
 const AXES: AxisId[] = ['business', 'love', 'energy'];
 const PEAK_SCORE = 88;
 
@@ -69,7 +72,8 @@ export function TideRibbon({ days, selected, labels, className }: Props) {
   const n = days.length;
   const stops = seasonStops(days.map((d) => d.season));
   const ticks = tickPositions(n);
-  const totalHeight = BAND_HEIGHT * AXES.length + GRADUATION_HEIGHT;
+  const bandsTop = SEASON_STRIP + 8;
+  const totalHeight = bandsTop + BAND_HEIGHT * AXES.length + GRADUATION_HEIGHT;
 
   return (
     <svg
@@ -85,6 +89,13 @@ export function TideRibbon({ days, selected, labels, className }: Props) {
             <stop key={`${s.offset}-${i}`} offset={`${s.offset}%`} stopColor={s.color} />
           ))}
         </linearGradient>
+        {/* Un dégradé par axe : profond en haut, lumineux vers la ligne de base. */}
+        {AXES.map((axis) => (
+          <linearGradient key={axis} id={`${gradientId}-${axis}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={AXIS_COLORS[axis].deep} />
+            <stop offset="100%" stopColor={AXIS_COLORS[axis].bright} />
+          </linearGradient>
+        ))}
         <clipPath id={clipId}>
           <rect
             x="0"
@@ -96,17 +107,19 @@ export function TideRibbon({ days, selected, labels, className }: Props) {
         </clipPath>
       </defs>
 
-      {/* Le lavis ne teinte que la zone des jours : la gouttière reste du papier. */}
+      {/* Bandeau de saison : la seule trace du calendrier, au-dessus des bandes. */}
       <rect
         x={LABEL_GUTTER}
+        y={0}
         width={RIBBON_WIDTH - LABEL_GUTTER}
-        height={BAND_HEIGHT * AXES.length}
+        height={SEASON_STRIP}
+        rx={SEASON_STRIP / 2}
         fill={`url(#${gradientId})`}
       />
 
       <g clipPath={`url(#${clipId})`}>
         {AXES.map((axis, band) => (
-          <g key={axis} transform={`translate(0 ${band * BAND_HEIGHT})`}>
+          <g key={axis} transform={`translate(0 ${bandsTop + band * BAND_HEIGHT})`}>
             {bandMarks(days.map((d) => d.scores[axis]), n, axis).map((m, i) => (
               <rect
                 key={i}
@@ -114,7 +127,8 @@ export function TideRibbon({ days, selected, labels, className }: Props) {
                 y={m.y}
                 width={m.width}
                 height={m.height}
-                fill="var(--color-ink)"
+                rx={m.radius}
+                fill={`url(#${gradientId}-${axis})`}
                 fillOpacity={m.opacity}
               />
             ))}
@@ -133,8 +147,8 @@ export function TideRibbon({ days, selected, labels, className }: Props) {
               x={4}
               y={BASELINE + 3}
               fontSize={8}
-              fill="var(--color-ink)"
-              fillOpacity={0.5}
+              fill={`var(--axis-${axis}-text)`}
+              fontWeight={600}
               letterSpacing="0.1em"
             >
               {labels[axis].toUpperCase()}
@@ -143,19 +157,7 @@ export function TideRibbon({ days, selected, labels, className }: Props) {
         ))}
       </g>
 
-      {[1, 2].map((i) => (
-        <line
-          key={i}
-          x1={LABEL_GUTTER}
-          y1={i * BAND_HEIGHT}
-          x2={RIBBON_WIDTH}
-          y2={i * BAND_HEIGHT}
-          stroke="var(--color-ink)"
-          strokeOpacity={0.1}
-        />
-      ))}
-
-      <g transform={`translate(0 ${BAND_HEIGHT * AXES.length})`}>
+      <g transform={`translate(0 ${bandsTop + BAND_HEIGHT * AXES.length})`}>
         {ticks.map((t) => (
           <g key={t.day}>
             <line
@@ -185,11 +187,12 @@ export function TideRibbon({ days, selected, labels, className }: Props) {
 
       <line
         x1={columnCenter(selected, n)}
-        y1={0}
+        y1={bandsTop}
         x2={columnCenter(selected, n)}
-        y2={BAND_HEIGHT * AXES.length}
+        y2={bandsTop + BAND_HEIGHT * AXES.length}
         stroke="var(--color-ink)"
         strokeWidth={1.1}
+        strokeOpacity={0.35}
         data-testid="ribbon-cursor"
       />
     </svg>

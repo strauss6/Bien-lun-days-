@@ -21,33 +21,56 @@ Conséquence directe sur chaque écran : la ligne technique se pose **au-dessus*
 paragraphe, jamais autour, jamais en incise. Le lecteur voit d'abord la mesure, puis la
 phrase.
 
-## 1. Les six couleurs
+## 1. La couleur — révisée le 10 septembre 2026
 
-Deux valeurs portent 95 % de l'interface.
+La première version faisait vivre l'interface sur deux valeurs, papier et encre, la
+couleur réservée aux saisons. À l'écran, l'ensemble lisait gris : les trois bandes du
+ruban étaient toutes à l'encre. **Un produit qui parle de journées ne peut pas être terne.**
 
-| | Hex | Justification |
+Nouvelle grammaire, celle des graphiques d'Apple : **une teinte vive par axe, en dégradé
+dans sa propre famille, beaucoup de blanc autour.**
+
+### Le fond
+
+| | Hex | Rôle |
 |---|---|---|
-| **Papier** | `#EFF0EE` | Gris neutre très clair, légèrement froid. Le moindre soupçon de crème ferait basculer les quatre saisons vers l'aquarelle. C'est une feuille technique, pas une page de librairie — et le fond crème est un interdit du brief. |
-| **Encre** | `#131518` | Bleu-noir profond. Le noir pur durcit le serif et le fait vibrer sur fond clair ; ce bleuté garde le Garamond posé et donne 15,4:1 de contraste sur le papier. |
+| **Papier** | `#F6F7F9` | Blanc froid, très légèrement bleuté. Plus lumineux que le gris précédent, et il fait ressortir les trois familles sans les salir. |
+| **Surface** | `#FFFFFF` | Les objets posés sur le papier : le ruban, la carte du jour. Rayon 20 px, ombre à peine là — `0 8px 24px -12px` à 12 %. C'est la profondeur d'Apple : on la sent, on ne la voit pas. |
+| **Encre** | `#0F1419` | Texte. Noir très légèrement bleuté. |
 
-Les quatre saisons. Une seule famille : quatre pigments d'une même boîte, clartés voisines,
-chromas voisins. C'est cette parenté qui leur permet de cohabiter sans se battre.
+### Les trois axes
 
-| Saison | Signes | Hex | Nom | Justification |
+Chaque axe est un **dégradé vertical** : profond en haut, lumineux vers la ligne de base.
+Les scores hauts sont donc saturés, les jours ternes s'effacent d'eux-mêmes.
+
+| Axe | Profond | Lumineux | Texte | Teinte |
 |---|---|---|---|---|
-| **Printemps** | ♈ ♉ ♊ | `#2C7A3F` | Vert de sève | Tiré vers le bleu volontairement : un vert jaune glisserait vers l'été et les deux teintes se confondraient sur une transition continue de ruban. |
-| **Été** | ♋ ♌ ♍ | `#C08E00` | Jaune d'or | Un jaune vrai est illisible sur fond clair. Descendu à l'or mûr, il reste franchement jaune et tient 3,0:1 — donc réservé au tracé et aux aplats. Variante texte : `#8A6600`. |
-| **Automne** | ♎ ♏ ♐ | `#A5282C` | Rouge de garance | Rouge de teinture légèrement bleuté. Ni écarlate — trop d'alerte —, ni terracotta, qui est le cliché de la catégorie et un interdit du brief. |
-| **Hiver** | ♑ ♒ ♓ | `#1C5A96` | Bleu de cobalt sourd | Tiré vers le cyan (≈ 205°) pour rester loin de l'indigo interdit. Assez profond pour porter un trait fin. |
+| **Business** | `#1E4FFF` | `#22D3EE` | `#1338B8` | 232° — bleu électrique vers cyan |
+| **Amour** | `#FF2D6F` | `#FF9A5B` | `#C21048` | 340° — magenta vers corail |
+| **Énergie** | `#FF9500` | `#B8E62E` | `#9A5B00` | 40° — ambre vers lime |
 
-Répartition sur la roue : 150° / 44° / 358° / 205°. Bien écartées.
+Trois familles franchement séparées sur la roue, distinguables d'un coup d'œil y compris
+en vignette de partage. **Le mode de tracé reste** — colonne pleine, double filet, pile de
+tirets — pour que le ruban survive à l'impression en noir et blanc et au daltonisme : la
+couleur ajoute, elle ne remplace pas.
 
-**La couleur ne sort jamais de là.** Boutons en encre. États en encre. Liens en encre
-soulignée. Aucune couleur de marque.
+### Les quatre saisons
 
-**Lavis du ruban** : la saison à **7 %** sur le papier, en dégradé linéaire d'une saison à
-la suivante, la transition centrée sur l'équinoxe ou le solstice **réellement calculé**, pas
-sur le premier du mois. Valeur résolue, printemps : `#E1E8E2`. L'encre y tient 15:1.
+Elles gardent leur rôle — dire le passage du temps — mais quittent le fond des bandes, où
+elles salissaient tout, pour un **bandeau de cinq pixels** posé au-dessus du ruban. Elles
+y sont à pleine teinte, puisqu'elles ne concurrencent plus rien.
+
+| Saison | Hex |
+|---|---|
+| Printemps | `#34C759` |
+| Été | `#FFC300` |
+| Automne | `#FF6B3D` |
+| Hiver | `#0A9BE8` |
+
+### Ce qui n'a pas changé
+
+Aucune couleur d'état, aucune couleur de marque, aucun bouton coloré. La couleur appartient
+aux **axes** et au **calendrier**, à rien d'autre.
 
 ## 2. Les deux typographies
 

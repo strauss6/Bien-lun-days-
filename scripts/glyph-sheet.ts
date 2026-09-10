@@ -1,7 +1,7 @@
 /** Planche de contrôle des douze glyphes. `npx tsx scripts/glyph-sheet.ts out.svg` */
 import { writeFileSync } from 'node:fs';
 import { ZODIAC_LABELS, ZODIAC_ORDER, ZODIAC_PATHS, ZODIAC_STROKE } from '../lib/design/zodiac-paths';
-import { INK, PAPER, SEASON_COLORS, SEASON_LABELS, SIGN_SEASON, washOver } from '../lib/design/tokens';
+import { INK, PAPER, SEASON_COLORS, SEASON_LABELS, SIGN_SEASON, mix } from '../lib/design/tokens';
 
 const MONO = "ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace";
 
@@ -48,7 +48,7 @@ for (const [i, key] of ZODIAC_ORDER.entries()) {
   y = 130 + row * 210;
   const season = SIGN_SEASON[i];
   const color = SEASON_COLORS[season];
-  out.push(`<rect x="${x - 8}" y="${y - 8}" width="112" height="112" fill="${washOver(color)}"/>`);
+  out.push(`<rect x="${x - 8}" y="${y - 8}" width="112" height="112" fill="${mix(color, 0.1)}"/>`);
   out.push(glyph(key, x, y, 96, color));
   out.push(text(x - 8, y + 128, ZODIAC_LABELS[key].toUpperCase(), 11, INK, 1, 700));
   out.push(text(x - 8, y + 145, `${SEASON_LABELS[season]} · ${color}`, 10, INK, 0.5));
@@ -80,12 +80,12 @@ out.push(`<line x1="48" y1="${ry}" x2="${W - 48}" y2="${ry}" stroke="${INK}" str
 out.push(text(48, ry + 20, 'FOND DU RUBAN — la saison à 7 % sur le papier, en transition continue', 12, INK, 0.55));
 const order = ['spring', 'summer', 'autumn', 'winter'] as const;
 out.push('<defs><linearGradient id="wash" x1="0" x2="1">'
-  + order.map((s, i) => `<stop offset="${(i / (order.length - 1)) * 100}%" stop-color="${washOver(SEASON_COLORS[s])}"/>`).join('')
+  + order.map((s, i) => `<stop offset="${(i / (order.length - 1)) * 100}%" stop-color="${mix(SEASON_COLORS[s], 0.1)}"/>`).join('')
   + '</linearGradient></defs>');
 out.push(`<rect x="48" y="${ry + 34}" width="${W - 96}" height="76" fill="url(#wash)"/>`);
 for (const [i, s] of order.entries()) {
   const px = 48 + (i / (order.length - 1)) * (W - 96);
-  out.push(text(Math.min(px, W - 120), ry + 128, `${SEASON_LABELS[s]} ${washOver(SEASON_COLORS[s])}`, 10, INK, 0.5));
+  out.push(text(Math.min(px, W - 120), ry + 128, `${SEASON_LABELS[s]} ${mix(SEASON_COLORS[s], 0.1)}`, 10, INK, 0.5));
 }
 
 // ── Les deux valeurs de l'interface

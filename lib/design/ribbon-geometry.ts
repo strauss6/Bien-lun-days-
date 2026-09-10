@@ -1,5 +1,5 @@
 import type { AxisId, Season } from '@/lib/astro/types';
-import { SEASON_COLORS, washOver } from './tokens';
+import { SEASON_COLORS } from './tokens';
 
 /**
  * Géométrie du ruban.
@@ -36,6 +36,8 @@ export interface Mark {
   width: number;
   height: number;
   opacity: number;
+  /** Rayon des extrémités : les colonnes sont des pilules, pas des barres. */
+  radius: number;
 }
 
 export function columnWidth(days: number): number {
@@ -66,7 +68,8 @@ function shape(score: number) {
     intensity,
     height,
     y: rising ? BASELINE - height : BASELINE,
-    opacity: rising ? 0.4 + 0.6 * intensity : 0.22 + 0.45 * intensity,
+    // Le dégradé porte déjà l'essentiel : l'opacité ne sert qu'à retenir les jours ternes.
+    opacity: rising ? 0.55 + 0.45 * intensity : 0.3 + 0.5 * intensity,
   };
 }
 
@@ -79,16 +82,16 @@ export function bandMarks(scores: number[], days: number, axis: AxisId): Mark[] 
     const x = columnLeft(day, days);
 
     if (axis === 'business') {
-      // Colonne pleine : le trait le plus appuyé des trois.
-      out.push({ x, y, width: w, height, opacity });
+      // Colonne pleine, extrémités arrondies : la barre la plus franche des trois.
+      out.push({ x, y, width: w, height, opacity, radius: w / 2 });
       return;
     }
 
     if (axis === 'love') {
       // Double filet : deux traits fins accolés, la trame se lit comme un tissu.
-      const thin = Math.max(w * 0.28, 0.9);
-      out.push({ x, y, width: thin, height, opacity });
-      out.push({ x: x + w - thin, y, width: thin, height, opacity });
+      const thin = Math.max(w * 0.3, 1);
+      out.push({ x, y, width: thin, height, opacity, radius: thin / 2 });
+      out.push({ x: x + w - thin, y, width: thin, height, opacity, radius: thin / 2 });
       return;
     }
 
@@ -96,7 +99,7 @@ export function bandMarks(scores: number[], days: number, axis: AxisId): Mark[] 
     const units = Math.max(1, Math.round(height / DASH_PITCH));
     for (let u = 0; u < units; u += 1) {
       const dy = rising ? BASELINE - (u + 1) * DASH_PITCH + (DASH_PITCH - DASH) : BASELINE + u * DASH_PITCH;
-      out.push({ x, y: Math.max(0, dy), width: w, height: DASH, opacity });
+      out.push({ x, y: Math.max(0, dy), width: w, height: DASH, opacity, radius: DASH / 2 });
     }
   });
 
@@ -109,15 +112,16 @@ export interface SeasonStop {
 }
 
 /**
- * Arrêts du dégradé de fond.
+ * Arrêts du dégradé du bandeau de saison.
  *
  * La transition est centrée sur le changement de saison réel — l'équinoxe ou le
  * solstice calculé, pas le premier du mois — et étalée sur quelques jours pour
- * qu'on lise un glissement et non une frontière.
+ * qu'on lise un glissement et non une frontière. Le bandeau est fin et posé
+ * au-dessus des bandes : il dit le passage du temps sans concurrencer les axes.
  */
 export function seasonStops(seasons: Season[]): SeasonStop[] {
   const spread = 6;
-  const colorOf = (s: Season) => washOver(SEASON_COLORS[s]);
+  const colorOf = (s: Season) => SEASON_COLORS[s];
   const stops: SeasonStop[] = [{ offset: 0, color: colorOf(seasons[0]) }];
 
   let current = seasons[0];

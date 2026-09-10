@@ -147,3 +147,20 @@ réparé, ce qui reste incertain.
   tracés d'aspect restent dans le dépôt sans être utilisés — non supprimés, parce que la
   suppression de fichier n'est pas une décision à prendre seul, et parce qu'ils resserviront
   pour le document destiné à l'astrologue.
+
+## T06 ter — La couleur entre dans le produit
+
+- **Fait** : direction révisée par le commanditaire — trop sombre, plus de couleur, registre
+  Apple. Une teinte vive par axe en dégradé vertical, fond blanc froid, surfaces blanches
+  largement arrondies à ombre presque invisible, colonnes en pilules. Les saisons quittent
+  le fond des bandes, où elles salissaient tout, pour un bandeau de cinq pixels au-dessus du
+  ruban, à pleine teinte. `DESIGN.md` §1 et la règle couleur de `CLAUDE.md` sont réécrites.
+- **Cassé / réparé** : les scores restaient noirs alors qu'ils portaient bien
+  `var(--color-business)`. Cause : Tailwind v4 n'émet une variable de `@theme` que si une
+  classe l'utilise, et rien ne l'utilisait — les variables d'axe sont maintenant déclarées
+  en CSS direct, où rien ne peut les élaguer. Le test de bout en bout qui interdisait toute
+  couleur hors saison encodait la règle périmée : il vérifie désormais qu'aucune teinte
+  n'est écrite en dur, et qu'un axe porte bien sa propre teinte.
+- **Incertain** : le bandeau de saison n'est pour l'instant qu'une barre colorée sans nom.
+  Il lui faut deux mots — ÉTÉ, AUTOMNE — pour que l'idée « on lit le temps passer » se
+  comprenne. À traiter avec la carte de jour en T09.

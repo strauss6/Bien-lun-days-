@@ -43,15 +43,29 @@ test.describe('le ruban des trente jours', () => {
     expect(Number(after)).toBeGreaterThan(Number(before));
   });
 
-  /** La couleur n'appartient qu'aux saisons : rien d'autre n'est teinté. */
-  test('la seule couleur du ruban est le lavis saisonnier', async ({ page }) => {
+  /**
+   * La couleur est désormais celle des axes, en dégradé, plus celle du bandeau de
+   * saison. Aucune teinte ne doit apparaître en dur : tout passe par un dégradé
+   * ou par un jeton, faute de quoi une couleur finit par échapper au système.
+   */
+  test('aucune couleur en dur : dégradés et jetons seulement', async ({ page }) => {
     const fills = await page.locator('svg rect, svg line, svg text').evaluateAll((els) =>
       els.map((el) => el.getAttribute('fill') ?? el.getAttribute('stroke') ?? ''),
     );
+    const allowed = ['#1338B8', '#C21048', '#9A5B00'];
     for (const f of fills) {
-      const isTokenOrGradient = f === '' || f.startsWith('var(--color-ink)') || f.startsWith('url(#');
-      expect(isTokenOrGradient, `teinte inattendue : ${f}`).toBe(true);
+      const ok = f === ''
+        || f.startsWith('url(#')
+        || f.startsWith('var(--color-')
+        || allowed.includes(f);
+      expect(ok, `teinte inattendue : ${f}`).toBe(true);
     }
+  });
+
+  test('chaque axe porte sa propre teinte', async ({ page }) => {
+    const labels = page.getByTestId('axis-label');
+    const colors = await labels.evaluateAll((els) => els.map((el) => el.getAttribute('fill')));
+    expect(new Set(colors).size).toBe(3);
   });
 
   test('se révèle une seule fois par session', async ({ page }) => {

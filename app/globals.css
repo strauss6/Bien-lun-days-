@@ -1,26 +1,43 @@
 @import 'tailwindcss';
 
 /*
- * Deux valeurs portent l'interface entière. Les quatre teintes de saison
- * n'existent que pour dire quelle saison le Soleil traverse : elles
- * n'apparaissent que dans le ruban et sur les glyphes.
+ * Une couleur vive par axe, en dégradé, sur un fond blanc froid — la grammaire
+ * des graphiques d'Apple. Les saisons gardent leur teinte, réduites à un bandeau
+ * fin au-dessus du ruban.
  */
 @theme {
-  --color-paper: #eff0ee;
-  --color-ink: #131518;
+  --color-paper: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-ink: #0f1419;
 
-  --color-spring: #2c7a3f;
-  --color-summer: #c08e00;
-  --color-summer-text: #8a6600;
-  --color-autumn: #a5282c;
-  --color-winter: #1c5a96;
+  --color-business: #1e4fff;
+  --color-love: #ff2d6f;
+  --color-energy: #ff9500;
+
+  --color-spring: #34c759;
+  --color-summer: #ffc300;
+  --color-autumn: #ff6b3d;
+  --color-winter: #0a9be8;
+
+  --radius-card: 20px;
 
   --font-technical: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   --font-reading: 'EB Garamond', 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
 }
 
+/*
+ * Les variables de `@theme` ne sont émises par Tailwind que si une classe les
+ * utilise. Celles-ci sont lues en CSS direct par le ruban et les cartes : elles
+ * sont donc déclarées ici, où rien ne peut les élaguer.
+ */
 :root {
   color-scheme: light;
+  --axis-business: #1e4fff;
+  --axis-love: #ff2d6f;
+  --axis-energy: #ff9500;
+  --axis-business-text: #1338b8;
+  --axis-love-text: #c21048;
+  --axis-energy-text: #9a5b00;
 }
 
 html,
@@ -40,6 +57,13 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-ink);
   outline-offset: 3px;
+}
+
+/* Surface posée sur le papier : blanche, largement arrondie, ombre à peine là. */
+.surface {
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  box-shadow: 0 1px 2px rgb(15 20 25 / 0.04), 0 8px 24px -12px rgb(15 20 25 / 0.12);
 }
 
 /* Registre « interprétation » : colonne étroite, interlignage large. */

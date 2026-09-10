@@ -94,12 +94,19 @@ une commande en échec.
 
 ## Design
 
-- La couleur ne sert **qu'au** système saisonnier. L'interface vit sur deux valeurs,
-  papier et encre. Aucune couleur de bouton, d'accent de marque ou d'état.
+- **Une couleur vive par axe, en dégradé** — Business, Amour, Énergie —, sur un fond
+  blanc froid. Direction révisée le 10 septembre 2026 : la version à deux valeurs, papier
+  et encre, lisait gris à l'écran, et un produit qui parle de journées ne peut pas être
+  terne. Grammaire visée : celle des graphiques d'Apple — une teinte par série, un dégradé
+  dans sa propre famille, beaucoup de blanc autour.
+- Les saisons gardent leur couleur, réduites à un **bandeau fin** au-dessus du ruban :
+  elles disent le passage du temps sans concurrencer les axes.
+- Toujours aucune couleur d'état ni de marque en dehors de ces deux systèmes.
 - Les glyphes du zodiaque sont en **polylignes uniquement** : aucune courbe de Bézier,
   aucun arc SVG. C'est testé — un `C`, `Q`, `S` ou `A` dans un tracé fait échouer la
   suite.
-- Les axes du ruban se distinguent par la position et le tracé, jamais par la teinte.
+- Les axes du ruban se distinguent par la teinte **et** par le tracé — le tracé reste,
+  pour que le ruban survive à l'impression en noir et blanc et au daltonisme.
 - `prefers-reduced-motion` respecté partout : sans animation, tout reste utilisable.
 - **Variante A des glyphes**, nue. La variante à nœuds vectoriels est abandonnée.
 
