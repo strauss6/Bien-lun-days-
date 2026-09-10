@@ -24,7 +24,7 @@ aussi bien en trigone au Soleil qu'en carré à Vénus.
 
 ## Ce que les gens lisent réellement
 
-Mesuré sur 250 thèmes tirés au hasard dans le marché visé — vingt villes, France d'abord
+Mesuré sur 800 thèmes tirés au hasard dans le marché visé — vingt villes, France d'abord
 puis francophonie, naissances de 1955 à 2008. On compte la part des textes **cités** dans
 un rapport, c'est-à-dire ceux qui expliquent un des meilleurs jours ou un des jours à
 éviter. C'est ce qu'un client lit vraiment, pas ce que le moteur calcule.
@@ -33,25 +33,25 @@ un rapport, c'est-à-dire ceux qui expliquent un des meilleurs jours ou un des j
 
 | Lune | Soleil | Vénus | Mercure | Mars | Jupiter | Saturne | Uranus · Neptune · Pluton |
 |---|---|---|---|---|---|---|---|
-| 32,0 % | 22,9 % | 12,7 % | 10,7 % | 9,8 % | 6,3 % | 5,5 % | 0 % |
+| 31,7 % | 23,4 % | 12,8 % | 10,5 % | 10,3 % | 6,0 % | 5,3 % | 0 % |
 
 **Aspect**
 
 | trigone | carré | sextile | conjonction | opposition |
 |---|---|---|---|---|
-| 27,1 % | 27,0 % | 17,9 % | 15,1 % | 12,9 % |
+| 27,5 % | 27,0 % | 17,4 % | 15,0 % | 13,1 % |
 
 **Point natal**
 
-| Soleil | Lune | Ascendant | Vénus | Mars | Descendant | Milieu du Ciel | Mercure | Jupiter |
+| Soleil | Lune | Vénus | Ascendant | Mars | Milieu du Ciel | Descendant | Mercure | Jupiter |
 |---|---|---|---|---|---|---|---|---|
-| 23,8 % | 13,5 % | 12,9 % | 12,6 % | 8,6 % | 8,0 % | 8,0 % | 6,7 % | 5,9 % |
+| 24,5 % | 13,9 % | 12,2 % | 11,9 % | 9,1 % | 8,1 % | 8,0 % | 6,4 % | 5,8 % |
 
 **Axe**
 
 | Énergie | Amour | Business |
 |---|---|---|
-| 36,4 % | 35,0 % | 28,6 % |
+| 36,3 % | 35,1 % | 28,6 % |
 
 Trois lectures utiles. Les planètes lentes — Uranus, Neptune, Pluton — ne sortent jamais
 comme meilleur ou pire jour sur trente jours : elles appartiennent à l'écran des jours
@@ -60,28 +60,65 @@ aussi lu que le trigone : un produit qui ne sait dire que les bons jours n'a éc
 moitié de son corpus. Et l'axe Énergie est le plus lu des trois, alors que c'est celui qui
 porte la contrainte la plus dure.
 
-## Premier lot — quatre briques
+## Premier lot — dix briques
 
-Une par famille, la plus lue de chacune. Ensemble elles composent une feuille entière —
-« la Lune en trigone à ton Soleil, sur l'axe Énergie » — donc elles suffisent à voir tourner
-la chaîne de bout en bout avant d'écrire les vingt-sept autres.
+**Comment le lot a été choisi.** Pas en prenant les dix briques les plus fréquentes une par
+une : une feuille de texte a besoin de ses **quatre** briques pour exister. Une planète en
+transit sans son point natal ne produit rien. Ce qu'on cherche, c'est le lot de dix qui
+maximise la part des textes **entièrement composables** — les quatre briques écrites. Un
+glouton suivi d'échanges locaux, sur les 800 thèmes simulés, jusqu'au point fixe.
 
-### 1 · La Lune en transit — 32 % de ce qui est lu
+| Lot | Part des textes lus entièrement composables |
+|---|---|
+| Les quatre premières | **1,5 %** |
+| Les dix ci-dessous | **15,7 %** |
 
+Dix fois plus pour deux fois et demie le travail. C'est ce que veut dire choisir un lot
+plutôt qu'une liste.
+
+Une contrainte a été imposée à l'optimiseur : **les trois axes en font partie**. Sans elle
+il concentre tout sur un seul axe et monte à 20 %, mais le produit ne sait alors parler que
+d'Énergie — les cartes Business et Amour retombent sur les gabarits. Trois définitions
+courtes contre un tiers du produit chacune : le calcul est vite fait.
+
+Le lot enseigne aussi la distinction centrale **deux fois** : la Lune en transit *et* la
+Lune natale, Vénus en transit *et* Vénus natale. Ce que fait une planète quand elle passe
+n'est pas ce qu'elle représente dans le thème. Si les quatre textes le montrent, le format
+est compris.
+
+### Ce que fait la planète quand elle passe
+
+**1 · La Lune en transit** — 32 % des transits lus
 > Quand la Lune passe sur un point d'un thème, qu'est-ce qu'elle fait ?
 
 Ce qui reste vrai quel que soit le point touché et quel que soit l'angle. Elle repasse tous
 les mois et ne dure qu'un jour : dire ce que ça change, et ce que ça ne change pas.
 
-### 2 · Le trigone — 27 % de ce qui est lu
+**2 · Vénus en transit** — 13 %
+> Quand Vénus vient toucher un point d'un thème, qu'est-ce qui devient possible ce jour-là ?
 
+Vénus est la planète la plus commercialement utile du lot : elle touche l'accord, le prix,
+le goût, l'entente. Dire ce qu'elle facilite — et ce qu'elle endort, parce qu'un jour où
+tout paraît facile n'est pas toujours un bon jour pour signer.
+
+### Ce que veut dire l'angle
+
+**3 · Le trigone** — 27 % des angles lus
 > Qu'est-ce qu'un trigone donne, et en quoi diffère-t-il d'un sextile ?
 
 Valable quelle que soit la planète. Sa limite compte autant que sa promesse : un trigone
 peut aussi vouloir dire que ça vient trop facilement pour qu'on s'y applique.
 
-### 3 · Le Soleil natal — 24 % de ce qui est lu
+**4 · Le carré** — 27 %
+> Qu'impose un carré, et que faut-il en faire ?
 
+Aussi lu que le trigone : sans lui, aucun jour à éviter n'a de texte. Le ton est décisif —
+un carré n'est pas une malédiction, c'est un obstacle qui indique où il faut corriger. On
+vend un instrument, pas de la peur.
+
+### Ce que représente le point touché
+
+**5 · Le Soleil natal** — 25 % des points lus
 > Quand un transit vient toucher le Soleil natal de quelqu'un, qu'est-ce qui est touché
 > exactement ?
 
@@ -89,8 +126,31 @@ Le Soleil comme **point du thème**, jamais comme signe. Le produit se vend sur 
 le signe solaire ne dit presque rien : « ton Soleil », jamais « ton signe », jamais « tu es
 Lion ».
 
-### 4 · L'axe Énergie — 36 % de ce qui est lu
+**6 · La Lune natale** — 14 %
+> Que représente la Lune natale, et qu'est-ce qu'on remue en la touchant ?
 
+**7 · Vénus natale** — 12 %
+> Que représente Vénus natale ?
+
+Et si c'est vrai : dire que l'affectif et le tarif sont la même planète. C'est le genre
+d'observation qui fait qu'un lecteur reconnaît quelqu'un derrière le texte.
+
+### Ce que demande l'axe
+
+**8 · L'axe Business** — 29 % de ce qui est lu
+> Qu'est-ce qu'un bon jour Business demande de faire, concrètement ? Et un mauvais ?
+
+Une action, pas une intention. « Demander une augmentation », pas « être ouvert aux
+opportunités ».
+
+**9 · L'axe Amour** — 35 %
+> Qu'est-ce qu'un bon jour Amour demande de faire ? Et un mauvais ?
+
+**Aucune promesse sur autrui.** On dit ce que la personne peut faire, jamais ce que
+quelqu'un d'autre va faire ou ressentir. « Un jour pour dire les choses », pas « un jour où
+on te dira oui ».
+
+**10 · L'axe Énergie** — 36 %
 > Qu'est-ce qu'une journée à forte énergie demande de faire, et une journée à faible
 > énergie ? En termes de rythme et d'élan.
 
@@ -99,6 +159,10 @@ Pas un symptôme, pas un traitement, pas un diagnostic, jamais « bon jour pour 
 opération ». Rythme, fatigue, élan, capacité à pousser — rien d'autre. Un filtre
 déterministe vérifie la sortie et remplace le texte par un gabarit si un terme médical
 passe, mais mieux vaut que la brique soit juste à la source.
+
+**Les briques des points natals et des axes servent dans les deux sens.** Le même « Soleil
+natal » est lu un jour de trigone et un jour de carré. La définition doit donc dire ce que
+le point *est*, pas ce qui lui arrive de bon.
 
 ## La forme attendue
 
@@ -142,14 +206,14 @@ on regarde ce que la composition donne sur un vrai thème.
 
 ## L'ordre du reste
 
-Les vingt-sept autres, dans cet ordre — chaque ligne rapporte moins que la précédente :
+Les vingt et une restantes, dans cet ordre — chaque ligne rapporte moins que la précédente :
 
-1. **Le carré** (27 %), puis le sextile, la conjonction, l'opposition. Le carré est
-   prioritaire : sans lui, aucun jour à éviter n'a de texte.
-2. **Le Soleil en transit** (23 %), Vénus, Mercure, Mars.
-3. **La Lune natale** (14 %), l'Ascendant, Vénus natale, Mars natal.
-4. **Les axes Amour et Business.**
-5. Jupiter et Saturne en transit, le Descendant, le Milieu du Ciel, Mercure et Jupiter
-   natals.
+1. **Le sextile** (17 %) et la **conjonction** (15 %). Avec le trigone et le carré déjà
+   écrits, ces deux-là portent la famille des angles à 87 % de ce qui est lu.
+2. **Le Soleil en transit** (23 %), puis Mercure et Mars.
+3. **L'Ascendant** natal (12 %), Mars natal, le Milieu du Ciel, le Descendant.
+4. **L'opposition** (13 %).
+5. Jupiter et Saturne en transit, Mercure et Jupiter natals.
 6. **En dernier, les planètes lentes** — Uranus, Neptune, Pluton, en transit comme en
-   natal. Elles ne servent qu'à l'écran des jours rares.
+   natal. Elles ne sortent jamais comme meilleur ou pire jour sur trente jours : elles ne
+   servent qu'à l'écran des jours rares.
