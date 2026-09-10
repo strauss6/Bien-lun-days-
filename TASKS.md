@@ -94,7 +94,8 @@ produit vendable.
       réels, graduation, glyphe minuscule sur les pics, révélation par `clip-path` une fois
       par session. Page de démonstration alimentée par un vrai rapport.
       *Fini quand* : capture Playwright conforme à `DESIGN.md`, lisible à 375 px, sans
-      débordement horizontal, et rendu identique sous `prefers-reduced-motion`.
+      débordement horizontal, rendu identique sous `prefers-reduced-motion`, et **aucune
+      légende ni libellé de mode de tracé** — règle 5 du budget de densité.
 
 - [ ] **T07 — Le quiz, cinq écrans.** (90 min)
       Prénom, date, heure — avec la phrase du brief et la case « je ne la connais pas » —,
@@ -116,8 +117,11 @@ produit vendable.
       les deux autres axes repliés à leur score. Phrases par **gabarits déterministes**
       montés sur `lib/copy/blocks.ts` — voir Q6. Signe de contribution affiché, jamais la
       valeur brute.
-      *Fini quand* : un jour à score bas affiche deux contributions négatives, et le premier
-      emploi de chaque terme technique est suivi de sa traduction.
+      *Fini quand* : un jour à score bas affiche deux contributions négatives, le premier
+      emploi de chaque terme technique est suivi de sa traduction, et le **budget de densité
+      passe** — un seul nombre au-dessus de 24 px, quarante-cinq mots de texte courant au
+      maximum, orbes et signes masqués jusqu'au tap. Test de bout en bout sur les règles 3
+      et 4.
 
 - [ ] **T10 — L'écran « Les jours rares ».** (75 min)
       Uniquement les aspects classés rares ou au-dessus. Pour chacun : notation technique,

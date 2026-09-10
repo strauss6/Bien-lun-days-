@@ -1,8 +1,12 @@
 # Bien.Luné — plan de design
 
-> À valider avant de coder l'interface. Il consolide le brief et remplace les versions
-> antérieures. Les glyphes et les jetons de couleur sont déjà implémentés et testés ;
-> le reste attend accord.
+> **Validé le 10 septembre 2026** : la palette, les deux typographies avec les dates et
+> les scores en mono, et la **variante A** des glyphes — nue, sans nœuds vectoriels. La
+> variante B est abandonnée et n'est plus maintenue.
+>
+> **Directive reçue avec la validation : l'interface doit être beaucoup plus épurée que
+> la planche.** La planche était un support de validation, elle montrait tout à la fois ;
+> le produit montre une chose à la fois. La section 8 en fait une règle chiffrée.
 
 ## 0. La tension, et ce qu'elle impose
 
@@ -100,9 +104,9 @@ suites de segments. C'est ce qui leur donne l'air calculés plutôt que dessiné
 dans le ruban ou 120 px en pleine page. Les douze sont dessinés, testés (aucune courbe, tout
 dans la grille, centrage optique) et livrés en planche de contrôle.
 
-**Variante B** — nœuds vectoriels de 1,3 sur les extrémités des tracés ouverts. Elle pousse
-la facture « tracé en cours d'édition » un cran plus loin. Je recommande **la version nue** :
-à 10 px dans le ruban les nœuds deviennent du bruit, et il faudrait entretenir deux jeux.
+**Variante A retenue** — la version nue, sans nœuds vectoriels. À 10 px dans le ruban les
+nœuds devenaient du bruit, et entretenir deux jeux n'avait pas de contrepartie. Un seul jeu
+de douze tracés, celui qui est déjà dans `lib/design/zodiac-paths.ts`.
 
 ## 4. Le ruban
 
@@ -196,3 +200,27 @@ ombre douce, badges pilule, hero centré à sous-titre gris, icônes décorative
 alternance de fond, compteur de réassurance, grille de trois features à icône,
 `fade-and-slide` au scroll, étiquettes capitales espacées, flèche accolée aux boutons,
 dégradés, mode sombre — le produit parle de journées, il vit en lumière du jour.
+
+## 8. Le budget de densité — la règle d'épuration
+
+« Épuré » ne survit pas à six écrans si on ne le chiffre pas. Six règles, dont deux
+vérifiables par un test de bout en bout.
+
+1. **Un écran, une décision.** Le jour affiché, un score, deux raisons. Rien d'autre
+   au-dessus de la ligne de flottaison.
+2. **Trois tailles de texte visibles au maximum par écran** : un grand nombre, une ligne
+   technique, un paragraphe. Pas de quatrième.
+3. **Un seul nombre au-dessus de 24 px par écran** — le score de l'axe prioritaire. Les
+   deux autres axes sont des lignes, pas des blocs.
+4. **Quarante-cinq mots de texte courant au maximum par écran.** Au-delà, on coupe, on ne
+   réduit pas le corps.
+5. **Le produit ne s'explique pas à l'intérieur de lui-même.** Pas de légende sous le
+   ruban, pas de tableau des données de naissance, pas de compteur de statistiques. Ces
+   informations passent une fois, sur l'écran de calcul, puis disparaissent.
+6. **La notation d'un aspect s'écrit une fois, pas trois.** Les glyphes et le libellé en
+   clair, c'est tout. L'orbe et la contribution signée existent dans la donnée et
+   s'affichent au tap — jamais par défaut.
+
+Ce qui disparaît donc de la planche quand elle devient produit : le bloc d'identité de
+naissance, la ligne de statistiques, la légende des trois modes de tracé, les orbes et les
+signes affichés d'office, et les libellés d'axe répétés sur le ruban **et** dans la carte.

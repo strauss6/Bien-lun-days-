@@ -101,3 +101,20 @@ une commande en échec.
   suite.
 - Les axes du ruban se distinguent par la position et le tracé, jamais par la teinte.
 - `prefers-reduced-motion` respecté partout : sans animation, tout reste utilisable.
+- **Variante A des glyphes**, nue. La variante à nœuds vectoriels est abandonnée.
+
+## Budget de densité
+
+Validé avec la direction artistique, contraignant sur chaque écran du produit. Détail et
+justification dans `DESIGN.md` §8.
+
+1. Un écran, une décision : le jour, un score, deux raisons.
+2. Trois tailles de texte visibles au maximum par écran.
+3. Un seul nombre au-dessus de 24 px par écran.
+4. Quarante-cinq mots de texte courant au maximum par écran.
+5. Le produit ne s'explique pas à l'intérieur de lui-même : pas de légende, pas de tableau
+   de données de naissance, pas de compteur de statistiques dans l'interface.
+6. La notation d'un aspect s'écrit une fois : glyphes et libellé en clair. L'orbe et la
+   contribution s'affichent au tap, jamais par défaut.
+
+Les règles 3 et 4 sont vérifiées par un test de bout en bout.
