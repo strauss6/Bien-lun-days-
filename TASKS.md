@@ -145,7 +145,7 @@ produit vendable.
       Les cartes s'accrochent une à une. La pastille reste visible et ramène au jour courant
       en un tap, où qu'on soit dans les 30 jours.
 
-- [ ] **T13 — Compteurs, accessibilité, LCP.** (75 min)
+- [x] **T13 — Compteurs, accessibilité, LCP.** (75 min)
       Scores animés de 0 à leur valeur, une seule fois. Passe complète : contrastes, focus,
       ordre de tabulation, cibles tactiles de 44 px. LCP mesuré sous 2 s.
 

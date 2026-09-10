@@ -270,3 +270,20 @@ jamais d'étiquette.
 
 Les cinq symboles d'aspect dessinés en polylignes restent dans le dépôt : ils resserviront
 pour le document que relira l'astrologue, où le lecteur, lui, sait les lire.
+
+## 10 — Où vont les teintes vives, où va le jeton `text`
+
+Chaque axe porte trois valeurs : `deep` et `bright`, les deux bornes de son dégradé, et
+`text`. La règle est sans exception :
+
+- **Les teintes vives ne servent qu'aux formes** — les bandes du ruban, la graduation du
+  quiz, le contour d'un choix retenu. Une forme n'a pas de seuil de lisibilité à tenir,
+  elle a une surface.
+- **Tout ce qui se lit emploie le jeton `text`** — les scores, les noms d'axes, les
+  libellés. Les trois passent 4,5:1 sur le blanc des cartes comme sur le papier, et un
+  test unitaire le vérifie à chaque exécution.
+
+La raison tient en un chiffre : `#FF9500`, l'orangé de l'axe Énergie, donne **2,2:1** sur
+blanc. Il est superbe en aplat et illisible en caractères. Voir `Q9` pour la suite —
+faut-il assombrir la famille pour réconcilier les deux emplois.
+

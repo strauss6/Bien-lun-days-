@@ -280,3 +280,28 @@ sur iOS Safari, qui est la moitié de la cible, et l'environnement de test n'a p
 téléphone. Le test prouve que la vibration est *demandée* au bon moment, pas qu'elle a
 lieu. À vérifier sur un Android réel avant de compter dessus.
 
+## T13 — Compteurs, accessibilité, LCP
+
+**Fait.** Les scores montent de zéro à leur valeur en 750 ms, une seule fois par session,
+sur une décélération exponentielle — l'essentiel du trajet dans le premier tiers du temps,
+puis un accostage. La courbe est une fonction pure, testée ; le déclenchement est dans le
+composant. Passe d'accessibilité mesurée et non affirmée : quatre tests de bout en bout
+comptent les cibles sous 44 px, suivent l'ordre de tabulation et lisent le contour de
+focus élément par élément. Le contraste, lui, se vérifie sur les jetons en test unitaire —
+c'est là qu'il se décide. LCP mesuré au `PerformanceObserver` sur la construction de
+production : **100 ms** sur l'accueil, **80 ms** sur le quiz, pour un budget de 2 s.
+
+**Cassé, réparé.** Le contraste a trouvé un vrai défaut : les grands nombres portaient la
+teinte vive de leur axe, et `#FF9500` sur blanc donne **2,2:1** — sous le seuil du grand
+texte, sous celui du texte courant. Ils emploient désormais le jeton `text` de chaque axe,
+qui existait pour ça. Deux cibles tactiles étaient trop petites : « Le détail » à 16 px de
+haut et « Retour aux trente jours » à 17 px ; toutes deux à 44 px, sans que le dessin
+change, par marge négative. Le premier essai mettait le résumé en `flex`, ce qui a fait
+disparaître le triangle de dépliage : il est revenu en `block`.
+
+**Incertain.** Le 51 de l'axe Énergie lit maintenant brun à côté d'une bande orange. C'est
+conforme et lisible, mais la carte et le ruban ne parlent plus tout à fait de la même
+couleur — question `Q9`, à trancher avec la direction artistique. Et le budget LCP est
+tenu très large : la machine d'intégration n'est pas un téléphone sur un réseau ordinaire,
+et un seuil serré rendrait le test capricieux plutôt qu'utile.
+

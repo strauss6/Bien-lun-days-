@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { TideRibbon, type RibbonDay } from '@/components/ribbon/TideRibbon';
 import { AXIS_IDS } from '@/lib/astro/transits';
 import { PEAK_SCORE } from '@/lib/design/ribbon-geometry';
+import { COUNT_MS, countAt } from '@/lib/ui/count-up';
 import { buzz, crossesPeak } from '@/lib/ui/haptics';
 import type { ExplainingAspect, ReadingDay, ReadingPayload } from '@/lib/api/reading';
 import type { AxisId } from '@/lib/astro/types';
@@ -12,6 +13,48 @@ const MONTHS = ['janv', 'févr', 'mars', 'avr', 'mai', 'juin', 'juil', 'août', 
 const shortDate = (iso: string) => `${Number(iso.slice(8, 10))} ${MONTHS[Number(iso.slice(5, 7)) - 1]}`;
 /** Au-delà, on considère le défilement programmé terminé même sans `scrollend`. */
 const SETTLE_MS = 500;
+
+/**
+ * Montée des compteurs, une fois par session.
+ *
+ * Rend l'avancement de 0 à 1. Il part à 1 — donc au résultat — dès que la
+ * personne a demandé moins de mouvement, ou qu'elle a déjà vu la montée dans
+ * cette session : une animation qu'on subit deux fois devient un péage.
+ */
+function useCountUp(): number {
+  const [progress, setProgress] = useState(() => {
+    if (typeof window === 'undefined') return 1;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return 1;
+    try {
+      return sessionStorage.getItem('scores-counted') === '1' ? 1 : 0;
+    } catch {
+      return 0;
+    }
+  });
+
+  useEffect(() => {
+    if (progress === 1) return;
+    try {
+      sessionStorage.setItem('scores-counted', '1');
+    } catch {
+      /* navigation privée : on se passe du souvenir, pas de l'animation */
+    }
+    const start = performance.now();
+    let frame = 0;
+    const step = (now: number) => {
+      const t = Math.min(1, (now - start) / COUNT_MS);
+      setProgress(t);
+      if (t < 1) frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+    // Une seule montée par montage : relancer à chaque changement de `progress`
+    // ferait repartir la boucle à chaque frame.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return progress;
+}
 
 /**
  * Les trente jours.
@@ -28,6 +71,7 @@ const SETTLE_MS = 500;
  */
 export function DaysScreen({ payload, onRare }: { payload: ReadingPayload; onRare: () => void }) {
   const [selected, setSelected] = useState(0);
+  const progress = useCountUp();
   const track = useRef<HTMLDivElement>(null);
   /**
    * Jour courant lisible en dehors du rendu.
@@ -151,6 +195,7 @@ export function DaysScreen({ payload, onRare }: { payload: ReadingPayload; onRar
             primary={primary}
             others={others}
             labels={payload.axisLabels}
+            progress={progress}
             hidden={index !== selected}
           />
         ))}
@@ -184,12 +229,14 @@ export function DaysScreen({ payload, onRare }: { payload: ReadingPayload; onRar
  * d'écran annonce trente jours à la suite.
  */
 function DayCard({
-  day, primary, others, labels, hidden,
+  day, primary, others, labels, progress, hidden,
 }: {
   day: ReadingDay;
   primary: AxisId;
   others: AxisId[];
   labels: Record<AxisId, string>;
+  /** Avancement de la montée des compteurs, de 0 à 1. */
+  progress: number;
   hidden: boolean;
 }) {
   const lead = day.axes[primary];
@@ -199,9 +246,9 @@ function DayCard({
       <section className="surface p-6">
         <p
           className="technical text-[38px] font-semibold leading-none tracking-[-0.03em] tabular-nums"
-          style={{ color: `var(--axis-${primary})` }}
+          style={{ color: `var(--axis-${primary}-text)` }}
         >
-          {lead.score}
+          {countAt(lead.score, progress)}
         </p>
         {/*
           Un seul `h1` sur l'écran : il vit sur la carte visible, les autres
@@ -225,11 +272,17 @@ function DayCard({
         */}
         <p className="reading mt-5 border-t border-ink/8 pt-5">{lead.phrase}</p>
 
-        <details className="technical mt-4">
-          <summary className="cursor-pointer text-[10.5px] tracking-[0.06em] opacity-45">
+        {/*
+          Le résumé fait 44 px de haut sans en avoir l'air : la hauteur est celle
+          du doigt, la marge négative rend au dessin l'espace qu'elle prend. Il
+          reste en `block` et non en `flex`, sinon le triangle de dépliage
+          disparaît — et le texte gris cesse d'annoncer qu'il est cliquable.
+        */}
+        <details className="technical mt-1">
+          <summary className="-my-3 block min-h-11 cursor-pointer py-3 text-[10.5px] tracking-[0.06em] opacity-45">
             Le détail
           </summary>
-          <ul className="mt-3 grid gap-1.5">
+          <ul className="mt-1 grid gap-1.5">
             {lead.explaining.map((aspect: ExplainingAspect) => (
               <li key={aspect.notation} className="flex items-baseline justify-between gap-3 text-[11px] opacity-65">
                 <span>{aspect.phrase}</span>
@@ -249,9 +302,9 @@ function DayCard({
           >
             <dt
               className="text-[20px] font-semibold tabular-nums tracking-[-0.02em]"
-              style={{ color: `var(--axis-${axis})` }}
+              style={{ color: `var(--axis-${axis}-text)` }}
             >
-              {day.axes[axis].score}
+              {countAt(day.axes[axis].score, progress)}
             </dt>
             <dd className="text-[10px] font-semibold tracking-[0.1em]" style={{ color: `var(--axis-${axis}-text)` }}>
               {labels[axis].toUpperCase()}

@@ -130,3 +130,43 @@ test('les cartes s’accrochent une à une', async ({ page }) => {
   await expect.poll(async () => track.evaluate((el) => el.scrollLeft / el.clientWidth))
     .toBeCloseTo(3, 1);
 });
+
+const compteur = (page: import('@playwright/test').Page) =>
+  page.getByRole('heading', { level: 1 }).locator('xpath=preceding-sibling::p[1]');
+
+const montéeVue = (page: import('@playwright/test').Page) =>
+  page.evaluate(() => sessionStorage.getItem('scores-counted'));
+
+test('les scores montent une fois, puis se taisent', async ({ page }) => {
+  await remplirLeQuiz(page);
+  await page.waitForURL('**/jours', { timeout: 20000 });
+
+  // La montée a bien eu lieu : elle laisse sa trace au moment où elle démarre.
+  await expect.poll(() => montéeVue(page)).toBe('1');
+
+  // Elle s'achève sur la valeur exacte du rapport, pas sur un arrondi voisin.
+  const attendu = await page.evaluate(() => {
+    const brut = sessionStorage.getItem('bien-lune:reading');
+    return brut ? JSON.parse(brut).days[0].axes.business.score : null;
+  });
+  expect(attendu).toBeGreaterThan(0);
+  await expect.poll(async () => Number(await compteur(page).innerText())).toBe(attendu);
+
+  // Un aller-retour par les jours rares ne la rejoue pas : au retour, le nombre
+  // est déjà là. Une animation qu'on subit deux fois devient un péage.
+  await page.getByRole('button', { name: /Les jours rares/ }).click();
+  await page.waitForURL('**/rares');
+  await page.getByRole('button', { name: /Retour aux trente jours/ }).click();
+  await page.waitForURL('**/jours');
+  expect(Number(await compteur(page).innerText())).toBe(attendu);
+});
+
+test('sous prefers-reduced-motion, les scores sont là d’emblée', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await remplirLeQuiz(page);
+  await page.waitForURL('**/jours', { timeout: 20000 });
+
+  // Aucune montée n'est lancée du tout : la trace n'est jamais posée.
+  expect(await montéeVue(page)).toBeNull();
+  expect(Number(await compteur(page).innerText())).toBeGreaterThan(0);
+});

@@ -138,6 +138,9 @@ export function QuizFlow({ onComplete, search }: Props) {
                       style={{
                         borderColor: chosen ? `var(--axis-${choice.id})` : 'rgb(15 20 25 / 0.12)',
                         color: chosen ? `var(--axis-${choice.id}-text)` : undefined,
+                        // Trait doublé sans décalage : l'état choisi se lit aussi à
+                        // l'épaisseur, pas seulement à la teinte.
+                        boxShadow: chosen ? 'inset 0 0 0 1px currentColor' : undefined,
                       }}
                       onClick={() => set('priorityAxis', choice.id)}
                     >

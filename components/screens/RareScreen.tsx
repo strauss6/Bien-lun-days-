@@ -26,7 +26,7 @@ export function RareScreen({ payload, onBack }: { payload: ReadingPayload; onBac
       <button
         type="button"
         onClick={onBack}
-        className="technical text-[11px] opacity-50 underline underline-offset-4"
+        className="technical -my-3 inline-flex min-h-11 items-center text-[11px] opacity-50 underline underline-offset-4"
       >
         Retour aux trente jours
       </button>

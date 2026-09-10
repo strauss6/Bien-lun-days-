@@ -167,3 +167,31 @@ commit, l'inverse aussi.
 **Pour trancher** : avant que la seconde façon ne se répande. Le parcours réel — quiz,
 calcul, jours, rares — est entièrement en utilitaires ; si la démonstration devient une page
 de vente, il faudra choisir.
+
+## Q9 — L'orangé de l'axe Énergie ne peut pas porter de texte
+
+**Mesure.** `#FF9500` sur blanc donne **2,2:1**. Le seuil de la norme est de 4,5:1 pour
+du texte courant et de 3:1 pour du grand texte : l'orangé vif échoue aux deux. `#FF2D6F`
+donne 3,6:1 — il passe en grand, échoue en courant. Seul `#1E4FFF`, à 5,8:1, tient
+partout.
+
+**Ce que j'ai fait.** Les nombres de l'interface emploient désormais le jeton `text` de
+chaque axe — `#1338B8`, `#C21048`, `#9A5B00` —, qui existait déjà et que `tokens.ts`
+décrit comme « la teinte du texte sur fond clair, assez foncée pour rester lisible ».
+C'est l'emploi prévu du jeton, pas un changement de palette. Les teintes vives restent
+où elles sont justes : les dégradés du ruban, qui sont des formes et non du texte. Un
+test unitaire fige la frontière.
+
+**Ce qui reste à trancher, et c'est ton appel.** Le 51 de l'axe Énergie lit maintenant
+**brun** à côté d'une bande orange. C'est lisible, mais la carte et le ruban ne parlent
+plus tout à fait de la même couleur. Deux options :
+
+1. **Laisser ainsi.** Zéro travail, conforme, mais l'axe Énergie perd son éclat sur la
+   carte.
+2. **Décaler la famille Énergie vers le sombre** — par exemple `#E8760A` en vif, qui
+   monte à 3,1:1 et pourrait alors porter les grands nombres, avec un `bright` ajusté.
+   Le ruban reste chaud, la carte retrouve l'orangé. Une ligne dans `tokens.ts`.
+
+Option retenue en attendant : la 1, parce qu'elle est la plus réversible — elle ne touche
+à aucune valeur de la palette.
+
