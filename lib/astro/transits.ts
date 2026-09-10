@@ -5,33 +5,36 @@ import { addCivilDays, localHourInstant, localNoonInstant } from './zone';
 import { signOf } from './angles';
 
 /**
- * Planètes en transit retenues par axe.
+ * Planètes en transit retenues par axe, et points natals visés.
  *
- * Amour et Business portent chacun cinq planètes en transit et cinq points
- * natals, contre quatre au périmètre initial. Ce n'est pas un élargissement
- * gratuit : sur 90 jours Jupiter parcourt ~8° et Saturne ~3°, Vénus ~110° et
- * Mars ~50°. Quatre transits vers quatre points natals ne produisent donc pas
- * cinq événements *distincts* sur la fenêtre, et le rapport ne pouvait pas
- * toujours livrer les cinq dates que le paywall promet.
- *
- * Les ajouts sont ceux qui se défendent le mieux astrologiquement : le Soleil
- * sur le Vénus ou le Descendant natal est une configuration relationnelle
- * classique et Vénus–Mars est le cœur du sujet ; Vénus est la planète de la
- * valeur, du prix et du contrat, et les transits au Saturne natal parlent
- * d'engagement et de structure — donc de business.
+ * Périmètre fixé par le brief. Il avait été élargi après une mesure sur 90 jours
+ * — Jupiter ne parcourt que 8° et Saturne 3° sur une telle fenêtre, ce qui ne
+ * produit pas toujours cinq **événements distincts** à citer — puis ramené ici,
+ * parce que le brief fait foi et que la fenêtre courante est de 30 jours avec
+ * deux aspects par jour, un besoin bien moins exigeant en diversité. La mesure
+ * est conservée dans QUESTIONS.md Q3 et dans docs/02-architecture-moteur.md ;
+ * elle devra être rouverte quand le rapport passera à 90 jours et promettra cinq
+ * dates par axe.
  */
 export const AXIS_TRANSITS: Record<AxisId, PlanetId[]> = {
-  business: ['jupiter', 'saturn', 'mercury', 'sun', 'venus'],
-  love: ['venus', 'mars', 'jupiter', 'moon', 'sun'],
-  energy: ['mars', 'saturn', 'sun', 'moon'],
+  business: ['jupiter', 'saturn', 'mercury', 'sun'],
+  love: ['venus', 'mars', 'moon', 'jupiter'],
+  energy: ['mars', 'sun', 'moon', 'saturn'],
 };
 
-/** Points natals visés par axe. */
 export const AXIS_NATALS: Record<AxisId, PointId[]> = {
-  business: ['sun', 'mc', 'mercury', 'jupiter', 'saturn'],
-  love: ['venus', 'moon', 'dsc', 'sun', 'mars'],
+  business: ['sun', 'mc', 'mercury', 'jupiter'],
+  love: ['venus', 'moon', 'dsc', 'sun'],
   energy: ['asc', 'sun', 'mars', 'moon'],
 };
+
+/**
+ * Longueur de la fenêtre par défaut.
+ *
+ * Trente jours : c'est ce que livre le produit aujourd'hui. Le rapport complet à
+ * quatre-vingt-dix jours reste calculable en passant `days`.
+ */
+export const DEFAULT_WINDOW_DAYS = 30;
 
 export const AXIS_LABELS: Record<AxisId, string> = {
   business: 'Business',
@@ -113,7 +116,7 @@ export function buildTransitGrid(options: {
   pad?: number;
 }): TransitGrid {
   const { chart, zone, startDate } = options;
-  const days = options.days ?? 90;
+  const days = options.days ?? DEFAULT_WINDOW_DAYS;
   const pad = options.pad ?? 1;
   const spanDays = days + 2 * pad;
   const firstDate = addCivilDays(startDate, -pad);

@@ -31,3 +31,21 @@ réparé, ce qui reste incertain.
   Regroupement en événements ajouté, exigence inscrite dans T03 avec ses valeurs attendues.
 - **Incertain** : les trois validations de design — palette, typographies, variante de
   glyphe — restent en attente, et le brief interdit de les trancher seul.
+
+## T01 — Tables du brief, fenêtre de 30 jours
+
+- **Fait** : les tables d'axes reviennent à quatre transits et quatre points natals,
+  `DEFAULT_WINDOW_DAYS` vaut 30, et un test de conformité au brief empêche la dérive de
+  revenir sans qu'on la voie. Le rapport à 90 jours reste calculable en passant `days`.
+- **Cassé / réparé** : seize tests écrits pour la fenêtre de 90 jours et la promesse de
+  cinq dates par axe. Deux corrections d'attente, justifiées par une mesure et non par
+  commodité — sur 10 thèmes × 12 fenêtres, un axe rend moins de cinq dates dans 81 % des
+  cas à 30 jours et 3 % à 90 jours. Surtout, ces tests ont révélé deux vrais défauts du
+  repli de `selectDates` : il complétait avec des doublons du même événement, puis, une
+  fois cela corrigé, il citait un jour à 19 sur 100 comme meilleure date. Le repli est
+  supprimé ; une date est citée quand elle passe le seuil et apporte un événement nouveau,
+  sinon elle ne l'est pas. Un jour sans aucun aspect n'est plus citable du tout. Et un
+  `describe` entier perdu dans une de mes substitutions a été restauré.
+- **Incertain** : à 30 jours, trois axes sur 360 ne rendent qu'une seule date. C'est la
+  réponse juste, mais l'interface devra afficher un axe pauvre sans donner l'impression
+  d'un bug — à traiter en T09.

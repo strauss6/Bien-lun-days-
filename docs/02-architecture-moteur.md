@@ -153,8 +153,8 @@ Un aspect large existe sans peser ; un aspect serré domine la journée.
 - Chaque jour renvoie la liste brute des aspects trouvés `{ transit, aspect, natal, orb, e }`,
   conservée jusqu'au rapport : c'est elle qui alimente les textes et l'affichage des orbes.
 
-Volume : 66 couples (25 Business + 25 Amour + 16 Énergie) × 5 aspects × 90 jours =
-**29 700 combinaisons testées**, environ **200 aspects retenus** sur les thèmes de contrôle
+Volume : 48 couples (16 par axe) × 5 aspects × 30 jours = **7 200 combinaisons testées** sur
+la fenêtre courante, 21 600 sur 90 jours, environ **200 aspects retenus** sur les thèmes de contrôle
 (un « aspect retenu » est un événement continu, pas un jour : Vénus qui reste deux semaines
 dans l'orbe d'un trigone compte pour un). Ce sont ces nombres réels qui s'affichent sur
 l'écran de calcul.
@@ -173,7 +173,7 @@ Planètes en transit :
 | Axe | Poids |
 |---|---|
 | Business | Jupiter 1,00 · Saturne 0,90 · Soleil 0,70 · Mercure 0,60 |
-| Amour | Vénus 1,00 · Mars 0,70 · Jupiter 0,65 · Soleil 0,55 · Lune 0,45 |
+| Amour | Vénus 1,00 · Mars 0,70 · Jupiter 0,65 · Lune 0,45 |
 | Énergie | Mars 1,00 · Saturne 0,85 · Soleil 0,80 · Lune 0,50 |
 
 Points natals visés :
@@ -181,10 +181,15 @@ Points natals visés :
 | Axe | Poids |
 |---|---|
 | Business | Soleil 1,00 · MC 0,95 · Mercure 0,70 · Jupiter 0,60 |
-| Amour | Vénus 1,00 · Lune 0,80 · DSC 0,75 · Mars 0,70 · Soleil 0,60 |
+| Amour | Vénus 1,00 · Lune 0,80 · DSC 0,75 · Soleil 0,60 |
 | Énergie | ASC 1,00 · Soleil 0,85 · Mars 0,80 · Lune 0,55 |
 
-**Écart assumé au périmètre initial.** Amour et Business portent cinq planètes en transit
+**Périmètre revenu à celui du brief.** Les tables ci-dessus sont celles du brief : quatre
+planètes en transit, quatre points natals par axe. Elles avaient été élargies, et
+l'élargissement est conservé ci-dessous à titre de mesure, parce qu'il faudra le rouvrir
+quand le rapport passera à 90 jours.
+
+**Mesure conservée de l'élargissement.** Amour et Business portent cinq planètes en transit
 et cinq points natals, contre quatre. Sur 90 jours Jupiter parcourt ~8° et Saturne ~3° :
 quatre transits vers quatre points natals ne produisent pas cinq événements **distincts**
 sur la fenêtre. Mesuré sur 10 thèmes × 24 fenêtres glissantes, **18 axes sur 720**
@@ -198,8 +203,16 @@ relationnelle classique sur le Vénus ou le Descendant natal, et le Mars natal, 
 Vénus–Mars est le cœur du sujet. Après élargissement : **4 axes sur 720**, soit 0,55 %.
 Un test rejoue ce balayage et échoue au-delà de 2 %.
 
-**Le repli ne bourre jamais.** Sous le seuil de qualité, un axe rend quatre dates fortes
-plutôt que cinq dont une tiède ; il ne descend jamais sous trois.
+**Il n'y a aucun repli.** Deux ont été essayés et retirés, chacun parce qu'il faisait
+mentir le rapport : compléter avec un événement déjà cité produit trois dates qui sont
+trois fois le même transit, et relâcher le seuil de qualité présente un jour à 19 sur 100
+comme un pic. Une date est citée quand elle passe le seuil **et** apporte un événement
+nouveau, sinon elle ne l'est pas.
+
+Un axe peut donc rendre moins de dates que demandé, y compris aucune sur une fenêtre calme.
+Mesuré sur 10 thèmes × 12 fenêtres glissantes : sur 30 jours, 81 % des axes rendent moins
+de cinq dates ; sur 90 jours, 3 %. L'interface doit savoir afficher un axe pauvre plutôt
+que le masquer.
 
 Polarité de l'aspect, modulée par la nature du transitant :
 

@@ -30,7 +30,7 @@ produit vendable.
 
 ## Phase 1 — le moteur, complet et juste
 
-- [ ] **T01 — Revenir aux tables d'axes du brief, et paramétrer la fenêtre.** (45 min)
+- [x] **T01 — Revenir aux tables d'axes du brief, et paramétrer la fenêtre.** (45 min)
       Les tables de `scoring.ts` et `transits.ts` reviennent aux quatre transits et quatre
       points natals du brief. La fenêtre devient un paramètre de premier plan avec 30 jours
       par défaut. Voir Q3.

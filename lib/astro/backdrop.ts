@@ -3,6 +3,7 @@ import { ASPECTS, ASPECT_IDS } from './aspects';
 import { longitudeOf } from './ephemeris';
 import { separation } from './angles';
 import { addCivilDays } from './zone';
+import { DEFAULT_WINDOW_DAYS } from './transits';
 
 /**
  * Transits longs.
@@ -81,7 +82,7 @@ export function computeLongTransits(options: {
   searchYears?: number;
 }): LongTransit[] {
   const { chart, startDate } = options;
-  const days = options.days ?? 90;
+  const days = options.days ?? DEFAULT_WINDOW_DAYS;
   const searchYears = options.searchYears ?? DEFAULT_SEARCH_YEARS;
   const targets = options.targets
     ?? (['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn', 'asc', 'mc'] as PointId[])

@@ -1,19 +1,19 @@
 import type {
   AspectId, AxisDay, AxisId, AxisReading, DayAspect, NatalChart, PlanetId, PointId, Reading,
 } from './types';
-import { AXIS_IDS, AXIS_NATALS, AXIS_TRANSITS, buildTransitGrid, pairKey } from './transits';
+import { AXIS_IDS, AXIS_NATALS, AXIS_TRANSITS, DEFAULT_WINDOW_DAYS, buildTransitGrid, pairKey } from './transits';
 
 /** Poids des planètes en transit, par axe. */
 export const TRANSIT_WEIGHTS: Record<AxisId, Partial<Record<PlanetId, number>>> = {
-  business: { jupiter: 1.0, saturn: 0.9, sun: 0.7, mercury: 0.6, venus: 0.55 },
-  love: { venus: 1.0, mars: 0.7, jupiter: 0.65, sun: 0.55, moon: 0.45 },
+  business: { jupiter: 1.0, saturn: 0.9, sun: 0.7, mercury: 0.6 },
+  love: { venus: 1.0, mars: 0.7, jupiter: 0.65, moon: 0.45 },
   energy: { mars: 1.0, saturn: 0.85, sun: 0.8, moon: 0.5 },
 };
 
 /** Poids des points natals visés, par axe. */
 export const NATAL_WEIGHTS: Record<AxisId, Partial<Record<PointId, number>>> = {
-  business: { sun: 1.0, mc: 0.95, mercury: 0.7, saturn: 0.65, jupiter: 0.6 },
-  love: { venus: 1.0, moon: 0.8, dsc: 0.75, mars: 0.7, sun: 0.6 },
+  business: { sun: 1.0, mc: 0.95, mercury: 0.7, jupiter: 0.6 },
+  love: { venus: 1.0, moon: 0.8, dsc: 0.75, sun: 0.6 },
   energy: { asc: 1.0, sun: 0.85, mars: 0.8, moon: 0.55 },
 };
 
@@ -58,8 +58,11 @@ export const MOON_SELECTION_FACTOR = 0.25;
 export const BEST_THRESHOLD = 55;
 export const WORST_THRESHOLD = 45;
 
-/** En dessous de ce nombre, un axe paraît vide : on relâche la diversité des événements. */
-export const MIN_DATES = 3;
+/**
+ * Nombre de dates en dessous duquel un axe se lit comme vide. C'est un repère
+ * d'affichage, pas une garantie du moteur : rien n'est fabriqué pour l'atteindre.
+ */
+export const SPARSE_AXIS_THRESHOLD = 3;
 
 /**
  * Aspect à citer pour justifier une date.
@@ -169,6 +172,11 @@ export function selectDates(
      * rapport ne peuvent pas partager le même événement : Vénus reste dans
      * l'orbe d'un trigone pendant deux semaines, et sans cette contrainte les
      * cinq « meilleures dates » sont cinq fois le même transit.
+     *
+     * Un retour `null` signifie **ce jour n'a rien à citer** : il est écarté.
+     * Le brief demande que chaque date affichée porte l'aspect qui l'explique ;
+     * une journée sans aucun aspect sur cet axe n'est pas une date du rapport,
+     * même si son score la place haut par simple absence de contrariété.
      */
     eventKey?: (day: number) => string | null;
     /**
@@ -191,24 +199,35 @@ export function selectDates(
   const passesThreshold = (day: number) => options.threshold === undefined
     || (options.order === 'best' ? scores[day] >= options.threshold : scores[day] <= options.threshold);
 
+  const citable = (day: number): string | null | undefined => {
+    if (!options.eventKey) return undefined;      // pas de contrainte d'événement
+    const key = options.eventKey(day);
+    if (key === null || usedEvents.has(key)) return null;
+    return key;
+  };
+
   for (const { day } of ranked) {
     if (picked.length >= options.count) break;
     if (!spaced(day) || !passesThreshold(day)) continue;
-    const key = options.eventKey?.(day) ?? null;
-    if (key !== null && usedEvents.has(key)) continue;
-    if (key !== null) usedEvents.add(key);
+    const key = citable(day);
+    if (key === null) continue;
+    if (key !== undefined) usedEvents.add(key);
     picked.push(day);
   }
 
-  // Repli : on complète avec un événement déjà cité plutôt que de descendre
-  // sous trois dates, mais on ne descend jamais sous le seuil de qualité.
-  if (picked.length < MIN_DATES) {
-    for (const { day } of ranked) {
-      if (picked.length >= MIN_DATES) break;
-      if (!picked.includes(day) && spaced(day)) picked.push(day);
-    }
-  }
-
+  /**
+   * Aucun repli.
+   *
+   * Deux tentations ont été essayées et écartées, chacune parce qu'elle faisait
+   * mentir le rapport : compléter avec un événement déjà cité produit trois
+   * dates qui sont trois fois le même transit, et relâcher le seuil de qualité
+   * présente un jour à 19 sur 100 comme un pic. Une date est citée quand elle
+   * passe le seuil **et** apporte un événement nouveau, sinon elle ne l'est pas.
+   *
+   * Un axe peut donc rendre moins de dates que demandé, y compris aucune sur une
+   * fenêtre calme. C'est la réponse juste, et l'interface doit savoir l'afficher
+   * plutôt que la masquer.
+   */
   return picked.sort((a, b) => a - b);
 }
 
@@ -227,7 +246,7 @@ export interface ScoreOptions {
 
 export function computeReading(options: ScoreOptions): Reading {
   const { chart, zone, startDate } = options;
-  const days = options.days ?? 90;
+  const days = options.days ?? DEFAULT_WINDOW_DAYS;
   const grid = buildTransitGrid({ chart, zone, startDate, days });
   const reliable = chart.anglesReliable;
 
