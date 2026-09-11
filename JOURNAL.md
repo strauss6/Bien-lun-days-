@@ -390,3 +390,29 @@ L'index des douze signes a quitté l'accueil — une roue du zodiaque sur le pre
 le signal « horoscope générique » que le produit refuse — et la règle des polylignes est
 désormais vérifiée sur les glyphes du ruban, là où ils servent encore.
 
+## Le score du jour, porté par la Lune
+
+**Fait.** La journée a désormais son propre score, en tête de l'écran quotidien, à côté de
+la date. Trois quarts viennent de la Lune suivie sur les **quatorze** points du thème —
+là où chaque axe n'en regarde que quatre —, un quart de la moyenne des trois axes déjà
+calibrés. La Lune est la seule planète dont le passage se mesure en heures : elle boucle
+le zodiaque en vingt-sept jours et croise tout le thème chaque mois. Mesuré sur six
+thèmes, le score du jour bouge de 1,3 à 1,7 fois plus que l'axe le plus mobile et deux à
+quatre fois plus que l'axe Business — c'est ce qui fait qu'un jeudi ne ressemble pas à un
+vendredi. Sous le score, le contact lunaire du jour en toutes lettres, et quand il n'y en
+a aucun, l'interface l'écrit.
+
+**Cassé, réparé.** Le nombre de combinaisons annoncé à l'écran de calcul était faux : il
+additionnait les paires axe par axe sans retirer les doublons — la Lune sur le Soleil natal
+sert à l'amour et à l'énergie et n'est calculée qu'une fois. Il annonçait 7 200 pour 41
+paires réelles. Il est maintenant dérivé des paires réellement calculées : 49 depuis que la
+Lune vise tout le thème, soit 7 350. Trois tests entérinaient l'ancien compte ; ils
+comparent désormais au calcul, plus à une constante recopiée.
+
+**Incertain.** Le score du jour peut contredire les trois axes — le 19 septembre 2026 sort
+à 28 quand les axes sont à 86, 84 et 81, la Lune passant en carré à la Lune natale. C'est
+l'information, pas un défaut, mais c'est le genre d'écart qui se lit comme une panne : la
+ligne de contact lunaire est là pour l'expliquer, et `LUNAR_SHARE` est le réglage si la
+direction produit veut adoucir. Il est aussi bien plus sensible au fuseau de résidence que
+les axes : 71 à Paris contre 83 en UTC pour la même date. Tout est en Q13.
+

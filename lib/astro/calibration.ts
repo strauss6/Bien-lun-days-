@@ -4,6 +4,7 @@ import {
   SCORE_CEILING, SCORE_FLOOR, accumulate, effectiveNatalWeights, effectiveTransitWeights,
   median, medianAbsoluteDeviation, smooth,
 } from './scoring';
+import { effectiveLunarWeights, lunarSeries } from './lunar';
 
 /**
  * Étalonnage des scores.
@@ -53,8 +54,12 @@ import {
  * À changer dès que l'étalonnage, les poids, les orbes ou la courbe de
  * compression bougent : c'est ce qui distingue « ce rapport est à jour » de
  * « ce rapport a été calculé autrement ».
+ *
+ * `v2` : arrivée du score global du jour, porté par la Lune. Les paires
+ * calculées par la grille ont changé, donc les scores aussi — un rapport `v1`
+ * enregistré sur un appareil se recalcule à la première ouverture.
  */
-export const SCORE_METHOD = 'stable-780-v1';
+export const SCORE_METHOD = 'stable-780-lune-v2';
 
 /** Début de la période de référence. Fixe : il ne suit pas la date du jour. */
 export const CALIBRATION_EPOCH = '2026-01-01';
@@ -80,6 +85,8 @@ export interface Calibration {
   method: string;
   /** Une échelle pour le score affiché, une pour la série qui sert au classement. */
   axes: Record<AxisId, { score: Scale; selection: Scale }>;
+  /** Échelle du score lunaire, qui porte les trois quarts du score global du jour. */
+  lunar: Scale;
 }
 
 /** Compression : centre, réduit, puis écrase les queues sans les couper. */
@@ -145,7 +152,8 @@ export function computeCalibration(chart: NatalChart, zone: string): Calibration
     axes[axis] = { score: scaleOf(smooth(raw)), selection: scaleOf(smooth(rawSelection)) };
   }
 
-  return { method: SCORE_METHOD, axes };
+  const { raw: lunarRaw } = lunarSeries(grid, effectiveLunarWeights(reliable));
+  return { method: SCORE_METHOD, axes, lunar: scaleOf(smooth(lunarRaw)) };
 }
 
 /*

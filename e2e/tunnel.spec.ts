@@ -36,7 +36,10 @@ test('du prénom au rendez-vous du jour, avec de vrais calculs', async ({ page }
   // L'écran de calcul porte les vraies valeurs du calcul, pas une attente décorative.
   await expect(page.getByTestId('calc-step').first()).toContainText('6 août 1993, 20:40');
   await expect(page.getByText(/Ascendant .*Verseau/)).toBeVisible();
-  await expect(page.getByText(/7\s?200\s+combinaisons testées/)).toBeVisible();
+  // 49 paires uniques × 5 aspects × 30 jours. Le chiffre a changé le jour où la
+  // Lune s'est mise à viser tout le thème pour le score global — et où le compte
+  // a cessé d'additionner deux fois les paires partagées entre deux axes.
+  await expect(page.getByText(/7\s?350\s+combinaisons testées/)).toBeVisible();
 
   // Et il débouche sur la journée, jamais sur le mois.
   await page.waitForURL((url) => url.pathname === '/', { timeout: 25000 });
@@ -233,4 +236,54 @@ test('sous prefers-reduced-motion, les scores sont là d’emblée', async ({ pa
   await premiereVisite(page);
   expect(await page.evaluate(() => sessionStorage.getItem('scores-counted'))).toBeNull();
   expect(Number(await page.getByTestId('score').innerText())).toBeGreaterThan(0);
+});
+
+/**
+ * Le score global du jour, porté aux trois quarts par la Lune.
+ *
+ * Il doit être présent, stable comme les autres, et rester sous le grand nombre
+ * de l'axe prioritaire : un seul nombre au-dessus de 24 px par écran.
+ */
+test('le jour porte son propre score, sans devenir le grand nombre de l’écran', async ({ page }) => {
+  await premiereVisite(page);
+
+  await expect(page.getByText('LE JOUR')).toBeVisible();
+  const jour = page.getByTestId('overall');
+  await expect(jour).toBeVisible();
+  await expect.poll(async () => Number(await jour.innerText())).toBeGreaterThan(0);
+
+  // Le grand nombre reste celui de l'axe : le score du jour est à 20 px.
+  expect(await grandsNombresVisibles(page)).toBe(1);
+  const taille = await jour.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+  expect(taille).toBeLessThanOrEqual(24);
+
+  // Et la Lune dit ce qu'elle touche, ou dit qu'elle ne touche rien.
+  await expect(page.getByText(/Lune en (conjonction|sextile|carré|trigone|opposition) à|La Lune ne touche aucun point/))
+    .toBeVisible();
+});
+
+test.describe('le score du jour ne bouge pas non plus', () => {
+  test.use({ reducedMotion: 'reduce' });
+
+  test('il vaut la même chose d’un onglet à l’autre et au retour', async ({ page }) => {
+    await premiereVisite(page);
+    const jour = page.getByTestId('overall');
+
+    const aujourdhui = await jour.innerText();
+    await page.getByRole('button', { name: 'DEMAIN', exact: true }).click();
+    const demain = await jour.innerText();
+    await page.getByRole('button', { name: 'AUJOURD’HUI', exact: true }).click();
+    expect(await jour.innerText()).toBe(aujourdhui);
+
+    // Changer d'axe ne touche pas au score du jour : il ne mesure aucun domaine.
+    await page.getByRole('button', { name: /AMOUR/ }).click();
+    expect(await jour.innerText()).toBe(aujourdhui);
+
+    // Et une nouvelle visite retrouve exactement les mêmes valeurs.
+    await page.goto('/');
+    await expect(jour).toBeVisible();
+    expect(await jour.innerText()).toBe(aujourdhui);
+    await page.getByRole('button', { name: 'DEMAIN', exact: true }).click();
+    expect(await jour.innerText()).toBe(demain);
+  });
 });

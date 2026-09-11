@@ -1,9 +1,11 @@
 import type {
-  AspectId, AxisDay, AxisId, AxisReading, DayAspect, NatalChart, PlanetId, PointId, Reading,
+  AspectId, AxisDay, AxisId, AxisReading, DayAspect, LunarDay, NatalChart, PlanetId, PointId,
+  Reading,
 } from './types';
 import type { TransitGrid } from './transits';
 import { AXIS_IDS, AXIS_NATALS, AXIS_TRANSITS, DEFAULT_WINDOW_DAYS, buildTransitGrid, pairKey } from './transits';
 import { type Calibration, applyCalibration, calibrationFor } from './calibration';
+import { effectiveLunarWeights, lunarSeries, overallScore } from './lunar';
 
 /** Poids des planètes en transit, par axe. */
 export const TRANSIT_WEIGHTS: Record<AxisId, Partial<Record<PlanetId, number>>> = {
@@ -354,6 +356,23 @@ export function computeReading(options: ScoreOptions): Reading {
     };
   }
 
+  /*
+   * La journée elle-même. Calculée après les axes parce qu'elle en dépend : le
+   * score global mêle la Lune, qui en porte les trois quarts, à la moyenne des
+   * trois axes déjà calibrés.
+   */
+  const { raw: lunarRaw, perDay: lunarAspects } = lunarSeries(grid, effectiveLunarWeights(reliable));
+  const windowOf = <T,>(series: T[]): T[] => series.slice(grid.pad, grid.pad + grid.days);
+  const lunarScores = applyCalibration(windowOf(smooth(lunarRaw)), calibration.lunar);
+  const lunarWindow = windowOf(lunarAspects);
+
+  const lunar: LunarDay[] = windowOf(grid.dates).map((date, d) => ({
+    day: d, date, score: lunarScores[d], aspects: lunarWindow[d],
+  }));
+
+  const overall = lunar.map((l, d) =>
+    overallScore(l.score, AXIS_IDS.map((axis) => axes[axis].days[d].score)));
+
   return {
     chart,
     startDate,
@@ -361,6 +380,8 @@ export function computeReading(options: ScoreOptions): Reading {
     zone,
     method: calibration.method,
     axes,
+    lunar,
+    overall,
     seasons: grid.seasons.slice(grid.pad, grid.pad + grid.days),
     stats: {
       comparisonsTested: grid.comparisonsTested,

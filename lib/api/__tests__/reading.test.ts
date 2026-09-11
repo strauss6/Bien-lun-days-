@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { comparisonsTested } from '@/lib/astro/transits';
 import { ReadingRequest, buildReading } from '../reading';
 
 const NOMINAL = {
@@ -81,7 +82,10 @@ describe('calcul complet', () => {
     expect(payload.chart.asc).toContain('Verseau');
     expect(payload.chart.utcISO).toBe('1993-08-06T18:40:00.000Z');
     expect(payload.chart.offset).toBe('UTC+2');
-    expect(payload.stats.comparisonsTested).toBe(48 * 5 * 30);
+    // 49 paires uniques × 5 aspects × 30 jours. C'était 48 × 5 × 30 tant que le
+    // compte additionnait les paires par axe sans retirer les doublons, et avant
+    // que la Lune ne vise l'ensemble du thème pour le score global du jour.
+    expect(payload.stats.comparisonsTested).toBe(comparisonsTested(30));
   });
 
   it('porte les jours rares, avec l\'âge à la dernière occurrence', () => {

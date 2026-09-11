@@ -93,10 +93,28 @@ export interface RarePayload {
   firstInLifetime: boolean;
 }
 
+/** Le jour lui-même, porté par la Lune. Voir `lib/astro/lunar.ts`. */
+export interface OverallDay {
+  /** Score global affiché : trois quarts Lune, un quart la moyenne des axes. */
+  score: number;
+  /** Score de la Lune seule, pour qui veut savoir d'où vient le global. */
+  lunar: number;
+  /**
+   * Le contact lunaire le plus fort du jour, en toutes lettres — « Lune en
+   * trigone à ton Soleil ». `null` les jours où la Lune ne touche rien du thème,
+   * et l'interface le dit franchement au lieu d'inventer.
+   */
+  contact: string | null;
+  /** Nombre de points du thème que la Lune touche ce jour-là. */
+  contacts: number;
+}
+
 /** Une journée du rapport, telle que l'interface la reçoit. */
 export interface ReadingDay {
   date: string;
   season: string;
+  /** Le score global du jour et ce qui le porte. */
+  overall: OverallDay;
   axes: Record<AxisId, {
     score: number;
     explaining: ExplainingAspect[];
@@ -155,6 +173,8 @@ export function buildReading(input: ReadingInput): ReadingPayload {
 
   const days = reading.axes.business.days.map((_, i) => {
     const axes = {} as ReadingPayload['days'][number]['axes'];
+    const lune = reading.lunar[i];
+    const contact = lune.aspects[0] ?? null;
     for (const axis of AXIS_IDS) {
       const d = reading.axes[axis].days[i];
       const top = d.explaining[0];
@@ -186,7 +206,17 @@ export function buildReading(input: ReadingInput): ReadingPayload {
         })),
       };
     }
-    return { date: reading.axes.business.days[i].date, season: reading.seasons[i], axes };
+    return {
+      overall: {
+        score: reading.overall[i],
+        lunar: Math.round(lune.score),
+        contact: contact ? transitPhrase(contact.transit, contact.aspect, contact.natal) : null,
+        contacts: lune.aspects.length,
+      },
+      date: reading.axes.business.days[i].date,
+      season: reading.seasons[i],
+      axes,
+    };
   });
 
   return {

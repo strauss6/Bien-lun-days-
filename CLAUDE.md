@@ -40,6 +40,24 @@ Le brief de référence est `BRIEF.md`. En cas de contradiction entre ce fichier
 - **Aucune donnée personnelle dans une adresse.** Ni date, ni heure, ni ville, ni prénom.
 - **Aucun exemple de démonstration présenté comme un résultat personnel.**
 
+## Le score du jour
+
+- **La journée a son propre score, porté aux trois quarts par la Lune.** C'est la seule
+  planète dont le passage se mesure en heures : elle fait le tour du zodiaque en
+  vingt-sept jours et croise l'intégralité du thème chaque mois. Les trois axes mesurent
+  des domaines, portés par des planètes lentes dont un même aspect dure des semaines ; le
+  score du jour mesure la journée.
+- **La Lune est suivie sur les quatorze points natals**, là où chaque axe n'en regarde que
+  quatre. Une journée ne se juge pas sur un domaine.
+- **Le quart restant est la moyenne des trois axes déjà calibrés.** Sans lui, un score
+  global à 20 un jour où les trois axes sont à 85 se lirait comme une panne. Avec lui,
+  l'écart demeure possible — c'est une information, pas un défaut — mais il reste lisible.
+  Le ratio est la constante `LUNAR_SHARE`.
+- **Le score du jour n'est jamais le grand nombre de l'écran.** Le brief du 11 septembre
+  réserve cette place à l'axe prioritaire. Il vit dans la ligne de date, à 20 px.
+- **Ce que la Lune touche s'écrit en toutes lettres**, et les jours où elle ne touche rien
+  du thème, l'interface le dit au lieu de meubler.
+
 ## Scores — stabilité
 
 - **Un même jour porte le même score partout.** Dans la vue du jour, dans les trois jours,
@@ -53,6 +71,8 @@ Le brief de référence est `BRIEF.md`. En cas de contradiction entre ce fichier
   autre méthode se recalcule ; deux méthodes ne se mélangent jamais.
 - **Les deux aspects affichés sont les deux plus forts en valeur absolue**, pas les deux
   plus positifs. Ils ne sont jamais présentés comme la décomposition complète du score.
+- **Le score du jour obéit à la même exigence** : bâti sur deux séries déjà étalonnées, il
+  ne doit rien à la fenêtre affichée, et c'est testé.
 
 ## Moteur astro
 

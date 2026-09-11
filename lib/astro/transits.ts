@@ -29,6 +29,25 @@ export const AXIS_NATALS: Record<AxisId, PointId[]> = {
 };
 
 /**
+ * Points natals que la Lune vient toucher, pour le score global du jour.
+ *
+ * Les quatre points par axe suffisent à mesurer un domaine ; ils ne suffisent
+ * pas à mesurer **une journée**. La Lune fait le tour du zodiaque en 27 jours et
+ * croise donc tout le thème chaque mois : c'est ce qui fait d'elle l'aiguille
+ * des heures du quotidien, et c'est pour ça que le score global la suit sur
+ * l'ensemble du thème et non sur un quart de celui-ci.
+ *
+ * Les axes — Ascendant, Milieu du Ciel, Descendant, Fond du Ciel — n'en font
+ * partie que si l'heure de naissance est connue : sans elle ils ne sont pas
+ * calculables, et `effectiveNatalWeights` les retire.
+ */
+export const LUNAR_NATALS: PointId[] = [
+  'sun', 'moon', 'mercury', 'venus', 'mars',
+  'jupiter', 'saturn', 'uranus', 'neptune', 'pluto',
+  'asc', 'mc', 'dsc', 'ic',
+];
+
+/**
  * Longueur de la fenêtre par défaut.
  *
  * Trente jours : c'est ce que livre le produit aujourd'hui. Le rapport complet à
@@ -48,31 +67,40 @@ export function pairKey(transit: PlanetId, natal: PointId): string {
   return `${transit}|${natal}`;
 }
 
-/** Toutes les paires (transit, point natal) utilisées par au moins un axe. */
+/**
+ * Toutes les paires (transit, point natal) que la grille calcule.
+ *
+ * Les trois axes, plus la Lune sur l'ensemble du thème pour le score global du
+ * jour. Les doublons sont écartés : la Lune sur le Soleil natal sert aux deux,
+ * elle n'est calculée qu'une fois.
+ */
 export function allPairs(): Array<{ transit: PlanetId; natal: PointId }> {
   const seen = new Set<string>();
   const out: Array<{ transit: PlanetId; natal: PointId }> = [];
+  const add = (transit: PlanetId, natal: PointId) => {
+    const key = pairKey(transit, natal);
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push({ transit, natal });
+  };
+
   for (const axis of AXIS_IDS) {
     for (const transit of AXIS_TRANSITS[axis]) {
-      for (const natal of AXIS_NATALS[axis]) {
-        const key = pairKey(transit, natal);
-        if (!seen.has(key)) {
-          seen.add(key);
-          out.push({ transit, natal });
-        }
-      }
+      for (const natal of AXIS_NATALS[axis]) add(transit, natal);
     }
   }
+  for (const natal of LUNAR_NATALS) add('moon', natal);
+
   return out;
 }
 
-/** Nombre de combinaisons réellement testées — le chiffre affiché à l'écran de calcul. */
+/**
+ * Nombre de combinaisons réellement testées — le chiffre affiché à l'écran de
+ * calcul. Dérivé de `allPairs` et non recalculé à part : deux comptes séparés
+ * finiraient par diverger, et celui-ci est montré à l'utilisateur comme un fait.
+ */
 export function comparisonsTested(days: number): number {
-  let pairsPerAxis = 0;
-  for (const axis of AXIS_IDS) {
-    pairsPerAxis += AXIS_TRANSITS[axis].length * AXIS_NATALS[axis].length;
-  }
-  return pairsPerAxis * 5 * days;
+  return allPairs().length * 5 * days;
 }
 
 export interface TransitGrid {

@@ -72,8 +72,34 @@ export function TodayScreen({ payload }: { payload: ReadingPayload }) {
         ))}
       </nav>
 
-      <p className="technical mt-6 text-[15px] font-semibold tracking-[0.02em]">
-        {longDate(day.date).toUpperCase()}
+      {/*
+        La date et le score du jour, sur une ligne.
+        Le score global est porté aux trois quarts par la Lune : c'est la seule
+        planète dont le passage se mesure en heures, donc la seule qui distingue
+        un jeudi d'un vendredi. Il est en encre et non en couleur d'axe — il ne
+        mesure aucun domaine, il mesure la journée. Et il reste sous 24 px : le
+        seul grand nombre de l'écran demeure celui de l'axe prioritaire, comme le
+        demande le brief.
+      */}
+      <div className="technical mt-6 flex items-baseline justify-between gap-4">
+        <p className="text-[15px] font-semibold tracking-[0.02em]">
+          {longDate(day.date).toUpperCase()}
+        </p>
+        <p className="flex items-baseline gap-2">
+          <span className="text-[10px] font-semibold tracking-[0.12em] opacity-40">LE JOUR</span>
+          <span data-testid="overall" className="text-[20px] font-bold tabular-nums tracking-[-0.02em]">
+            {countAt(day.overall.score, progress)}
+          </span>
+        </p>
+      </div>
+
+      {/*
+        Ce que la Lune touche, en toutes lettres. C'est ce qui explique pourquoi
+        un jour se détache de la veille — et les jours où elle ne touche rien du
+        thème, on l'écrit plutôt que de meubler.
+      */}
+      <p className="technical mt-1.5 text-[11px] leading-relaxed opacity-45">
+        {day.overall.contact ?? 'La Lune ne touche aucun point de ton thème aujourd’hui.'}
       </p>
 
       <section className="surface mt-3 p-6" aria-live="polite">

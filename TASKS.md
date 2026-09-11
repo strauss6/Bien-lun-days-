@@ -200,6 +200,11 @@ monétisation et le parcours. Voir l'encadré en tête de `BRIEF.md`.
       Mention « Bêta » près du nom. Aucune pression commerciale, vérifiée par un test sur
       tous les écrans. Les jours rares ne disent plus que ce qui a été calculé.
 
+- [x] **B08 — Le score global du jour, porté par la Lune.** (90 min)
+      Trois quarts Lune sur les quatorze points du thème, un quart la moyenne des axes.
+      Étalonné comme les autres, donc stable d'une vue à l'autre. Compte des combinaisons
+      corrigé au passage. Voir `QUESTIONS.md` Q13.
+
 ## Reste à faire
 
 - [ ] **B07 — Canal de retour.** Bloqué : aucun canal réel n'est configuré. Voir Q10.

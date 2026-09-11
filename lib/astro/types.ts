@@ -126,6 +126,15 @@ export interface AxisReading {
   backdrop: DayAspect | null;
 }
 
+export interface LunarDay {
+  day: number;
+  date: string;
+  /** Score de la Lune seule, sur l'échelle 3–97 du thème. */
+  score: number;
+  /** Tous les contacts de la Lune ce jour-là, du plus fort au plus faible. */
+  aspects: DayAspect[];
+}
+
 export interface Reading {
   chart: NatalChart;
   /** Premier jour de la fenêtre, `YYYY-MM-DD` local. */
@@ -139,6 +148,15 @@ export interface Reading {
    */
   method: string;
   axes: Record<AxisId, AxisReading>;
+  /**
+   * La journée elle-même, portée par la Lune.
+   *
+   * `lunar` est le score de la seule Lune sur l'ensemble du thème ; `overall`
+   * est le score global affiché, où la Lune compte pour trois quarts et la
+   * moyenne des trois axes pour un quart. Voir `lunar.ts`.
+   */
+  lunar: LunarDay[];
+  overall: number[];
   /** Saison traversée par chaque jour — teinte du ruban. */
   seasons: Season[];
   stats: {

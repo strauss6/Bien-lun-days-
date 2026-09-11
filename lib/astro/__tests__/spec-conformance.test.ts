@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AXIS_NATALS, AXIS_TRANSITS, DEFAULT_WINDOW_DAYS, comparisonsTested } from '../transits';
+import { AXIS_NATALS, AXIS_TRANSITS, DEFAULT_WINDOW_DAYS, allPairs, comparisonsTested } from '../transits';
 import { NATAL_WEIGHTS, SCORE_CEILING, SCORE_FLOOR, TRANSIT_WEIGHTS, computeReading } from '../scoring';
 import { referenceChart } from './fixtures';
 
@@ -31,8 +31,18 @@ describe('périmètre des axes, tel que fixé par le brief', () => {
     }
   });
 
-  it('16 couples par axe, 48 en tout', () => {
-    expect(comparisonsTested(1)).toBe(48 * 5);
+  /*
+   * Le compte annoncé à l'écran de calcul était faux, et le test l'entérinait :
+   * il additionnait 16 couples par axe, soit 48, alors que certains couples
+   * servent à deux axes — la Lune sur le Soleil natal compte pour l'amour et
+   * pour l'énergie, et n'est calculée qu'une fois. Depuis l'arrivée du score
+   * global du jour, la Lune vise en plus les quatorze points du thème. Le compte
+   * est maintenant dérivé des paires réellement calculées, sans doublon, et
+   * c'est ce nombre-là qui est montré comme un fait.
+   */
+  it('compte les paires réellement calculées, sans doublon', () => {
+    expect(comparisonsTested(1)).toBe(allPairs().length * 5);
+    expect(new Set(allPairs().map((p) => `${p.transit}|${p.natal}`)).size).toBe(allPairs().length);
   });
 });
 
@@ -45,7 +55,7 @@ describe('la fenêtre est un paramètre de premier plan', () => {
     expect(reading.axes.business.days[0].date).toBe('2026-09-10');
     expect(reading.axes.business.days[29].date).toBe('2026-10-09');
     expect(reading.seasons).toHaveLength(30);
-    expect(reading.stats.comparisonsTested).toBe(48 * 5 * 30);
+    expect(reading.stats.comparisonsTested).toBe(comparisonsTested(30));
   });
 
   it('sait encore produire 90 jours, pour le rapport complet à venir', () => {

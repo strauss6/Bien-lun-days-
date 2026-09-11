@@ -255,3 +255,40 @@ sauterait au 1er janvier et un même jour aurait deux valeurs selon la date de c
 Échelle absolue commune à tout le monde : interdite par le projet, et la moitié des
 rapports seraient plats.
 
+## Q13 — Le score du jour peut contredire les trois axes
+
+**Mesure, sur le thème de référence.** Le 19 septembre 2026 : score du jour **28**, alors
+que Business, Amour et Énergie sont à 86, 84 et 81. La Lune passe en carré à la Lune
+natale ce jour-là. Ce n'est pas un défaut de calcul — c'est exactement ce que le score du
+jour est censé capter : une journée qui détonne à l'intérieur d'une bonne période.
+
+**Le risque produit.** Un utilisateur qui voit 28 en tête et trois axes à 80 peut y lire
+une panne plutôt qu'une nuance. C'est pourquoi la ligne sous le score nomme le contact
+lunaire responsable, en toutes lettres.
+
+**Le réglage, s'il faut l'ajuster.** `LUNAR_SHARE` dans `lib/astro/lunar.ts`, à 0,75
+aujourd'hui — trois quarts Lune, un quart la moyenne des axes. À 0,6, le 19 septembre
+remonterait autour de 39 ; à 0,5, autour de 47. Baisser cette part rapproche le score du
+jour d'une moyenne des axes et lui fait perdre ce qui le rend utile : sa variation
+quotidienne, mesurée à 1,3–1,7 fois celle de l'axe le plus mobile. Changer la valeur
+impose une nouvelle `SCORE_METHOD`, donc un recalcul propre.
+
+**Ce que le fuseau de résidence déplace, mesuré.** Le même 11 septembre, sur le thème de
+référence : score du jour **71** en `Europe/Paris`, **83** en `UTC`. Les axes, eux, ne
+bougent que de quatre dixièmes de point. L'écart n'est pas un défaut — c'est la Lune qui
+avance de treize degrés par jour, et une journée civile décalée d'une heure n'est
+littéralement pas la même journée. La grille l'échantillonne déjà à 0 h, midi et 24 h
+locales, donc le jour est couvert de bout en bout ; c'est bien la fenêtre civile qui se
+déplace, pas la mesure qui tremble. Le stockage en tient compte : un changement de fuseau
+périme le rapport et le fait recalculer.
+
+Ce qu'il faut en retenir : le score du jour est **beaucoup plus sensible au fuseau de
+résidence que les axes**. Le jour où le produit aura des comptes et suivra les gens en
+voyage, c'est le premier endroit où une incohérence apparente sera signalée.
+
+**Un compte faux corrigé au passage.** Le nombre de combinaisons testées affiché à l'écran
+de calcul additionnait les paires axe par axe sans retirer les doublons : la Lune sur le
+Soleil natal était comptée deux fois. Il annonçait 7 200 là où 41 paires étaient
+réellement calculées. Il est maintenant dérivé des paires réelles — 49 depuis que la Lune
+vise tout le thème — et affiche 7 350.
+

@@ -7,7 +7,7 @@ import {
 import { exactness, findAspect } from '../aspects';
 import { computeNatalChart } from '../natal';
 import { resolveBirthInstant } from '../time';
-import { AXIS_IDS } from '../transits';
+import { comparisonsTested, AXIS_IDS } from '../transits';
 import { addCivilDays } from '../zone';
 import { REFERENCE_BIRTH, referenceChart } from './fixtures';
 
@@ -144,8 +144,9 @@ describe('rapport sur 90 jours', () => {
   });
 
   it('annonce le nombre exact de combinaisons testées', () => {
-    // 16 paires par axe, cinq aspects, quatre-vingt-dix jours.
-    expect(reading.stats.comparisonsTested).toBe(48 * 5 * 90);
+    // Les paires réellement calculées, sans doublon entre axes, cinq aspects,
+    // quatre-vingt-dix jours. Voir spec-conformance pour le détail du compte.
+    expect(reading.stats.comparisonsTested).toBe(comparisonsTested(90));
     expect(reading.stats.aspectEvents).toBeGreaterThan(20);
     expect(reading.stats.aspectDays).toBeGreaterThan(reading.stats.aspectEvents);
   });
