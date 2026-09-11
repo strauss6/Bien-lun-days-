@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { AXIS_NATALS, AXIS_TRANSITS, DEFAULT_WINDOW_DAYS, comparisonsTested } from '../transits';
-import { NATAL_WEIGHTS, TRANSIT_WEIGHTS, computeReading } from '../scoring';
+import { NATAL_WEIGHTS, SCORE_CEILING, SCORE_FLOOR, TRANSIT_WEIGHTS, computeReading } from '../scoring';
 import { referenceChart } from './fixtures';
 
 /**
@@ -56,15 +56,34 @@ describe('la fenêtre est un paramètre de premier plan', () => {
     expect(reading.axes.love.days[89].date).toBe('2026-12-08');
   });
 
-  /** La normalisation reste par personne : l'amplitude tient sur 30 jours comme sur 90. */
-  it('garde son amplitude sur une fenêtre courte', () => {
+  /*
+   * L'échelle est celle de la personne, pas celle de la fenêtre.
+   *
+   * Ce test disait l'inverse jusqu'au 11 septembre 2026 : il vérifiait que toute
+   * fenêtre s'étalait exactement sur 94 points, parce que la normalisation était
+   * refaite sur les jours affichés. C'était la cause directe du défaut que la
+   * nouvelle direction produit interdit — un même jour changeait de score selon
+   * la vue, et changeait encore le lendemain. L'attente change donc parce que la
+   * méthode a changé, et le test vérifie maintenant ce qui compte : les bornes
+   * tiennent, et il reste du relief.
+   */
+  it('reste dans ses bornes et garde du relief sur une fenêtre courte', () => {
     for (const days of [14, 30, 90]) {
       const reading = computeReading({
         chart: referenceChart(), zone: 'Europe/Paris', startDate: '2026-09-10', days,
       });
       for (const axis of ['business', 'love', 'energy'] as const) {
         const scores = reading.axes[axis].days.map((d) => d.score);
-        expect(Math.max(...scores) - Math.min(...scores)).toBeCloseTo(94, 5);
+        expect(Math.min(...scores)).toBeGreaterThanOrEqual(SCORE_FLOOR);
+        expect(Math.max(...scores)).toBeLessThanOrEqual(SCORE_CEILING);
+        /*
+         * Mesuré sur dix thèmes et quatre départs : sur trente jours, le relief
+         * médian est de 67 points, le premier décile de 50, le minimum de 9. Sur
+         * quatorze jours il descend plus bas encore — une quinzaine calme est
+         * calme, et le produit doit pouvoir le dire. Le plancher vérifie donc
+         * qu'il reste quelque chose à lire, pas que l'échelle est remplie.
+         */
+        expect(Math.max(...scores) - Math.min(...scores)).toBeGreaterThan(8);
       }
     }
   });

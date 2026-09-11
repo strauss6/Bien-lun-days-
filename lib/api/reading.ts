@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { AxisId } from '@/lib/astro/types';
+import type { AspectId, AxisId, PlanetId, PointId } from '@/lib/astro/types';
 import { formatOffset, resolveBirthInstant } from '@/lib/astro/time';
 import { computeNatalChart, POINT_LABELS } from '@/lib/astro/natal';
 import { computeReading } from '@/lib/astro/scoring';
@@ -9,6 +9,7 @@ import { formatLongitude, formatOrb } from '@/lib/astro/angles';
 import { ASPECT_PLAIN, notation, transitPhrase } from '@/lib/astro/labels';
 import { ASPECTS } from '@/lib/astro/aspects';
 import { buildPhrase, violatesContentRules } from '@/lib/copy/phrase';
+import { continuityClause, continuityOf, type DayContinuity } from '@/lib/copy/continuity';
 import { longitudeOf } from '@/lib/astro/ephemeris';
 import { signOf } from '@/lib/astro/angles';
 import { localNoonInstant } from '@/lib/astro/zone';
@@ -66,10 +67,10 @@ export type ReadingInput = z.infer<typeof ReadingRequest>;
 export interface ExplainingAspect {
   /** Notation technique : « ♃ △ ☉ ». Forme textuelle, pour l'accessibilité et les tests. */
   notation: string;
-  /** Composants de la notation, pour que l'interface dessine le symbole d'aspect. */
-  transit: string;
-  aspect: string;
-  natal: string;
+  /** Composants de l'aspect, typés : l'interface en tire des libellés sûrs. */
+  transit: PlanetId;
+  aspect: AspectId;
+  natal: PointId;
   /** Libellé en clair : « Jupiter en trigone à ton Soleil ». */
   phrase: string;
   /** Traduction de l'aspect, pour son premier emploi dans l'écran. */
@@ -107,6 +108,13 @@ export interface ReadingDay {
     peakSign: number | null;
     /** Phrase du jour, par gabarit déterministe, vérifiée en sortie. */
     phrase: string;
+    /**
+     * Où en est la journée dans son propre mouvement : ce qui commence, dure,
+     * culmine ou se relâche, et l'écart avec la veille. Calculé au serveur pour
+     * que l'interface n'ait rien à déduire — et pour que deux ouvertures du même
+     * jour donnent exactement le même texte.
+     */
+    continuity: DayContinuity;
   }>;
 }
 
@@ -123,6 +131,8 @@ export interface ReadingPayload {
     anomaly: 'dst-gap' | 'dst-ambiguous' | null;
   };
   chart: { sun: string; moon: string; asc: string; mc: string; utcISO: string; offset: string };
+  /** Méthode de score. Un rapport enregistré sous une autre méthode se recalcule. */
+  method: string;
   axisOrder: AxisId[];
   axisLabels: Record<AxisId, string>;
   startDate: string;
@@ -152,12 +162,14 @@ export function buildReading(input: ReadingInput): ReadingPayload {
         phrase: transitPhrase(a.transit, a.aspect, a.natal),
         sign: a.contribution >= 0 ? '+' as const : '−' as const,
       }));
-      const draft = buildPhrase(axis, explaining);
+      const continuity = continuityOf(reading.axes[axis].days, i);
+      const draft = buildPhrase(axis, explaining, continuityClause(continuity));
       // Vérification en sortie, comme l'exige le brief : rien ne sort sans être relu,
       // même un gabarit. Le repli est neutre et ne promet rien.
       const violation = violatesContentRules(axis, draft);
       axes[axis] = {
         score: Math.round(d.score),
+        continuity,
         phrase: violation ? 'Journée sans aspect marquant sur cet axe.' : draft,
         peakSign: top
           ? signOf(longitudeOf(top.transit, new Date(localNoonInstant(zone, d.date))))
@@ -199,6 +211,7 @@ export function buildReading(input: ReadingInput): ReadingPayload {
     },
     // L'axe qui compte pour la personne passe devant : c'est à ça que sert la
     // cinquième question du quiz.
+    method: reading.method,
     axisOrder: [input.priorityAxis, ...AXIS_IDS.filter((a) => a !== input.priorityAxis)],
     axisLabels: AXIS_LABELS,
     startDate: input.startDate,

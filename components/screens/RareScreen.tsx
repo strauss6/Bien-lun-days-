@@ -11,8 +11,15 @@ const longDate = (iso: string) => `${Number(iso.slice(8, 10))} ${MONTHS[Number(i
  * Uniquement les transits classés rares ou au-dessus. La donnée qui vend le
  * produit est ici : la dernière fois que c'est arrivé, traduite en âge.
  *
- * **On ne fabrique jamais de rareté.** Quand rien n'a précédé sur soixante ans de
- * balayage, l'écran l'écrit ; quand la période n'en contient aucun, il le dit.
+ * **On ne fabrique jamais de rareté**, et on ne dit jamais plus que ce qui a été
+ * calculé. Trois formulations, trois faits différents, à ne pas confondre :
+ *
+ * — « Jamais depuis ta naissance » : le balayage a couvert la vie de la personne
+ *   et n'a rien trouvé. Ce n'est pas « cela n'est jamais arrivé » dans l'absolu,
+ *   et l'écran ne le dit pas.
+ * — « La dernière fois, tu avais X ans » : une occurrence a été trouvée et datée.
+ * — Une prochaine occurrence n'est annoncée que si elle a été **calculée**. Hors
+ *   de la portée du balayage, on se tait plutôt que d'extrapoler.
  */
 export function RareScreen({ payload, onBack }: { payload: ReadingPayload; onBack: () => void }) {
   // Les plus rares d'abord, et parmi elles celles qui ont une histoire à raconter.
@@ -37,8 +44,9 @@ export function RareScreen({ payload, onBack }: { payload: ReadingPayload; onBac
 
       {rare.length === 0 ? (
         <p className="reading mt-6">
-          Rien de rare sur ces trente jours. C’est une information : les transits lents ne
-          passent que quelques fois dans une vie, et cette période n’en contient aucun.
+          Aucun aspect rare sur ces trente jours. C’est une information, pas un manque : les
+          planètes lentes ne passent que quelques fois dans une vie, et il n’y en a aucune sur
+          la période étudiée.
         </p>
       ) : null}
 
@@ -53,14 +61,20 @@ export function RareScreen({ payload, onBack }: { payload: ReadingPayload; onBac
             </p>
 
             <p className="reading mt-3 text-[17px] leading-snug">
-              {event.firstInLifetime ? (
-                <>Jamais auparavant. <em>Une seule fois dans une vie.</em></>
-              ) : (
+              {event.previousAge !== null ? (
                 <>
                   La dernière fois, tu avais <strong className="font-medium">{event.previousAge} ans</strong>
                   {event.previousDate ? ` — ${event.previousDate.slice(0, 4)}` : ''}.
                   {event.nextYear ? <> La prochaine, en <strong className="font-medium">{event.nextYear}</strong>.</> : null}
                 </>
+              ) : event.firstInLifetime ? (
+                <>
+                  Jamais depuis ta naissance.
+                  {event.nextYear ? <> La prochaine, en <strong className="font-medium">{event.nextYear}</strong>.</> : null}
+                </>
+              ) : (
+                /* Ni date antérieure, ni balayage concluant : on le dit tel quel. */
+                <>Aucune occurrence antérieure trouvée sur la période balayée.</>
               )}
             </p>
           </li>

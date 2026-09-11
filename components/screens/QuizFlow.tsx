@@ -8,6 +8,7 @@ import {
 } from '@/lib/quiz/steps';
 import type { QuizDraft } from '@/lib/quiz/steps';
 import type { City } from '@/lib/cities/search';
+import { civilDateIn, residentZone } from '@/lib/app/today';
 import type { ReadingInput } from '@/lib/api/reading';
 
 /**
@@ -20,12 +21,32 @@ interface Props {
   onComplete: (request: ReadingInput) => void;
   /** Injectable : la version autonome cherche dans l'index embarqué, sans serveur. */
   search?: (query: string) => Promise<City[]>;
+  /**
+   * Brouillon de départ, quand on vient corriger des données déjà saisies.
+   * Corriger une heure de naissance ne doit pas obliger à tout retaper.
+   */
+  initial?: QuizDraft | null;
 }
 
-export function QuizFlow({ onComplete, search }: Props) {
+export function QuizFlow({ onComplete, search, initial }: Props) {
   const [step, setStep] = useState(0);
   const [draft, setDraft] = useState<QuizDraft>(blankDraft);
   const field = useRef<HTMLInputElement>(null);
+  const touched = useRef(false);
+
+  /*
+   * Le brouillon enregistré arrive après le premier rendu — il vient du stockage
+   * local, qui n'existe pas côté serveur. On monte donc le formulaire tout de
+   * suite, vide, et on le remplit quand il arrive : attendre le stockage pour
+   * afficher quoi que ce soit donnait un écran blanc au chargement, et un premier
+   * contenu affiché à zéro dans la mesure de performance.
+   *
+   * Une seule fois, et jamais après une frappe : personne ne doit voir un champ
+   * changer sous ses doigts.
+   */
+  useEffect(() => {
+    if (initial && !touched.current) setDraft(initial);
+  }, [initial]);
 
   const current = QUIZ_STEPS[step];
   const ready = isStepComplete(current.id, draft);
@@ -41,12 +62,16 @@ export function QuizFlow({ onComplete, search }: Props) {
       setStep((s) => s + 1);
       return;
     }
-    const startDate = new Date().toISOString().slice(0, 10);
-    onComplete(toReadingRequest(draft, startDate));
+    // La fenêtre commence aujourd'hui, dans le fuseau où la personne vit — pas
+    // en UTC, qui aurait un jour d'avance ou de retard selon l'heure et le lieu.
+    const zone = residentZone();
+    onComplete({ ...toReadingRequest(draft, civilDateIn(zone)), zone });
   }
 
-  const set = <K extends keyof QuizDraft>(key: K, value: QuizDraft[K]) =>
+  const set = <K extends keyof QuizDraft>(key: K, value: QuizDraft[K]) => {
+    touched.current = true;
     setDraft((d) => ({ ...d, [key]: value }));
+  };
 
   return (
     <main className="mx-auto flex min-h-dvh max-w-[520px] flex-col px-5 pb-10 pt-7">

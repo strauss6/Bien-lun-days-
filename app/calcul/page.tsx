@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { DRAFT_STORAGE_KEY, RESULT_STORAGE_KEY } from '@/lib/quiz/steps';
-import type { ReadingPayload } from '@/lib/api/reading';
+import { DRAFT_STORAGE_KEY } from '@/lib/quiz/steps';
+import { saveProfile, saveReading } from '@/lib/profile/store';
+import { residentZone } from '@/lib/app/today';
+import type { ReadingInput, ReadingPayload } from '@/lib/api/reading';
 
 const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const longDate = (iso: string) => `${Number(iso.slice(8, 10))} ${MONTHS[Number(iso.slice(5, 7)) - 1]} ${iso.slice(0, 4)}`;
@@ -50,11 +52,18 @@ export default function CalculPage() {
         return body as ReadingPayload;
       })
       .then((result) => {
-        try {
-          sessionStorage.setItem(RESULT_STORAGE_KEY, JSON.stringify(result));
-        } catch {
-          /* navigation privée : la page suivante recalculera */
-        }
+        /*
+         * C'est ici que le profil devient durable. Il est gardé sur l'appareil,
+         * avec le rapport et la date où il commence : la visite de demain
+         * retrouvera le profil sans repasser par le questionnaire, et verra que
+         * le rapport n'est plus celui du jour.
+         */
+        const request = JSON.parse(raw) as ReadingInput;
+        const zone = request.zone ?? residentZone();
+        const { startDate, days, ...profile } = request;
+        void days;
+        saveProfile(profile, zone);
+        saveReading(result, startDate, zone);
         setPayload(result);
       })
       .catch((e: Error) => setError(e.message));
@@ -79,7 +88,9 @@ export default function CalculPage() {
 
   useEffect(() => {
     if (!payload || shown < steps.length) return;
-    const timer = setTimeout(() => router.push('/jours'), 700);
+    // Le calcul finit sur la journée en cours, jamais sur le mois : c'est le
+    // rendez-vous quotidien qui est le produit.
+    const timer = setTimeout(() => router.replace('/'), 700);
     return () => clearTimeout(timer);
   }, [payload, shown, steps.length, router]);
 

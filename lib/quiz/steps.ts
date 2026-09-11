@@ -80,6 +80,31 @@ export function isDraftComplete(draft: QuizDraft, today?: string): boolean {
   return QUIZ_STEPS.every((s) => isStepComplete(s.id, draft, today));
 }
 
+/**
+ * Demande enregistrée → brouillon, pour corriger au lieu de tout ressaisir.
+ *
+ * Le fuseau et la date de départ ne reviennent pas : le premier est relu à
+ * l'ouverture, la seconde est toujours aujourd'hui.
+ */
+export function draftFromRequest(request: ReadingInput): QuizDraft {
+  return {
+    firstName: request.firstName,
+    birthDate: request.birthDate,
+    birthTime: request.birthTime ?? '',
+    timeKnown: request.timeKnown,
+    city: {
+      name: request.city,
+      country: request.country,
+      admin: '',
+      lat: request.lat,
+      lng: request.lng,
+      population: 0,
+      zone: request.zone ?? 'Europe/Paris',
+    },
+    priorityAxis: request.priorityAxis,
+  };
+}
+
 /** Brouillon → demande de calcul. Sans heure connue, le champ part à `null`. */
 export function toReadingRequest(draft: QuizDraft, startDate: string): ReadingInput {
   if (!draft.city || !draft.priorityAxis) throw new Error('Brouillon incomplet.');

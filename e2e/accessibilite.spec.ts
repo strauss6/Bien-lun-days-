@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { allerAuMois, premiereVisite } from './helpers/parcours';
 
 /**
  * Passe d'accessibilité, mesurée.
@@ -31,19 +32,8 @@ async function ciblesTropPetites(page: Page) {
 }
 
 async function allerAuxJours(page: Page) {
-  await page.goto('/quiz');
-  await page.locator('#quiz-firstName').fill('Elioth');
-  await page.getByRole('button', { name: 'Continuer' }).click();
-  await page.locator('#quiz-birthDate').fill('1993-08-06');
-  await page.getByRole('button', { name: 'Continuer' }).click();
-  await page.locator('#quiz-birthTime').fill('20:40');
-  await page.getByRole('button', { name: 'Continuer' }).click();
-  await page.locator('#quiz-city').fill('boulogne-b');
-  await page.getByRole('button', { name: /Boulogne-Billancourt/ }).click();
-  await page.getByRole('button', { name: 'Continuer' }).click();
-  await page.getByRole('button', { name: /Business/ }).click();
-  await page.getByRole('button', { name: 'Calculer mes jours' }).click();
-  await page.waitForURL('**/jours', { timeout: 20000 });
+  await premiereVisite(page);
+  await allerAuMois(page);
 }
 
 for (const chemin of ['/', '/quiz']) {
@@ -52,6 +42,15 @@ for (const chemin of ['/', '/quiz']) {
     expect(await ciblesTropPetites(page)).toEqual([]);
   });
 }
+
+test('toutes les cibles tactiles font 44 px sur la journée et le profil', async ({ page }) => {
+  await premiereVisite(page);
+  expect(await ciblesTropPetites(page)).toEqual([]);
+  await page.getByRole('button', { name: /AMOUR/ }).click();
+  expect(await ciblesTropPetites(page)).toEqual([]);
+  await page.goto('/profil');
+  expect(await ciblesTropPetites(page)).toEqual([]);
+});
 
 test('toutes les cibles tactiles font 44 px sur les trente jours', async ({ page }) => {
   await allerAuxJours(page);

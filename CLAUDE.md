@@ -22,6 +22,38 @@ Le brief de référence est `BRIEF.md`. En cas de contradiction entre ce fichier
 - **Aucune clé d'API en dur.** Tout passe par `.env.local`, qui reste dans `.gitignore`.
 - `.env.example` liste les variables attendues, sans valeur.
 
+## Produit — direction du 11 septembre 2026
+
+- **L'application ouvre toujours sur aujourd'hui.** Peu importe où l'on s'est arrêté la
+  fois précédente. Demain et après-demain sont à un geste ; les trente jours sont une vue
+  secondaire, `/mois`, pleinement accessible. Pas de vue hebdomadaire.
+- **Bêta ouverte, aucune pression commerciale.** Aucun paiement, aucun cadenas, aucun prix,
+  aucun badge premium, aucun essai limité, aucun « Débloquer », aucune annonce de version
+  payante, aucune promesse de gratuité à vie. Ce qui est fait est accessible à tous.
+- **Mention « Bêta » discrète** près du nom, sans couleur d'alerte. Pas de bandeau « en
+  cours de développement », pas de pourcentage, pas d'excuse permanente. Une fonction non
+  prête est **absente** de la navigation, jamais désactivée ni marquée « bientôt ».
+- **Une limite qui affecte un résultat se dit.** Heure de naissance inconnue, donnée
+  manquante, calcul indisponible : c'est écrit, à l'endroit où ça compte.
+- **Une entrée « Donner mon avis » n'existe que si un canal réel est configuré.** On
+  n'invente pas d'adresse et on ne simule jamais un envoi. Voir `QUESTIONS.md` Q10.
+- **Aucune donnée personnelle dans une adresse.** Ni date, ni heure, ni ville, ni prénom.
+- **Aucun exemple de démonstration présenté comme un résultat personnel.**
+
+## Scores — stabilité
+
+- **Un même jour porte le même score partout.** Dans la vue du jour, dans les trois jours,
+  dans le mois, à chaque ouverture, et le lendemain quand la fenêtre a avancé. C'est une
+  exigence, pas une préférence : un score qui bouge selon l'écran cesse d'être une mesure.
+- **L'échelle est celle de la personne, jamais celle de la fenêtre affichée.** Elle est
+  calculée une fois par thème sur une période de référence fixe — voir
+  `lib/astro/calibration.ts`. Corollaire assumé : une période calme reste calme, et le
+  produit le dit au lieu d'étaler de force.
+- **Les résultats sont versionnés** par `SCORE_METHOD`. Un rapport enregistré sous une
+  autre méthode se recalcule ; deux méthodes ne se mélangent jamais.
+- **Les deux aspects affichés sont les deux plus forts en valeur absolue**, pas les deux
+  plus positifs. Ils ne sont jamais présentés comme la décomposition complète du score.
+
 ## Moteur astro
 
 - **`astronomy-engine` uniquement.** Swiss Ephemeris est interdit : licence AGPL ou
@@ -30,7 +62,8 @@ Le brief de référence est `BRIEF.md`. En cas de contradiction entre ce fichier
   sortie déterministe, aucun accès réseau, aucun `Date.now()` implicite.
 - Maisons en **signes entiers**. Placidus n'est pas implémenté.
 - Les scores sont normalisés **sur la distribution propre de la personne**, jamais sur
-  une échelle absolue.
+  une échelle absolue — et jamais sur la fenêtre affichée. Voir la section « Scores —
+  stabilité » ci-dessus.
 
 ## Tests
 

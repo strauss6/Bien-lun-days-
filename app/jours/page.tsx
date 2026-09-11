@@ -1,12 +1,12 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { useRouter } from 'next/navigation';
-import { DaysScreen } from '@/components/screens/DaysScreen';
-import { useStoredReading } from '@/lib/quiz/useStoredReading';
-
+/**
+ * Ancienne adresse des trente jours.
+ *
+ * La vue existe toujours, elle s'appelle `/mois` depuis que le produit s'ouvre
+ * sur la journée. Le renvoi est gardé pour que les liens déjà partagés ne
+ * tombent pas dans le vide.
+ */
 export default function JoursPage() {
-  const router = useRouter();
-  const payload = useStoredReading();
-  if (!payload) return <main className="min-h-dvh" aria-busy="true" />;
-  return <DaysScreen payload={payload} onRare={() => router.push('/rares')} />;
+  redirect('/mois');
 }

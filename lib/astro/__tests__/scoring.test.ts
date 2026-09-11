@@ -122,7 +122,10 @@ describe('heure de naissance inconnue', () => {
     const reading = computeReading({ chart: noon, zone: 'Europe/Paris', startDate: '2026-09-09' });
     for (const axis of AXIS_IDS) {
       const scores = reading.axes[axis].days.map((d) => d.score);
-      expect(Math.max(...scores) - Math.min(...scores)).toBeCloseTo(94, 5);
+      // Depuis que l'échelle est celle de la personne et non celle de la fenêtre,
+      // une fenêtre calme a le droit d'être calme : on vérifie qu'il reste du
+      // relief lisible, plus qu'il est étalé de force sur toute l'échelle.
+      expect(Math.max(...scores) - Math.min(...scores)).toBeGreaterThan(25);
     }
   });
 });
@@ -250,7 +253,9 @@ describe('robustesse sur dix thèmes quelconques', () => {
       }
 
       const scores = days.map((d) => d.score);
-      expect(Math.max(...scores) - Math.min(...scores)).toBeCloseTo(94, 5);
+      expect(Math.min(...scores)).toBeGreaterThanOrEqual(SCORE_FLOOR);
+      expect(Math.max(...scores)).toBeLessThanOrEqual(SCORE_CEILING);
+      expect(Math.max(...scores) - Math.min(...scores)).toBeGreaterThan(8);
     }
   });
 });
@@ -265,17 +270,21 @@ describe('robustesse sur dix thèmes quelconques', () => {
  * Ce qui est garanti : au plus cinq dates, jamais deux fois le même événement,
  * jamais une date sans aspect pour l'expliquer, jamais une date sous le seuil de
  * qualité. Ce qui est seulement mesuré : la part d'axes qui n'atteignent pas
- * cinq dates — 81 % sur 30 jours, 3 % sur 90 — et la part d'axes sans aucune
- * date citable, qui doit rester marginale.
+ * cinq dates — 78 % sur 30 jours, 21 % sur 90 — et la part d'axes sans aucune
+ * date citable : 10 % sur 30 jours, 0,8 % sur 90.
  *
- * Le taux à 90 jours est l'indicateur à surveiller : le paywall à venir promettra
- * cinq dates par axe, et il faudra alors élargir les tables. L'élargissement
- * mesuré ramenait ce taux à 0,55 %. Voir QUESTIONS.md Q3.
+ * **Ces chiffres ont monté le 11 septembre 2026, et c'est voulu.** Tant que
+ * l'échelle était refaite sur la fenêtre affichée, un mois calme était étalé de
+ * force sur 3–97 et produisait mécaniquement ses cinq « meilleurs jours ». Avec
+ * une échelle stable, propre à la personne et indépendante de la fenêtre, un mois
+ * calme reste calme et le produit le dit au lieu de fabriquer des dates. Le
+ * plafond du test suit donc la mesure : il garde le moteur honnête, il ne le
+ * force plus à remplir.
  */
 describe('le nombre de dates citées, garanti et mesuré', () => {
   const starts = Array.from({ length: 4 }, (_, i) => addCivilDays('2026-09-10', i * 90));
 
-  it.each([[30, 0.05], [90, 0.001]])(
+  it.each([[30, 0.15], [90, 0.02]])(
     'sur %i jours : au plus cinq dates, toutes distinctes, justifiées et au-dessus du seuil',
     (days, emptyCeiling) => {
       let total = 0;
@@ -308,9 +317,10 @@ describe('le nombre de dates citées, garanti et mesuré', () => {
       // doit rester rare : au-delà, c'est le seuil ou les tables qu'il faut revoir.
       expect(empty / total).toBeLessThanOrEqual(emptyCeiling);
 
-      // Indicateur, pas garantie : il dit quand les tables devront être élargies
-      // pour que le paywall puisse promettre cinq dates par axe.
-      if (days === 90) expect(short / total).toBeLessThan(0.08);
+      // Indicateur, pas garantie. Mesuré à 17,5 % depuis que l'échelle est
+      // stable, contre 3 % quand elle était refaite sur la fenêtre : la hausse
+      // est l'effet recherché, un axe calme n'est plus rempli de force.
+      if (days === 90) expect(short / total).toBeLessThan(0.25);
     },
   );
 });

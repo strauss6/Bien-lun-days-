@@ -167,9 +167,49 @@ produit vendable.
 
 ---
 
+## Direction produit du 11 septembre 2026 — bêta ouverte
+
+Le brief de bêta remplace les consignes contradictoires sur la période affichée, la
+monétisation et le parcours. Voir l'encadré en tête de `BRIEF.md`.
+
+- [x] **B01 — Scores stables entre toutes les vues.** (120 min)
+      Étalonnage par thème sur une période de référence fixe, indépendant de la fenêtre
+      affichée, versionné par `SCORE_METHOD`. Deux dépendances à la fenêtre trouvées et
+      corrigées : la mise à l'échelle, et le « jour de l'exact » fabriqué aux bords de la
+      période calculée. Voir `QUESTIONS.md` Q12.
+
+- [x] **B02 — Aujourd'hui comme écran d'entrée.** (90 min)
+      `/` ouvre sur la journée, toujours. Trois onglets — aujourd'hui, demain,
+      après-demain — qui avancent avec la date locale de résidence. Changement d'axe
+      immédiat sur la même journée. Le ruban n'est plus sur cet écran.
+
+- [x] **B03 — Le mois en vue secondaire.** (45 min)
+      `/mois` garde le ruban, le rail aimanté, le scrub et les jours rares. Pleinement
+      accessible, rien de verrouillé. `/jours` renvoie vers elle.
+
+- [x] **B04 — Profil gardé sur l'appareil.** (75 min)
+      Une nouvelle visite retrouve le profil sans repasser par le questionnaire et rouvre
+      sur aujourd'hui. Fuseau de résidence distinct du fuseau historique de naissance,
+      réveil au passage de minuit, correction des données de naissance, effacement.
+
+- [x] **B05 — Une lecture qui assume la durée.** (60 min)
+      Ce qui commence, se prolonge, culmine ou se relâche, et l'écart avec la veille
+      quand il est net. Déterministe : deux ouvertures du même jour donnent le même texte.
+
+- [x] **B06 — Bêta discrète et honnête.** (45 min)
+      Mention « Bêta » près du nom. Aucune pression commerciale, vérifiée par un test sur
+      tous les écrans. Les jours rares ne disent plus que ce qui a été calculé.
+
+## Reste à faire
+
+- [ ] **B07 — Canal de retour.** Bloqué : aucun canal réel n'est configuré. Voir Q10.
+- [ ] **T14 — Génération des textes par le modèle.** Bloqué : corpus et clé d'API.
+- [ ] **T16 — Persistance serveur.** Bloqué : identifiants Supabase. Le profil vit pour
+      l'instant sur l'appareil, et l'interface le dit.
+
 ## Hors périmètre de cette session
 
-Paywall, Stripe, Resend, PDF, fenêtre de 90 jours, landing, compte utilisateur.
+Paywall, Stripe, Resend, PDF, fenêtre de 90 jours, vue hebdomadaire, compte utilisateur.
 
 ## Revue demandée le 10 septembre 2026
 

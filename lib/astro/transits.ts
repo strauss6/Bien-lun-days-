@@ -117,7 +117,17 @@ export function buildTransitGrid(options: {
 }): TransitGrid {
   const { chart, zone, startDate } = options;
   const days = options.days ?? DEFAULT_WINDOW_DAYS;
-  const pad = options.pad ?? 1;
+  /*
+   * Deux jours de marge et non un.
+   *
+   * Le lissage porte sur trois jours : avec une marge d'un seul jour, la valeur
+   * lissée du premier jour de la fenêtre lisait le tout premier jour calculé —
+   * celui dont le « jour de l'exact » ne peut pas être déterminé faute de voisin
+   * précédent. Un même jour prenait donc une valeur différente selon la fenêtre
+   * d'où on le regardait. Deux jours de marge éloignent le bord du lissage, et
+   * la valeur d'une date devient enfin indépendante de la fenêtre.
+   */
+  const pad = options.pad ?? 2;
   const spanDays = days + 2 * pad;
   const firstDate = addCivilDays(startDate, -pad);
   const pairs = allPairs();
@@ -182,6 +192,17 @@ export function buildTransitGrid(options: {
       const prev = series[d - 1];
       const next = series[d + 1];
       if (inWindow && (!prev || prev.aspect !== cell.aspect)) aspectEvents += 1;
+      if (d === 0 || d === spanDays - 1) {
+        /*
+         * Aux deux extrémités de la période calculée, on ignore ce que fait
+         * l'orbe de l'autre côté du bord. L'ancien code répondait « oui, c'est
+         * le jour de l'exact » parce qu'un voisin absent compte comme infiniment
+         * loin : il fabriquait une majoration sur chaque bord. Ne pas savoir se
+         * dit « non », pas « oui ».
+         */
+        cell.peaking = false;
+        continue;
+      }
       const beforeOrb = prev && prev.aspect === cell.aspect ? prev.orb : Infinity;
       const afterOrb = next && next.aspect === cell.aspect ? next.orb : Infinity;
       cell.peaking = cell.orb < beforeOrb && cell.orb <= afterOrb;

@@ -1,6 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AppHeader } from '@/components/app/AppHeader';
 import { TideRibbon, type RibbonDay } from '@/components/ribbon/TideRibbon';
 import { AXIS_IDS } from '@/lib/astro/transits';
 import { PEAK_SCORE } from '@/lib/design/ribbon-geometry';
@@ -68,6 +70,11 @@ function useCountUp(): number {
  * par jour. Le second est la manière naturelle de lire sur un téléphone ; le
  * premier est la manière naturelle de chercher. Les deux pilotent le même index,
  * et la pastille ramène à aujourd'hui d'où qu'on soit.
+ *
+ * C'est la **vue secondaire** : elle sert à explorer des tendances et des
+ * périodes remarquables, pas à ouvrir le produit. Elle lit exactement le même
+ * rapport que l'écran du jour — un 20 septembre y vaut le même score que dans la
+ * vue quotidienne, parce que l'échelle ne dépend plus de la fenêtre affichée.
  */
 export function DaysScreen({ payload, onRare }: { payload: ReadingPayload; onRare: () => void }) {
   const [selected, setSelected] = useState(0);
@@ -135,7 +142,15 @@ export function DaysScreen({ payload, onRare }: { payload: ReadingPayload; onRar
 
   return (
     <main className="mx-auto max-w-[520px] px-5 pb-14 pt-6">
-      <div className="surface p-4">
+      <AppHeader
+        action={(
+          <Link href="/" className="technical inline-flex min-h-11 items-center text-[11px] underline underline-offset-4 opacity-50">
+            Aujourd’hui
+          </Link>
+        )}
+      />
+
+      <div className="surface mt-6 p-4">
         <TideRibbon days={days} selected={selected} labels={payload.axisLabels} onScrub={onScrub} />
       </div>
 

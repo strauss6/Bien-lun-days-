@@ -2,11 +2,14 @@
 
 import { useRouter } from 'next/navigation';
 import { RareScreen } from '@/components/screens/RareScreen';
-import { useStoredReading } from '@/lib/quiz/useStoredReading';
+import { ReadingGate } from '@/components/app/ReadingGate';
 
+/** Les jours rares : une lecture du même rapport, jamais un calcul à part. */
 export default function RaresPage() {
   const router = useRouter();
-  const payload = useStoredReading();
-  if (!payload) return <main className="min-h-dvh" aria-busy="true" />;
-  return <RareScreen payload={payload} onBack={() => router.push('/jours')} />;
+  return (
+    <ReadingGate>
+      {(payload) => <RareScreen payload={payload} onBack={() => router.push('/mois')} />}
+    </ReadingGate>
+  );
 }

@@ -1,7 +1,9 @@
 import type {
   AspectId, AxisDay, AxisId, AxisReading, DayAspect, NatalChart, PlanetId, PointId, Reading,
 } from './types';
+import type { TransitGrid } from './transits';
 import { AXIS_IDS, AXIS_NATALS, AXIS_TRANSITS, DEFAULT_WINDOW_DAYS, buildTransitGrid, pairKey } from './transits';
+import { type Calibration, applyCalibration, calibrationFor } from './calibration';
 
 /** Poids des planètes en transit, par axe. */
 export const TRANSIT_WEIGHTS: Record<AxisId, Partial<Record<PlanetId, number>>> = {
@@ -236,12 +238,66 @@ export function eventKeyOf(aspect: DayAspect | null): string | null {
   return aspect ? `${aspect.transit}|${aspect.aspect}|${aspect.natal}` : null;
 }
 
+/**
+ * Série brute d'un axe sur toute la fenêtre élargie de la marge.
+ *
+ * Élargie pour que le lissage ait des voisins réels aux deux bords : sans ça, le
+ * premier et le dernier jour sont moins lissés que les autres et se retrouvent
+ * surreprésentés dans les extrêmes. **Conséquence importante : la valeur lissée
+ * d'un jour ne dépend pas de la fenêtre dans laquelle on le regarde.** C'est ce
+ * qui rend un étalonnage stable possible — seule la mise à l'échelle dépendait
+ * de la fenêtre, et c'est elle que `calibration.ts` fige.
+ *
+ * Extraite de `computeReading` pour que l'étalonnage la réutilise telle quelle :
+ * deux accumulations différentes produiraient deux distributions différentes, et
+ * l'échelle ne mesurerait plus ce qu'elle prétend mesurer.
+ */
+export function accumulate(
+  grid: TransitGrid,
+  axis: AxisId,
+  transitWeights: Partial<Record<PlanetId, number>>,
+  natalWeights: Partial<Record<PointId, number>>,
+): { raw: number[]; rawSelection: number[]; perDay: DayAspect[][] } {
+  const span = grid.days + 2 * grid.pad;
+  const raw = new Array<number>(span).fill(0);
+  const rawSelection = new Array<number>(span).fill(0);
+  const perDay: DayAspect[][] = Array.from({ length: span }, () => []);
+
+  for (const transit of AXIS_TRANSITS[axis]) {
+    const tw = transitWeights[transit];
+    if (!tw) continue;
+    for (const natal of AXIS_NATALS[axis]) {
+      const nw = natalWeights[natal];
+      if (!nw) continue;
+      const series = grid.cells.get(pairKey(transit, natal));
+      if (!series) continue;
+      for (let d = 0; d < span; d += 1) {
+        const cell = series[d];
+        if (!cell) continue;
+        const contribution =
+          tw * nw * polarity(transit, cell.aspect) * cell.exactness * (1 + (cell.peaking ? PEAK_BONUS : 0));
+        raw[d] += contribution;
+        rawSelection[d] += transit === 'moon' ? contribution * MOON_SELECTION_FACTOR : contribution;
+        perDay[d].push({ ...cell, transit, natal, contribution });
+      }
+    }
+  }
+
+  return { raw, rawSelection, perDay };
+}
+
 export interface ScoreOptions {
   chart: NatalChart;
   /** Fuseau de résidence — celui dans lequel « le jour » a un sens pour l'utilisateur. */
   zone: string;
   startDate: string;
   days?: number;
+  /**
+   * Étalonnage des scores. Omis, il est calculé — et mis en cache — à partir du
+   * thème : voir `calibration.ts`. Le passer évite de le recalculer quand
+   * plusieurs fenêtres du même profil sont demandées.
+   */
+  calibration?: Calibration;
 }
 
 export function computeReading(options: ScoreOptions): Reading {
@@ -249,6 +305,7 @@ export function computeReading(options: ScoreOptions): Reading {
   const days = options.days ?? DEFAULT_WINDOW_DAYS;
   const grid = buildTransitGrid({ chart, zone, startDate, days });
   const reliable = chart.anglesReliable;
+  const calibration = options.calibration ?? calibrationFor(chart, zone);
 
   const axes = {} as Record<AxisId, AxisReading>;
 
@@ -256,37 +313,15 @@ export function computeReading(options: ScoreOptions): Reading {
     const transitWeights = effectiveTransitWeights(axis, reliable);
     const natalWeights = effectiveNatalWeights(axis, reliable);
 
-    // Calcul sur la fenêtre élargie de la marge, pour que le lissage ait des
-    // voisins réels aux deux bords. Sans ça, le premier et le dernier jour sont
-    // moins lissés que les autres et se retrouvent surreprésentés dans les extrêmes.
-    const span = grid.days + 2 * grid.pad;
-    const raw = new Array<number>(span).fill(0);
-    const rawSelection = new Array<number>(span).fill(0);
-    const perDay: DayAspect[][] = Array.from({ length: span }, () => []);
+    const { raw, rawSelection, perDay } = accumulate(grid, axis, transitWeights, natalWeights);
 
-    for (const transit of AXIS_TRANSITS[axis]) {
-      const tw = transitWeights[transit];
-      if (!tw) continue;
-      for (const natal of AXIS_NATALS[axis]) {
-        const nw = natalWeights[natal];
-        if (!nw) continue;
-        const series = grid.cells.get(pairKey(transit, natal));
-        if (!series) continue;
-        for (let d = 0; d < span; d += 1) {
-          const cell = series[d];
-          if (!cell) continue;
-          const contribution =
-            tw * nw * polarity(transit, cell.aspect) * cell.exactness * (1 + (cell.peaking ? PEAK_BONUS : 0));
-          raw[d] += contribution;
-          rawSelection[d] += transit === 'moon' ? contribution * MOON_SELECTION_FACTOR : contribution;
-          perDay[d].push({ ...cell, transit, natal, contribution });
-        }
-      }
-    }
 
     const window = <T,>(series: T[]): T[] => series.slice(grid.pad, grid.pad + grid.days);
-    const scores = normalizeSmoothed(window(smooth(raw)));
-    const significance = normalizeSmoothed(window(smooth(rawSelection)));
+    // Mise à l'échelle par l'étalonnage du thème, jamais par la fenêtre : c'est
+    // ce qui garantit qu'un 11 septembre vaut la même chose vu d'aujourd'hui,
+    // vu demain, et vu depuis la vue mensuelle.
+    const scores = applyCalibration(window(smooth(raw)), calibration.axes[axis].score);
+    const significance = applyCalibration(window(smooth(rawSelection)), calibration.axes[axis].selection);
     const rawWindow = window(raw);
     const aspectsWindow = window(perDay);
 
@@ -324,6 +359,7 @@ export function computeReading(options: ScoreOptions): Reading {
     startDate,
     days,
     zone,
+    method: calibration.method,
     axes,
     seasons: grid.seasons.slice(grid.pad, grid.pad + grid.days),
     stats: {

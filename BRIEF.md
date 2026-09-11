@@ -1,3 +1,17 @@
+> **Direction produit révisée le 11 septembre 2026.** Ce qui suit reste la référence
+> pour le moteur, le ton, les contraintes de contenu et la direction artistique. Trois
+> points sont **remplacés** par la nouvelle direction, et c'est elle qui gagne :
+>
+> | Point | Ancien brief | Direction du 11 septembre 2026 |
+> |---|---|---|
+> | Période affichée | trente jours, écran d'entrée | **aujourd'hui**, écran d'entrée ; demain et après-demain à un geste ; les trente jours en vue secondaire, `/mois` |
+> | Monétisation | paywall, rapport long payant | **aucune** — bêta ouverte, tout ce qui est fait est accessible, rien à déverrouiller |
+> | Parcours | questionnaire → ruban trente jours | questionnaire → **journée** ; le profil est gardé sur l'appareil et une nouvelle visite rouvre sur aujourd'hui |
+>
+> S'y ajoute une exigence qui n'existait pas : **un même jour porte le même score dans
+> toutes les vues et d'un jour à l'autre**. Elle a imposé de refaire la mise à l'échelle
+> des scores — voir `lib/astro/calibration.ts` et `QUESTIONS.md` Q12.
+
 # Bien.Luné — Mes meilleurs jours
 
 > Brief de référence, fourni par le commanditaire. En cas de contradiction entre ce

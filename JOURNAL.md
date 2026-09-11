@@ -356,3 +356,37 @@ manquerait à la première requête en production, une panne invisible avant dé
 donc la persistance, donc T16. La route et l'encodage sont complets et testés ; il ne
 manque que l'endroit d'où l'on clique.
 
+## Direction bêta — aujourd'hui d'abord, scores stables
+
+**Fait.** Le produit s'ouvre sur la journée : `/` rend l'écran quotidien, trois onglets
+avancent avec la date locale de résidence, le changement d'axe est immédiat et le ruban a
+déménagé dans `/mois`. Le profil vit sur l'appareil : une nouvelle visite le retrouve,
+rouvre sur aujourd'hui, et l'écran « Mes données » dit franchement qu'il n'y a pas de
+compte et que rien ne suivra sur un autre téléphone. Un réveil est armé sur le prochain
+minuit local. Aucune pression commerciale nulle part, vérifiée par un test qui balaie tous
+les écrans. La lecture du jour dit maintenant ce qui commence, dure, culmine ou se relâche.
+
+**Cassé, réparé.** Le défaut de fond était dans le moteur. L'échelle des scores était
+dérivée de la fenêtre affichée : un même jour changeait de valeur selon la vue, et changeait
+encore le lendemain. Elle est désormais calculée une fois par thème sur 780 jours à partir
+d'une époque fixe. Mais la mise à l'échelle n'était pas la seule coupable : aux deux
+extrémités de la période calculée, un aspect était marqué « jour de l'exact » faute de
+voisin — un voisin absent comptant comme infiniment loin. Cette majoration fabriquée fuyait
+dans la fenêtre par le lissage. Corrigée, et la marge passée de un à deux jours pour que le
+bord ne puisse plus atteindre le premier jour affiché. Un jour vaut maintenant exactement
+la même chose vu de neuf fenêtres différentes, au bit près.
+
+Trois autres défauts trouvés par les tests plutôt que par l'œil. Le nom de marque et
+« Mes données » étaient des cibles tactiles de 36 et 17 px. Le questionnaire attendait le
+stockage local avant d'afficher quoi que ce soit : écran blanc au chargement, et premier
+contenu affiché mesuré à zéro. Et la continuité concluait « ça se relâche » au dernier jour
+de toute fenêtre, faute de lendemain calculé — un texte faux, écrit pour tout le monde le
+même jour.
+
+**Incertain.** L'étalonnage ne voit qu'une configuration de Jupiter et Saturne : un thème
+consulté en 2031 sera mesuré contre une distribution de 2026. C'est assumé et documenté en
+Q12, mais c'est le choix à revoir en premier si les scores paraissent durablement ternes.
+L'index des douze signes a quitté l'accueil — une roue du zodiaque sur le premier écran est
+le signal « horoscope générique » que le produit refuse — et la règle des polylignes est
+désormais vérifiée sur les glyphes du ruban, là où ils servent encore.
+

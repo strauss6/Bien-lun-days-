@@ -132,6 +132,12 @@ export interface Reading {
   startDate: string;
   days: number;
   zone: string;
+  /**
+   * Méthode de score employée. Un résultat enregistré avec une autre méthode se
+   * recalcule au lieu de se mélanger silencieusement à ceux de la méthode
+   * courante. Voir `calibration.ts`.
+   */
+  method: string;
   axes: Record<AxisId, AxisReading>;
   /** Saison traversée par chaque jour — teinte du ruban. */
   seasons: Season[];

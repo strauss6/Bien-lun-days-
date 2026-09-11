@@ -46,7 +46,16 @@ const OPENERS = {
 
 export const MAX_WORDS = 45;
 
-export function buildPhrase(axis: AxisId, aspects: PhraseAspect[]): string {
+export function buildPhrase(
+  axis: AxisId,
+  aspects: PhraseAspect[],
+  /**
+   * Où en est la journée dans son propre mouvement — voir `continuity.ts`.
+   * Absente, la phrase reste celle d'avant : le produit lit encore, il ne
+   * raconte simplement pas la suite.
+   */
+  continuity?: string | null,
+): string {
   if (!aspects.length) {
     return 'Rien de marquant ce jour-là. C’est une journée ordinaire, et c’est une information.';
   }
@@ -60,7 +69,21 @@ export function buildPhrase(axis: AxisId, aspects: PhraseAspect[]): string {
     : (positive ? OPENERS.singleGood : OPENERS.singleBad);
 
   const verdict = positive ? VERDICTS[axis].good : VERDICTS[axis].bad;
-  return `${cited}. ${opener} ${verdict}`;
+
+  /*
+   * Quarante-cinq mots, budget de densité. La clause de continuité est ce que
+   * la nouvelle direction produit demande d'ajouter — « ça dure depuis quatre
+   * jours » vaut mieux qu'une fausse nouveauté — mais elle ne peut pas faire
+   * déborder l'écran. Quand il faut couper, c'est l'ouverture qui saute : elle
+   * commente la forme, la continuité apporte un fait.
+   */
+  const full = continuity
+    ? `${cited}. ${opener} ${continuity} ${verdict}`
+    : `${cited}. ${opener} ${verdict}`;
+  if (wordCount(full) <= MAX_WORDS) return full;
+
+  const trimmed = continuity ? `${cited}. ${continuity} ${verdict}` : `${cited}. ${verdict}`;
+  return wordCount(trimmed) <= MAX_WORDS ? trimmed : `${cited}. ${verdict}`;
 }
 
 export function wordCount(text: string): number {

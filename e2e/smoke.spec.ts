@@ -13,18 +13,24 @@ test('la page se charge sur mobile, sans débordement horizontal', async ({ page
   expect(overflow).toBeLessThanOrEqual(1);
 });
 
-test('les douze glyphes sont des tracés SVG, pas une police de symboles', async ({ page }) => {
-  await page.goto('/');
+/*
+ * La règle des polylignes, vérifiée jusque dans le DOM rendu.
+ *
+ * Elle l'était sur l'index des douze signes de l'ancien accueil. Cet index a
+ * disparu avec la nouvelle direction produit — une roue du zodiaque sur le
+ * premier écran est le signal « horoscope générique » que le produit refuse. Les
+ * glyphes, eux, sont restés là où ils servent de repère : sur les pics du ruban.
+ * Le test les y suit. Les douze tracés eux-mêmes restent couverts par
+ * `lib/design/__tests__/zodiac-paths.test.ts`.
+ */
+test('les glyphes du ruban sont des tracés SVG, pas une police de symboles', async ({ page }) => {
+  await page.goto('/demo/ruban');
 
-  const glyphs = page.locator('ul[aria-label] svg');
-  await expect(glyphs).toHaveCount(12);
-
-  // Règle de design vérifiée jusque dans le DOM rendu : aucune courbe.
-  const commands = await glyphs.locator('path').evaluateAll(
-    (paths) => paths.map((p) => p.getAttribute('d') ?? ''),
+  const commands = await page.locator('main svg path').evaluateAll(
+    (paths) => paths.map((p) => p.getAttribute('d') ?? '').filter(Boolean),
   );
-  expect(commands.length).toBeGreaterThan(20);
-  for (const d of commands) expect(d).not.toMatch(/[CcSsQqTt]/);
+  expect(commands.length).toBeGreaterThan(0);
+  for (const d of commands) expect(d).not.toMatch(/[CcSsQqTtAa]/);
 });
 
 test('l\'API rend un rapport complet à partir des données de naissance', async ({ request }) => {

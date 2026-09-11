@@ -208,3 +208,50 @@ sont passés en **gras** : c'est le poids qui les fait entrer dans la catégorie
 texte » de la norme, donc dans le seuil que la teinte vive tient. Ils ont ainsi la couleur
 vive eux aussi — c'était le 51 brun qui avait ouvert la question.
 
+## Q10 — « Donner mon avis » : aucun canal configuré
+
+Le brief de bêta demande une entrée discrète pour recueillir les retours, **uniquement si
+un canal réel existe**. Il n'y en a pas : ni adresse de courriel de projet, ni formulaire,
+ni salon. Inventer une adresse ou simuler un envoi serait le pire des deux mondes — un
+utilisateur qui écrit dans le vide et un produit qui ment.
+
+L'entrée est donc **absente**, conformément à la règle « une fonction non prête reste
+absente de la navigation ». À configurer pour l'activer : une adresse de réception, ou un
+formulaire hébergé. Une ligne dans `AppHeader` suffira ensuite.
+
+## Q11 — `lib/quiz/useStoredReading.ts` n'est plus appelé
+
+Le nouveau parcours lit le rapport par `lib/profile/useReading.ts`, qui gère le fuseau de
+résidence, le passage de minuit et la péremption par méthode de score. L'ancien crochet,
+qui lisait `sessionStorage` sans rien de tout ça, n'a plus d'appelant.
+
+Il n'est **pas supprimé** : la suppression d'un fichier existant fait partie de ce qui ne
+se décide pas seul. À confirmer, puis à retirer en une ligne.
+
+## Q12 — L'échelle des scores : période de référence fixe
+
+**Le défaut.** L'échelle était dérivée de la fenêtre affichée — médiane, écart et bornes
+calculés sur les jours qu'on regardait. Un même jour changeait donc de score selon la vue,
+et changeait encore le lendemain, la fenêtre ayant glissé d'un cran. Pour un produit qu'on
+ouvre chaque matin, c'est disqualifiant.
+
+**Ce qui a été retenu.** Une échelle par thème, calculée sur **780 jours à partir d'une
+époque fixe** — un cycle synodique de Mars complet, pour que l'axe Énergie ne soit pas
+étalonné sur une demi-révolution de sa planète dominante. Bornes aux centiles 2 et 98, et
+non aux extrêmes, sans quoi deux ans de valeurs aberrantes écraseraient le ruban. Coût :
+250 ms par thème, une fois, mis en cache.
+
+**Ce que ce choix coûte, et qui doit être su.** Jupiter et Saturne ne bouclent pas en 780
+jours : l'étalonnage ne voit qu'une de leurs configurations. Quelqu'un qui traversera en
+2031 un carré durable de Saturne verra ses scores Business durablement bas, mesurés contre
+une distribution de 2026. C'est assumé — une période difficile *est* une période difficile,
+et c'est ce qui permet de dire « ça dure » au lieu d'inventer une nouveauté chaque matin.
+Si cela devait changer, ce serait une nouvelle valeur de `SCORE_METHOD`, donc un recalcul
+propre, jamais un mélange.
+
+**Autres options, écartées.** Étalonner sur la vie entière : trop cher et dominé par des
+transits qui n'arrivent qu'une fois. Étalonner sur l'année civile en cours : l'échelle
+sauterait au 1er janvier et un même jour aurait deux valeurs selon la date de consultation.
+Échelle absolue commune à tout le monde : interdite par le projet, et la moitié des
+rapports seraient plats.
+
