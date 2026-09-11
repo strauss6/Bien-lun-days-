@@ -327,3 +327,32 @@ l'extrémité lumineuse de leurs dégradés. Ils restent séparés par la teinte
 rouille contre magenta, et par le tracé — pile de tirets contre double filet. À revoir si
 quelqu'un confond les deux bandes sur un vrai téléphone.
 
+## T15 — L'image de partage
+
+**Fait.** Route `GET /api/partage` qui rend un PNG de 1200 × 630 : le ruban, un prénom, la
+marque. `next/og` est fourni par Next, donc aucune dépendance ajoutée. Le ruban est produit
+par `ribbon-svg.ts`, qui appelle **les mêmes fonctions de géométrie que l'écran** — un test
+compare abscisse par abscisse les marques du SVG à celles que `bandMarks` calcule, donc une
+correction d'un côté ne peut plus manquer de l'autre.
+
+L'adresse ne porte **que ce qui se dessine** : les trente hauteurs de barres et les saisons,
+99 octets, 132 caractères de base64url. Recalculer le ruban depuis la date, l'heure et la
+ville aurait été plus court à écrire et aurait fait de chaque lien partagé une fuite de
+données intimes — une adresse d'image circule dans des fils de discussion, des historiques,
+des aperçus de messagerie.
+
+**Cassé, réparé.** Trois choses, toutes vues à l'image et non au test. Le bandeau de saison
+sortait **vert printemps** sur un ruban de septembre : l'encodeur remplaçait silencieusement
+une saison absente par la première de la liste. Il lève maintenant une erreur, et un test
+couvre exactement ce cas. Le ruban était **décentré** dans un cadre symétrique, parce que la
+gouttière réservée aux noms d'axes restait vide : le `viewBox` cadre désormais sur la seule
+zone de tracé — une fenêtre différente, pas une géométrie différente, et le test des
+abscisses le prouve. Enfin la police : Satori n'a ni `next/font` ni navigateur, il lui faut
+des octets. Geist Mono est versionnée dans `assets/fonts`, sous licence SIL Open Font avec
+la licence qui l'accompagne, et déclarée dans `outputFileTracingIncludes` — sans quoi elle
+manquerait à la première requête en production, une panne invisible avant déploiement.
+
+**Reste.** Le bouton qui mène à l'image n'existe pas : il faut une adresse partageable,
+donc la persistance, donc T16. La route et l'encodage sont complets et testés ; il ne
+manque que l'endroit d'où l'on clique.
+

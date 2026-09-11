@@ -156,7 +156,7 @@ produit vendable.
       *Fini quand* : un test injecte une sortie contenant un terme médical et vérifie que
       l'utilisateur reçoit le gabarit à la place.
 
-- [ ] **T15 — Image de partage.** (60 min)
+- [x] **T15 — Image de partage.** (60 min)
       `@vercel/og` réutilisant la géométrie du ruban : une seule source de vérité entre
       l'écran et le PNG. Prénom et marque, rien d'autre.
 
