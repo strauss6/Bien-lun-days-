@@ -21,6 +21,39 @@ import { loadProfile, loadReading, saveReading } from './store';
  * prochain minuit local, et la journée change sans rechargement.
  */
 
+/**
+ * D'où vient le calcul.
+ *
+ * Par défaut, la route serveur. La page autonome — celle qu'on ouvre sur un
+ * téléphone sans rien déployer — remplace cette source par un calcul local :
+ * c'est exactement le même moteur, appelé depuis le navigateur au lieu de
+ * l'être depuis le serveur. Une seule couture, déclarée, plutôt qu'une copie du
+ * crochet qui divergerait au premier changement.
+ */
+export type ReadingSource = (
+  request: Record<string, unknown>,
+  today: string,
+  zone: string,
+) => Promise<ReadingPayload>;
+
+const parLeServeur: ReadingSource = async (request, today, zone) => {
+  const r = await fetch('/api/reading', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ ...request, startDate: today, zone }),
+  });
+  const body = await r.json();
+  if (!r.ok) throw new Error(body.error ?? 'Le calcul a échoué.');
+  return body as ReadingPayload;
+};
+
+let source: ReadingSource = parLeServeur;
+
+/** Remplace la source de calcul. Appelé une fois, au démarrage de la page autonome. */
+export function setReadingSource(fn: ReadingSource): void {
+  source = fn;
+}
+
 export type ReadingState =
   | { status: 'chargement' }
   | { status: 'sans-profil' }
@@ -60,16 +93,7 @@ export function useReading(): ReadingState & { refresh: () => void } {
     setState({ status: 'calcul' });
     let annulé = false;
 
-    fetch('/api/reading', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ...profile.request, startDate: today, zone }),
-    })
-      .then(async (r) => {
-        const body = await r.json();
-        if (!r.ok) throw new Error(body.error ?? 'Le calcul a échoué.');
-        return body as ReadingPayload;
-      })
+    source(profile.request as unknown as Record<string, unknown>, today, zone)
       .then((payload) => {
         if (annulé) return;
         saveReading(payload, today, zone);

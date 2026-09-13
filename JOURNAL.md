@@ -484,3 +484,32 @@ troisième fois qu'il y revient, et le moteur ne la connaît pas. Et le sexe se 
 planètes — Vénus pour la séduction, Mars pour le physique — distinction que les trois axes
 actuels ne savent pas porter.
 
+## La page autonome remise au niveau du produit
+
+**Fait.** La version autonome — celle qu'on ouvre sur un téléphone sans rien déployer — était
+restée sur l'ancien parcours : questionnaire, puis les trente jours. Elle suit maintenant le
+produit : aujourd'hui d'abord, les trois onglets, le score du jour, le mois en vue
+secondaire, les jours rares, mes données, et le profil gardé sur l'appareil. Elle emploie
+**les mêmes écrans** que la version servie, pas des copies.
+
+Deux coutures, toutes deux déclarées. `setReadingSource` remplace l'appel à la route serveur
+par un calcul local — même moteur, appelé depuis le navigateur. Et un routeur minimal à
+fragment d'adresse remplace `next/link` et `next/navigation` à la construction, ce qui fait
+marcher le bouton retour du téléphone, la première chose qu'on essaie sur mobile.
+
+**Cassé, réparé.** Rien n'était visiblement cassé, et c'est justement le problème qu'on a
+évité : la construction réussissait toujours, mais les écrans partagés importaient le
+routeur de Next, absent de cette page. Les alias de construction règlent le cas au lieu de
+le laisser exploser au premier clic.
+
+**Vérifié.** Parcours complet piloté au navigateur sur le fichier construit : questionnaire,
+calcul, les trois jours, changement d'axe, mois, jours rares, rechargement — le profil est
+retrouvé et la page rouvre sur aujourd'hui — et bouton retour. Aucune erreur JavaScript. Le
+score du jour bouge de 53 à 34 à 45 sur trois jours pendant que l'axe Business reste à
+73, 73, 76 : c'est le comportement recherché, visible à l'œil.
+
+**Incertain.** Les polices viennent de Google Fonts, donc la page a besoin du réseau pour
+avoir sa typographie — le texte reste lisible sans, sur la pile de repli. Une version
+vraiment hors-ligne demanderait de les embarquer en base64, ce qui doublerait le poids du
+fichier.
+

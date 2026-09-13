@@ -22,6 +22,11 @@ const css = join(work, 'bundle.css');
 execFileSync('npx', [
   'esbuild', 'standalone/main.tsx', '--bundle', '--minify', '--format=iife',
   '--target=es2020', '--loader:.json=json', '--jsx=automatic', '--alias:@=.',
+  // Les écrans partagés importent le routeur de Next. Il n'existe pas ici : on
+  // le remplace par un routeur minimal à fragment d'adresse, pour que les
+  // composants testés soient **les mêmes** que ceux qui sont servis.
+  '--alias:next/link=./standalone/router.tsx',
+  '--alias:next/navigation=./standalone/router.tsx',
   `--outfile=${js}`,
 ], { stdio: 'inherit' });
 
