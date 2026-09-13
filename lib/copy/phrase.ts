@@ -139,10 +139,45 @@ export const FORBIDDEN_PHRASES = [
   'vibrations', 'le destin', 'les planètes te',
 ];
 
+/**
+ * Le vocabulaire de la mort, interdit sur **tous** les axes.
+ *
+ * Le rédacteur du corpus a donné de Pluton une lecture exacte en astrologie et
+ * inacceptable dans un produit : « si tu as un aspect difficile de Pluton et que
+ * tu as 95 ans, tu risques d'y passer ». Sa formule utile est juste à côté —
+ * « mourir et renaître », « la fin d'un chapitre, le début d'un autre » — et
+ * c'est celle-là qu'on garde, au sens figuré seulement.
+ *
+ * Un produit grand public qui annonce une échéance vitale à quelqu'un sur la foi
+ * d'un thème astral, c'est le pire que ce projet puisse produire. Le filtre est
+ * donc global, pas réservé à l'axe Énergie.
+ *
+ * Recherche par **frontière de mot** et non par sous-chaîne : « amortir »,
+ * « immortel » et « mortier » contiennent tous « mort », et les interdire
+ * appauvrirait la langue sans rien protéger.
+ */
+export const MORTALITY_TERMS = [
+  'mort', 'morte', 'morts', 'mourir', 'meurt', 'mourrez', 'mourras',
+  'décès', 'décéder', 'décède', 'mortel', 'mortelle', 'funérailles',
+  'enterrement', 'obsèques', 'agonie', 'trépas',
+];
+
+const MORTALITY_RE = new RegExp(`\\b(${MORTALITY_TERMS.join('|')})\\b`, 'i');
+
+/** Expressions de fin de vie, qui échappent au mot isolé. */
+export const MORTALITY_PHRASES = [
+  'fin de vie', 'espérance de vie', 'y passer', 'dernier souffle', 'tes derniers',
+];
+
 export function violatesContentRules(axis: AxisId, text: string): string | null {
   const lower = text.toLowerCase();
   for (const term of FORBIDDEN_PHRASES) {
     if (lower.includes(term)) return `formule de voyance : « ${term} »`;
+  }
+  const mortel = MORTALITY_RE.exec(lower);
+  if (mortel) return `vocabulaire de la mort : « ${mortel[1]} »`;
+  for (const term of MORTALITY_PHRASES) {
+    if (lower.includes(term)) return `annonce de fin de vie : « ${term} »`;
   }
   if (axis === 'energy') {
     for (const term of MEDICAL_TERMS) {

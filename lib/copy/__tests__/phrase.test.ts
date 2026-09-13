@@ -137,3 +137,49 @@ describe('budget de densité, phrase et traduction ensemble', () => {
     expect(phrase.length).toBeGreaterThan(60);
   });
 });
+
+/**
+ * Le produit n'annonce jamais une échéance vitale.
+ *
+ * Le rédacteur du corpus a donné de Pluton une lecture exacte en astrologie et
+ * inacceptable ici : « si tu as un aspect difficile de Pluton et que tu as 95
+ * ans, tu risques d'y passer ». Sa formule utile est juste à côté — mourir et
+ * renaître, la fin d'un chapitre — et c'est elle qu'on garde, au figuré.
+ *
+ * Le filtre est global, pas réservé à l'axe Énergie : c'est la chose la plus
+ * grave que ce produit puisse dire à quelqu'un.
+ */
+describe('vocabulaire de la mort', () => {
+  it('refuse l’annonce, sur tous les axes', () => {
+    const interdits = [
+      'À 95 ans, un tel aspect peut annoncer la mort.',
+      'Tu risques d’y passer cette année.',
+      'Une période de fin de vie s’ouvre.',
+      'Ce transit peut faire mourir un proche.',
+      'Un aspect mortel sur ton Soleil.',
+    ];
+    for (const axis of ['business', 'love', 'energy'] as const) {
+      for (const texte of interdits) {
+        expect(violatesContentRules(axis, texte), `${axis} : ${texte}`).not.toBeNull();
+      }
+    }
+  });
+
+  /*
+   * Frontière de mot, et non sous-chaîne : « amortir », « immortel » et
+   * « mortier » contiennent tous « mort ». Les interdire appauvrirait la langue
+   * sans rien protéger, et « la fin d'un chapitre » est la formulation qu'on veut
+   * précisément pouvoir écrire.
+   */
+  it('laisse passer le figuré et les mots qui contiennent la chaîne', () => {
+    const permis = [
+      'La fin d’un chapitre, le début d’un autre.',
+      'Ce que tu construis va amortir le choc.',
+      'Une transformation sans retour possible.',
+      'Un souvenir immortel.',
+    ];
+    for (const texte of permis) {
+      expect(violatesContentRules('business', texte), texte).toBeNull();
+    }
+  });
+});

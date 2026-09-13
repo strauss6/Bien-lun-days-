@@ -10,10 +10,11 @@ import type { AspectId, AxisId, PlanetId, PointId } from '../astro/types';
  * feuilles à partir des briques et d'exemples rédigés en entier, et le rédacteur
  * corrige au lieu d'écrire.
  *
- * **Première livraison du rédacteur : 13 septembre 2026.** Les briques marquées
- * d'un `✳` dans leur commentaire portent sa matière ; les autres restent des
- * amorces de travail en attendant la suite. Il a répondu à bien plus que les dix
- * demandées — dix-neuf des trente-deux sont renseignées.
+ * **Corpus complet : les trente-deux briques portent la matière du rédacteur.**
+ * Deux livraisons, les 13 septembre 2026 — dix briques demandées, dix-neuf
+ * rendues — et le lendemain, les mots-clés de chaque planète, qui ont fermé les
+ * treize dernières. Chaque brique porte un `✳` et, quand la source mérite d'être
+ * citée, la phrase d'origine.
  *
  * Trois consignes de ton en sont ressorties, et elles valent pour tout le corpus.
  *
@@ -28,6 +29,16 @@ import type { AspectId, AxisId, PlanetId, PointId } from '../astro/types';
  * **Un bon aspect ne promet rien tout seul.** « Si on ne fait rien et qu'on reste
  * chez soi, il ne se passera rien de spécial. » Les briques favorables demandent
  * d'agir, elles n'annoncent pas un résultat.
+ *
+ * **Deux choses ont été écartées de la matière fournie**, et c'est le même
+ * réflexe dans les deux cas : ce qui est exact en astrologie n'est pas toujours
+ * publiable. Le rôle de Mars en astrologie médicale — les défenses de l'organisme
+ * — parce que l'axe Énergie ne parle jamais de santé. Et la lecture littérale de
+ * Pluton selon l'âge, parce qu'un produit grand public n'annonce pas une échéance
+ * vitale à quelqu'un sur la foi d'un thème astral. Sa formule utile pour Pluton
+ * était juste à côté — « mourir et renaître », « la fin d'un chapitre » — et c'est
+ * celle-là qui est retenue, au figuré seulement. Un filtre global refuse désormais
+ * le vocabulaire de la mort sur **tous** les axes, pas seulement sur l'Énergie.
  */
 
 export interface Block<K extends string> {
@@ -40,28 +51,35 @@ export interface Block<K extends string> {
 }
 
 export const TRANSIT_BLOCKS: Array<Block<PlanetId>> = [
-  { key: 'sun', label: 'Soleil en transit', prompt: 'Que met en lumière le Soleil quand il passe sur un point du thème ?', draft: 'Met en lumière. Ce qui était latent devient visible, pour une journée.' },
+  // ✳ Rédacteur : la vie, tout simplement.
+  { key: 'sun', label: 'Soleil en transit', prompt: 'Que met en lumière le Soleil quand il passe sur un point du thème ?', draft: 'Il met en lumière. Le Soleil, c\'est la vie : là où il passe, ce qui était latent devient visible, le temps d\'une journée.' },
   // ✳ Rédacteur, 13 septembre 2026.
   { key: 'moon', label: 'Lune en transit', prompt: 'Que fait la Lune, qui repasse chaque mois ?', draft: 'Elle touche l\'émotionnel, et ne reste que deux jours dans un signe : rien de ce qu\'elle apporte ne dure. En aspect difficile, on se méfie, on cherche midi à quatorze heures. En bon aspect, on se sent mieux, et l\'élan vient de là.' },
   // ✳ Rédacteur : c'est Mercure qui fait signer, pas Vénus.
-  { key: 'mercury', label: 'Mercure en transit', prompt: 'Que déclenche Mercure ?', draft: 'C\'est le mental et le mouvement. Il gouverne les contrats, les arrangements, les signatures — et les déplacements. C\'est lui qu\'on regarde avant de conclure quelque chose.' },
+  { key: 'mercury', label: 'Mercure en transit', prompt: 'Que déclenche Mercure ?', draft: 'C\'est la communication avant tout, donc le rapport aux autres. Il gouverne les contrats, les arrangements, les signatures — et les déplacements. C\'est lui qu\'on regarde avant de conclure.' },
   // ✳ Rédacteur : Vénus n'est pas la planète qui fait signer — c'est Mercure.
   // Elle gouverne le sentimental et l'amical, pas la conclusion d'un accord.
-  { key: 'venus', label: 'Vénus en transit', prompt: 'Que fait Vénus quand elle touche un point du thème ?', draft: 'Elle adoucit le relationnel — l\'amour, mais l\'amitié aussi, qui est une forme d\'amour. En bon aspect, tu passes de bons moments avec les gens qui comptent. En aspect difficile, tu es plus vite contrarié sur ce terrain-là.' },
+  { key: 'venus', label: 'Vénus en transit', prompt: 'Que fait Vénus quand elle touche un point du thème ?', draft: 'Elle adoucit tout le relationnel — l\'amour, l\'amitié, la famille — et les plaisirs : la table, la séduction. En bon aspect, tu passes de bons moments avec les gens qui comptent. En aspect difficile, tu es plus vite contrarié là-dessus.' },
   // ✳ Rédacteur. Sa matière comprenait le rôle de Mars en astrologie médicale :
   // **écartée**, l'axe Énergie ne parle jamais de santé.
-  { key: 'mars', label: 'Mars en transit', prompt: 'Que fait Mars ?', draft: 'Il donne l\'énergie et le courage de se battre. En bon aspect, on gagne ce qu\'on engage. Il met en mouvement avec friction : rien ne se fait sans pousser.' },
+  { key: 'mars', label: 'Mars en transit', prompt: 'Que fait Mars ?', draft: 'C\'est l\'action : entrer en action, se battre. Il donne l\'énergie et le courage, et il met en mouvement avec friction. En bon aspect, on gagne ce qu\'on engage ; rien ne se fait sans pousser.' },
   // ✳ Rédacteur.
   { key: 'jupiter', label: 'Jupiter en transit', prompt: 'Que fait Jupiter, qui revient tous les douze ans ?', draft: 'Il apporte la chance et les occasions à saisir. C\'est la planète du business et de l\'argent : ce qu\'on entreprend prend de l\'ampleur. Ce qu\'on néglige aussi.' },
   // ✳ Rédacteur : Chronos, le dieu du temps. Et surtout — les blocages se
   // débloquent. « L'aspect montre qu'il y a difficulté ; à nous de la vaincre. »
-  { key: 'saturn', label: 'Saturne en transit', prompt: 'Que fait Saturne, en bien comme en mal ?', draft: 'C\'est le temps. Il construit quand il aide, il retarde quand il contrarie. Un aspect difficile de Saturne annonce un blocage, pas une impasse : il montre où est la résistance, à toi de la lever.' },
+  { key: 'saturn', label: 'Saturne en transit', prompt: 'Que fait Saturne, en bien comme en mal ?', draft: 'C\'est le temps, donc les obstacles et les retards. Il est carré : en bon aspect, c\'est ce qui rend son travail très constructif. Un aspect difficile annonce un blocage, pas une impasse — il montre où est la résistance, à toi de la lever.' },
   // ✳ Rédacteur : le tournant. En maison 10 on change de travail, en maison 7
   // d'associé — ou de conjoint.
-  { key: 'uranus', label: 'Uranus en transit', prompt: 'Que fait Uranus, une fois par vie sur un point donné ?', draft: 'Il gère les tournants. Ce qui vient n\'était pas au programme, et on ne revient pas en arrière. C\'est aussi l\'indépendance : ce qui enfermait cesse de tenir.' },
+  { key: 'uranus', label: 'Uranus en transit', prompt: 'Que fait Uranus, une fois par vie sur un point donné ?', draft: 'Il gère les tournants. C\'est l\'exact inverse de Saturne : rien de carré, la liberté et l\'émancipation. Ce qui vient n\'était pas au programme, ce qui enfermait cesse de tenir, et on ne revient pas en arrière.' },
   // ✳ Rédacteur : l'instinct.
-  { key: 'neptune', label: 'Neptune en transit', prompt: 'Que fait Neptune ?', draft: 'Il parle à l\'instinct. Les contours se dissolvent : on sent avant de comprendre. Il inspire ou il brouille, rarement les deux à la fois.' },
-  { key: 'pluto', label: 'Pluton en transit', prompt: 'Que fait Pluton, qui ne passe qu\'une fois ?', draft: 'Transforme sans retour possible. On ne remet pas les choses comme avant.' },
+  { key: 'neptune', label: 'Neptune en transit', prompt: 'Que fait Neptune ?', draft: 'Il parle à l\'instinct et au rêve. Les contours se dissolvent : on sent avant de comprendre, et c\'est de là que vient l\'inspiration. Il inspire ou il brouille, rarement les deux à la fois.' },
+  /*
+   * ✳ Rédacteur : « mourir et renaître ». Sa formule, et elle est bonne — mais
+   * **au figuré seulement**. Sa matière comprenait aussi une lecture littérale
+   * selon l'âge de la personne : **écartée**, et un filtre global refuse désormais
+   * le vocabulaire de la mort sur tous les axes.
+   */
+  { key: 'pluto', label: 'Pluton en transit', prompt: 'Que fait Pluton, qui ne passe qu\'une fois ?', draft: 'Il transforme sans retour possible. C\'est la fin d\'un chapitre et le début d\'un autre : quelque chose s\'achève, et on ne remet pas les choses comme avant.' },
 ];
 
 export const ASPECT_BLOCKS: Array<Block<AspectId>> = [
@@ -86,22 +104,36 @@ export const NATAL_BLOCKS: Array<Block<PointId>> = [
   // ✳ Rédacteur : le mental, les contrats, le déplacement.
   { key: 'mercury', label: 'Mercure natal', prompt: 'Que représente Mercure natal ?', draft: 'Ton mental : ta façon de penser, de parler, de t\'arranger. C\'est aussi ce qui gouverne tes contrats et tes déplacements.' },
   // ✳ Rédacteur : l'accord avec les autres, amoureux comme amical.
-  { key: 'venus', label: 'Vénus natale', prompt: 'Que représente Vénus natale ?', draft: 'L\'accord avec ceux qui t\'entourent, qu\'il s\'agisse de liens amoureux ou d\'amitiés. C\'est le point dont on préfère qu\'il soit bien aspecté.' },
+  { key: 'venus', label: 'Vénus natale', prompt: 'Que représente Vénus natale ?', draft: 'L\'accord avec ceux qui t\'entourent — amoureux, amical, familial — et ton rapport au plaisir : la table, la séduction. C\'est le point dont on préfère qu\'il soit bien aspecté.' },
   // ✳ Rédacteur. Le versant médical de Mars, fourni, est **écarté** du produit.
-  { key: 'mars', label: 'Mars natal', prompt: 'Que représente Mars natal ?', draft: 'Ton énergie et ton courage — ta façon d\'aller au combat. Bien aspecté, tu gagnes ce que tu engages. Durement aspecté, tu te bats quand même, plus longtemps.' },
+  { key: 'mars', label: 'Mars natal', prompt: 'Que représente Mars natal ?', draft: 'Ton énergie et ton courage — ta façon d\'entrer en action et d\'aller au combat, le versant physique de toi. Bien aspecté, tu gagnes ce que tu engages. Durement aspecté, tu te bats plus longtemps.' },
   // ✳ Rédacteur : la chance, la réussite, l'argent.
   { key: 'jupiter', label: 'Jupiter natal', prompt: 'Que représente Jupiter natal ?', draft: 'Là où la chance te sourit et où tu vas de l\'avant. C\'est aussi l\'argent et la réussite. Et l\'endroit où tu en fais trop.' },
   // ✳ Rédacteur : le pragmatisme et la construction.
   { key: 'saturn', label: 'Saturne natal', prompt: 'Que représente Saturne natal ?', draft: 'Ta façon de voir les choses de manière carrée, et ce que tu construis dans la durée. Bien aspecté, tu bâtis ; durement aspecté, tu bâtis quand même, mais contre plus de résistance.' },
   // ✳ Rédacteur : liberté, indépendance — et les nouvelles technologies.
-  { key: 'uranus', label: 'Uranus natal', prompt: 'Que représente Uranus natal ?', draft: 'Ton besoin de liberté et d\'indépendance. Tu supportes mal les cadres trop rigides. C\'est aussi ce qui te tourne vers l\'informatique et les technologies.' },
+  /*
+   * ✳ Rédacteur : liberté, émancipation, et l'inventeur — « beaucoup de gens qui
+   * ont déposé des brevets ont un Uranus important ». L'électricité, l'informatique,
+   * et l'astrologie elle-même.
+   */
+  { key: 'uranus', label: 'Uranus natal', prompt: 'Que représente Uranus natal ?', draft: 'Ton besoin de liberté et d\'émancipation : tu supportes mal les cadres rigides. C\'est aussi le point de l\'inventeur — ce qui tourne vers les sciences, l\'informatique, tout ce qui n\'existait pas avant.' },
   // ✳ Rédacteur : l'instinct.
-  { key: 'neptune', label: 'Neptune natal', prompt: 'Que représente Neptune natal ?', draft: 'Ton instinct. Ce que tu perçois avant de pouvoir l\'expliquer — et, quand il est mal aspecté, ce que tu prends pour une intuition sans en être une.' },
-  { key: 'pluto', label: 'Pluton natal', prompt: 'Que représente Pluton natal ?', draft: 'Ta capacité à repartir de zéro.' },
-  { key: 'asc', label: 'Ascendant', prompt: 'Que touche-t-on en touchant l\'Ascendant ?', draft: 'Ton allure, ta façon d\'entrer dans une pièce, le corps.' },
-  { key: 'mc', label: 'Milieu du Ciel', prompt: 'Que représente le Milieu du Ciel ?', draft: 'Ta carrière, ta réputation, ce pour quoi on te connaît.' },
-  { key: 'dsc', label: 'Descendant', prompt: 'Que représente le Descendant ?', draft: 'L\'autre : associé, conjoint, partie adverse. Tout ce qui se signe à deux.' },
-  { key: 'ic', label: 'Fond du Ciel', prompt: 'Que représente le Fond du Ciel ?', draft: 'Ta base, ta famille, ce d\'où tu viens.' },
+  // ✳ Rédacteur : l'instinct et le rêve. « Les artistes qui peignent un beau
+  // tableau ont un Neptune important. »
+  { key: 'neptune', label: 'Neptune natal', prompt: 'Que représente Neptune natal ?', draft: 'Ton instinct et ton rêve — ce que tu perçois avant de pouvoir l\'expliquer, et d\'où vient ce que tu crées. Mal aspecté, c\'est ce que tu prends pour une intuition sans en être une.' },
+  // ✳ Rédacteur : mourir et renaître — au figuré, et seulement au figuré.
+  { key: 'pluto', label: 'Pluton natal', prompt: 'Que représente Pluton natal ?', draft: 'Ta capacité à repartir de zéro. C\'est le point qui sait finir un chapitre pour en ouvrir un autre, et se transformer au lieu de s\'accrocher.' },
+  // ✳ Rédacteur, via la maison 1. C'est aussi là que se lit une planète
+  // dominante : collée à l'Ascendant, elle colore toute la personne.
+  { key: 'asc', label: 'Ascendant', prompt: 'Que touche-t-on en touchant l\'Ascendant ?', draft: 'Ton allure et ta façon d\'entrer dans une pièce. C\'est aussi l\'endroit le plus révélateur du thème : une planète posée dessus colore toute la personne.' },
+  // ✳ Rédacteur, via la maison 10 — l'une des quatre maisons importantes.
+  { key: 'mc', label: 'Milieu du Ciel', prompt: 'Que représente le Milieu du Ciel ?', draft: 'Le boulot, et la réputation qui va avec. C\'est ce pour quoi on te connaît, et l\'endroit du thème où se lisent les changements de métier.' },
+  // ✳ Rédacteur, via la maison 7 : « les associés, les partenaires, tout contrat
+  // signé avec quelqu'un d'autre ». Il la tient pour aussi importante que la 10.
+  { key: 'dsc', label: 'Descendant', prompt: 'Que représente le Descendant ?', draft: 'L\'autre : l\'associé, le partenaire, le conjoint. Tout ce qui se signe à deux passe par là, dans le travail comme ailleurs.' },
+  // ✳ Rédacteur, via la maison 4 : la famille, le domicile, tout bien immobilier.
+  { key: 'ic', label: 'Fond du Ciel', prompt: 'Que représente le Fond du Ciel ?', draft: 'Ta base : la famille, le domicile, ce que tu possèdes en murs. C\'est d\'où tu viens, et ce sur quoi tu t\'appuies.' },
 ];
 
 export const AXIS_BLOCKS: Array<Block<AxisId>> = [

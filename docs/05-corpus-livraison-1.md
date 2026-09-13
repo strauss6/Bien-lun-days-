@@ -1,8 +1,8 @@
-# Corpus — première livraison du rédacteur
+# Corpus — livraisons du rédacteur
 
-**13 septembre 2026.** Note vocale, transcrite. Dix briques avaient été demandées ; la
-réponse en couvre **dix-neuf sur trente-deux**, plus une quantité de matière qui ne rentre
-dans aucune brique et qui est consignée ici pour la suite.
+**13 et 14 septembre 2026.** Deux notes vocales, transcrites. Dix briques avaient été
+demandées ; les deux réponses couvrent **les trente-deux**, plus une quantité de matière
+qui ne rentre dans aucune brique et qui est consignée ici pour la suite.
 
 Ce fichier est la source. Ce qui est déjà employé vit dans `lib/copy/blocks.ts`,
 `lib/astro/labels.ts` et `lib/copy/phrase.ts`.
@@ -40,11 +40,24 @@ traitait comme deux nuances du même registre.
 
 ## Ce qui a été écarté, et pourquoi
 
-Le rédacteur a donné, pour Mars, sa signification en astrologie médicale : les défenses de
-l'organisme face à la maladie. **Écarté.** L'axe Énergie ne parle jamais de santé — c'est
-une règle non négociable du projet, le filtre de sortie l'arrêterait, et un test vérifie
-qu'aucune brique de Mars ni de l'axe Énergie ne contient de terme médical. Mars reste
-l'énergie, le courage et le combat.
+Deux fois, et c'est le même réflexe : **ce qui est exact en astrologie n'est pas toujours
+publiable.**
+
+**Mars en astrologie médicale** — les défenses de l'organisme face à la maladie. Écarté :
+l'axe Énergie ne parle jamais de santé. Un test vérifie qu'aucune brique de Mars ni de
+l'axe Énergie ne contient de terme médical. Mars reste l'énergie, le courage et le combat.
+
+**Pluton lu littéralement selon l'âge.** Sa phrase : « si tu as un mauvais aspect de Pluton
+et que tu as 20 ans, c'est pas pareil que si tu en as 95 — là tu risques d'y passer. »
+C'est de l'astrologie courante et c'est la chose la plus grave que ce produit puisse dire à
+quelqu'un. Écartée sans discussion.
+
+Sa formule utile était juste à côté, et c'est elle qui est retenue : **« mourir et
+renaître »**, « la fin d'un chapitre, le début d'un autre » — **au figuré seulement**. Un
+filtre global refuse désormais le vocabulaire de la mort sur **tous** les axes, pas
+seulement sur l'Énergie : `mort`, `mourir`, `décès`, `mortel`, `fin de vie`, `y passer` et
+une douzaine d'autres. La recherche se fait par frontière de mot — « amortir », « immortel »
+et « mortier » contiennent tous « mort » et restent permis.
 
 ## Validation indépendante du score du jour
 
@@ -96,13 +109,33 @@ ou de la maison 4, ou près du Soleil ou de la Lune**. Elle colore toute la pers
 Exemple donné : un Uranus dominant, c'est quelqu'un qui aime sa liberté et qu'il ne faut
 pas enfermer dans un cadre rigide.
 
-### Ce que gouverne chaque planète, en un mot
+### Ce que gouverne chaque planète
 
-Soleil, la vie et la lumière. Lune, l'émotionnel, la mer, les femmes. Mercure, le mental,
-les contrats, les déplacements. Vénus, le sentimental et l'amical. Mars, l'énergie, le
-courage, le combat. Jupiter, la chance, l'argent, la réussite. Saturne, le temps, le
-pragmatisme, ce qui se construit. Uranus, la liberté, les tournants, les technologies.
-Neptune, l'instinct. Pluton, les transformations sans retour.
+Livraison du 14 septembre, mot pour mot ou presque. Tout est passé dans les briques.
+
+| Planète | Ce qu'elle gouverne |
+|---|---|
+| **Soleil** | la vie, tout simplement |
+| **Lune** | la sensibilité, l'émotion |
+| **Mercure** | la communication avant tout, donc le rapport aux autres |
+| **Vénus** | l'amitié, l'amour, l'affectif avec **toute** personne, famille comprise — et les plaisirs : la table, la séduction |
+| **Mars** | l'action, entrer en action, se battre — et le versant physique |
+| **Jupiter** | la chance, le succès, la réussite |
+| **Saturne** | les obstacles, le temps donc les retards ; en bon aspect, très constructif, « c'est carré » |
+| **Uranus** | l'exact inverse de Saturne : la liberté, l'émancipation, l'inventeur, l'électricité, l'informatique — **et l'astrologie elle-même** |
+| **Neptune** | l'instinct, le rêve, le côté artistique |
+| **Pluton** | mourir et renaître — la fin d'un chapitre, le début d'un autre |
+
+Deux précisions de méthode qui valent plus que les mots-clés eux-mêmes.
+
+**« Uranus important »**, c'est une planète **dominante** : collée au Soleil, à
+l'Ascendant, ou sur un angle. Le rédacteur donne son propre thème en exemple — Uranus collé
+au Soleil à sa naissance, et il fait de l'astrologie. C'est la notion de planète dominante
+déjà relevée plus haut, et elle reste non implémentée.
+
+**Le sexe se lit sur deux planètes**, pas une : Vénus pour la séduction, Mars pour le
+physique. C'est le genre de distinction que le produit ne sait pas encore faire — il ne
+connaît pas de domaine « séduction » séparé de l'axe Amour.
 
 ### L'erreur du débutant
 
