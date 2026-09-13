@@ -208,10 +208,11 @@ monétisation et le parcours. Voir l'encadré en tête de `BRIEF.md`.
 ## Reste à faire
 
 - [ ] **B07 — Canal de retour.** Bloqué : aucun canal réel n'est configuré. Voir Q10.
-- [ ] **T14 — Génération des textes par le modèle.** Bloqué sur la clé d'API seule : le
-      corpus a reçu sa première livraison le 13 septembre, dix-neuf briques sur trente-deux
-      sont renseignées. Restent : Soleil et Pluton en transit, Ascendant, Milieu du Ciel,
-      Descendant, Fond du Ciel et Pluton natals.
+- [ ] **T14 — Génération des textes par le modèle.** **Le corpus est complet** : les
+      trente-deux briques portent la matière du rédacteur, livrée les 13 et 14 septembre.
+      La couche de génération, son cache et son repli sur gabarit se construisent et se
+      testent sans clé ; la clé n'est nécessaire que pour générer réellement les 465
+      textes. Modèle retenu : `claude-opus-5`.
 - [ ] **B09 — Contexte de vie au questionnaire.** En couple ou non, en poste ou en
       recherche. Change la consigne de l'axe Amour et de l'axe Business à calcul identique.
       Arbitrage à rendre : deux écrans de plus sur cinq. Voir `QUESTIONS.md` Q14.

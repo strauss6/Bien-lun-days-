@@ -446,3 +446,24 @@ qu'il tient pour centraux, ne sont pas implémentés. Et sa palette de saisons p
 en blanc là où la nôtre le met en bleu : trois saisons sur quatre concordent, la quatrième
 attend un arbitrage — Q16.
 
+## Corpus complet, et un filtre que le produit n'avait pas
+
+**Fait.** Deuxième livraison du rédacteur — les mots-clés de chaque planète — qui ferme les
+treize briques restées en amorce. **Les trente-deux sont écrites.** Mercure devient la
+communication avant tout, Vénus gagne les plaisirs et la famille, Mars le versant physique,
+Saturne son « c'est carré », Uranus l'inventeur et l'informatique, Neptune le rêve. Les
+quatre axes du thème sont écrits depuis les maisons correspondantes données la veille.
+
+**Cassé, réparé.** Rien n'était cassé : quelque chose manquait. Le rédacteur a donné de
+Pluton une lecture exacte en astrologie et impubliable — une échéance vitale selon l'âge de
+la personne. Un filtre global refuse maintenant le vocabulaire de la mort sur tous les axes,
+et non sur le seul axe Énergie. Recherche par frontière de mot : « amortir », « immortel »
+et « mortier » contiennent tous « mort » et restent permis, « la fin d'un chapitre » aussi
+— c'est précisément la formulation qu'on veut pouvoir écrire.
+
+**Incertain.** Deux notions de méthode sont consignées sans être implémentées. « Uranus
+important » désigne une **planète dominante**, collée au Soleil ou à un angle : c'est la
+troisième fois qu'il y revient, et le moteur ne la connaît pas. Et le sexe se lit sur deux
+planètes — Vénus pour la séduction, Mars pour le physique — distinction que les trois axes
+actuels ne savent pas porter.
+
