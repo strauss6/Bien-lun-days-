@@ -43,11 +43,27 @@ export function notation(transit: PlanetId, aspect: AspectId, natal: PointId): s
  * Le brief interdit qu'un terme technique apparaisse seul la première fois. Une
  * fois traduit, il peut être employé seul — c'est ce qui permet d'avoir l'air
  * savant sans être compliqué.
+ *
+ * **Rédigé par le rédacteur du corpus, le 13 septembre 2026.** Trois corrections
+ * en sont sorties, et aucune n'est cosmétique.
+ *
+ * Le carré et l'opposition ne disent pas la même chose : le carré est un
+ * **blocage** — il montre où est la difficulté —, l'opposition est un **doute**,
+ * on est face à deux choix et on hésite. Les confondre sous « aspect difficile »
+ * perdait la moitié de l'information.
+ *
+ * Le trigone et le sextile ne promettent rien tout seuls : « si on ne fait rien
+ * et qu'on reste chez soi, il ne se passera rien de spécial ». La traduction le
+ * dit, sinon le produit promet des résultats qu'il ne peut pas tenir.
+ *
+ * Et on écrit **difficile**, jamais mauvais. C'est une consigne de ton explicite,
+ * et elle tient tout le positionnement : un aspect dur montre la difficulté, il
+ * ne la rend pas insurmontable.
  */
 export const ASPECT_PLAIN: Record<AspectId, string> = {
-  conjunction: 'la planète arrive dessus, à 0°',
-  sextile: 'un angle de 60°, une occasion qui demande d\'être saisie',
-  square: 'un angle de 90°, une résistance qui force à trancher',
-  trine: 'un angle de 120°, les choses passent sans effort',
-  opposition: 'un angle de 180°, un face-à-face avec quelqu\'un ou quelque chose',
+  conjunction: 'la planète arrive dessus, à 0° : elle prend le point en charge',
+  sextile: 'un angle de 60°, favorable — mais rien ne se fait si tu ne fais rien',
+  square: 'un angle de 90°, un blocage : il montre où est la difficulté',
+  trine: 'un angle de 120°, le vent en poupe — encore faut-il sortir de chez soi',
+  opposition: 'un angle de 180°, pile en face : un doute, deux choix, une hésitation',
 };

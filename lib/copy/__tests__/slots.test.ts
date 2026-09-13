@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { allSlots, slotCounts, slotKey, LONG_TARGETS } from '../slots';
 import { blockCount, ASPECT_BLOCKS, NATAL_BLOCKS, TRANSIT_BLOCKS, AXIS_BLOCKS } from '../blocks';
+import { violatesContentRules } from '../phrase';
 import { selectExemplars } from '../exemplars';
 import { AXIS_IDS, AXIS_NATALS, AXIS_TRANSITS } from '../../astro/transits';
 import { ASPECT_IDS } from '../../astro/aspects';
@@ -85,5 +86,51 @@ describe('choix des exemples', () => {
   it('couvre la majorité des couples planète × aspect possibles', () => {
     const pairs = new Set(exemplars.map((s) => `${s.transit}|${s.aspect}`));
     expect(pairs.size).toBeGreaterThanOrEqual(45);
+  });
+});
+
+/**
+ * Ce que le corpus n'a pas le droit de contenir.
+ *
+ * Le rédacteur a fourni, pour Mars, sa signification en astrologie médicale : les
+ * défenses de l'organisme face à la maladie. C'est peut-être exact et c'est sans
+ * emploi ici — la règle interdit à l'axe Énergie de parler de santé, et une
+ * brique est une définition qui finira dans un texte affiché. Le filtre de sortie
+ * l'arrêterait, mais mieux vaut qu'il n'ait rien à arrêter.
+ */
+describe('le corpus respecte les règles de contenu', () => {
+  const toutes = [...TRANSIT_BLOCKS, ...ASPECT_BLOCKS, ...NATAL_BLOCKS, ...AXIS_BLOCKS];
+
+  it('ne fait jamais parler l’axe Énergie ni Mars de santé', () => {
+    for (const b of toutes) {
+      if (b.key !== 'energy' && b.key !== 'mars') continue;
+      expect(violatesContentRules('energy', b.draft), `${b.label} : ${b.draft}`).toBeNull();
+    }
+  });
+
+  it('n’emploie aucune formule de voyance, nulle part', () => {
+    for (const b of toutes) {
+      expect(violatesContentRules('business', b.draft), b.label).toBeNull();
+    }
+  });
+
+  /*
+   * Consigne de ton du rédacteur : « j'aime pas dire pas bon, on dit plutôt
+   * difficile ». Et rien n'est une fatalité : « l'aspect montre qu'il y a
+   * difficulté ; à nous de la vaincre ».
+   */
+  it('dit « difficile », jamais « mauvais », et ne condamne rien', () => {
+    for (const b of toutes) {
+      const texte = b.draft.toLowerCase();
+      for (const mot of ['mauvais', 'néfaste', 'funeste', 'insurmontable', 'irrémédiable']) {
+        expect(texte, b.label).not.toContain(mot);
+      }
+    }
+  });
+
+  it('reste court : une brique tient en quarante mots', () => {
+    for (const b of toutes) {
+      expect(b.draft.trim().split(/\s+/).length, b.label).toBeLessThanOrEqual(45);
+    }
   });
 });

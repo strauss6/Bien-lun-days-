@@ -142,6 +142,17 @@ une commande en échec.
   **point natal** — « trigone à ton Soleil », jamais « trigone au Lion ».
 - Un terme technique n'apparaît jamais seul à sa première occurrence : il est suivi
   une fois de sa traduction en clair, puis peut être employé seul.
+- **On écrit « difficile », jamais « mauvais ».** Consigne du rédacteur du corpus, du
+  13 septembre 2026. Interdits en sortie comme dans les briques : « mauvais », « néfaste »,
+  « funeste », « insurmontable », « irrémédiable ». Vérifié par un test.
+- **Rien n'est une fatalité.** Un aspect difficile montre **où** est la résistance ; il ne
+  condamne pas la journée. « L'aspect montre qu'il y a une difficulté ; à nous de la
+  vaincre. » Et un bon aspect ailleurs compense un aspect lent difficile : le problème
+  demeure, mais il se résout. Aucun texte n'annonce de catastrophe ni ne conseille de
+  renoncer — au pire, de redoubler de vigilance ou d'attendre.
+- **Un bon aspect ne promet aucun résultat.** « Si on ne fait rien et qu'on reste chez soi,
+  il ne se passera rien de spécial. » Un verdict favorable demande d'agir ; il n'annonce
+  pas ce qui va arriver.
 - Pied de page obligatoire : `Bien.Luné propose une lecture astrologique à visée de
   divertissement et de réflexion personnelle.`
 

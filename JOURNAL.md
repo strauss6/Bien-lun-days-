@@ -416,3 +416,33 @@ ligne de contact lunaire est là pour l'expliquer, et `LUNAR_SHARE` est le régl
 direction produit veut adoucir. Il est aussi bien plus sensible au fuseau de résidence que
 les axes : 71 à Paris contre 83 en UTC pour la même date. Tout est en Q13.
 
+## Corpus — première livraison
+
+**Fait.** Dix briques avaient été demandées, dix-neuf sur trente-deux sont revenues, plus
+une quantité de matière consignée dans `docs/05-corpus-livraison-1.md`. Trois consignes de
+ton en sont tirées et inscrites dans les règles permanentes : on écrit « difficile » et
+jamais « mauvais » ; rien n'est une fatalité ; un bon aspect ne promet aucun résultat tout
+seul. Les trois sont vérifiées par des tests sur le corpus et sur les phrases produites.
+
+**Cassé, réparé.** Deux erreurs du produit corrigées par le rédacteur. Vénus « rendait la
+négociation facile et le prix acceptable » : faux, c'est Mercure qui gouverne les contrats
+et les signatures ; Vénus, c'est le sentimental et l'amical. Et le carré et l'opposition
+étaient traités comme deux nuances d'« aspect difficile » alors qu'ils disent deux choses
+distinctes — le carré est un blocage, l'opposition est un doute entre deux choix. Un test
+recopiait par ailleurs les verdicts mot pour mot : il tombait à chaque livraison alors que
+rien n'était cassé, il vérifie maintenant l'invariant.
+
+Deux défauts de ma propre rédaction attrapés par les tests que je venais d'écrire : une
+brique à 52 mots pour un budget de 45, et le mot « insurmontable » dans la brique du carré.
+
+**Écarté.** Le rôle de Mars en astrologie médicale, fourni spontanément. L'axe Énergie ne
+parle jamais de santé ; un test vérifie désormais qu'aucune brique de Mars ni de l'axe
+Énergie ne contient de terme médical.
+
+**Incertain.** Le contexte de vie change la consigne — en couple ou seul, ce n'est pas le
+même conseil pour le même calcul — et le produit ne le connaît pas : la brique Amour dit
+les deux cas et s'en trouve diluée. Q14. Les maîtres de maison et la planète dominante,
+qu'il tient pour centraux, ne sont pas implémentés. Et sa palette de saisons place l'hiver
+en blanc là où la nôtre le met en bleu : trois saisons sur quatre concordent, la quatrième
+attend un arbitrage — Q16.
+

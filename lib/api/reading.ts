@@ -8,7 +8,7 @@ import { AXIS_IDS, AXIS_LABELS } from '@/lib/astro/transits';
 import { formatLongitude, formatOrb } from '@/lib/astro/angles';
 import { ASPECT_PLAIN, notation, transitPhrase } from '@/lib/astro/labels';
 import { ASPECTS } from '@/lib/astro/aspects';
-import { buildPhrase, violatesContentRules } from '@/lib/copy/phrase';
+import { buildPhrase, violatesContentRules, wordCount } from '@/lib/copy/phrase';
 import { continuityClause, continuityOf, type DayContinuity } from '@/lib/copy/continuity';
 import { longitudeOf } from '@/lib/astro/ephemeris';
 import { signOf } from '@/lib/astro/angles';
@@ -183,7 +183,15 @@ export function buildReading(input: ReadingInput): ReadingPayload {
         sign: a.contribution >= 0 ? '+' as const : '−' as const,
       }));
       const continuity = continuityOf(reading.axes[axis].days, i);
-      const draft = buildPhrase(axis, explaining, continuityClause(continuity));
+      /*
+       * La traduction de l'aspect s'affiche dans le même bloc que la phrase, donc
+       * elle mange le même budget de quarante-cinq mots. On la réserve ici plutôt
+       * que de laisser chacun compter de son côté — l'écran est passé à
+       * quarante-six mots le jour où le rédacteur a livré des traductions plus
+       * longues, sans qu'aucun des deux soit fautif.
+       */
+      const reserve = top ? wordCount(ASPECT_PLAIN[top.aspect]) + 2 : 0;
+      const draft = buildPhrase(axis, explaining, continuityClause(continuity), reserve);
       // Vérification en sortie, comme l'exige le brief : rien ne sort sans être relu,
       // même un gabarit. Le repli est neutre et ne promet rien.
       const violation = violatesContentRules(axis, draft);

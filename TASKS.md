@@ -208,7 +208,19 @@ monétisation et le parcours. Voir l'encadré en tête de `BRIEF.md`.
 ## Reste à faire
 
 - [ ] **B07 — Canal de retour.** Bloqué : aucun canal réel n'est configuré. Voir Q10.
-- [ ] **T14 — Génération des textes par le modèle.** Bloqué : corpus et clé d'API.
+- [ ] **T14 — Génération des textes par le modèle.** Bloqué sur la clé d'API seule : le
+      corpus a reçu sa première livraison le 13 septembre, dix-neuf briques sur trente-deux
+      sont renseignées. Restent : Soleil et Pluton en transit, Ascendant, Milieu du Ciel,
+      Descendant, Fond du Ciel et Pluton natals.
+- [ ] **B09 — Contexte de vie au questionnaire.** En couple ou non, en poste ou en
+      recherche. Change la consigne de l'axe Amour et de l'axe Business à calcul identique.
+      Arbitrage à rendre : deux écrans de plus sur cinq. Voir `QUESTIONS.md` Q14.
+- [ ] **B10 — Comparaison de deux thèmes.** Trois choses à faire, trois à éviter, et ce qui
+      est rédhibitoire. Le moteur sait déjà le calculer ; le travail est de transmettre un
+      thème sans mettre de données de naissance dans une adresse. Voir Q15.
+- [ ] **B11 — Maîtres de maison et planète dominante.** Deux notions que le rédacteur tient
+      pour centrales et que le moteur n'implémente pas. Elles relient un point natal à un
+      domaine de vie, et rendraient les lectures nettement plus personnelles.
 - [ ] **T16 — Persistance serveur.** Bloqué : identifiants Supabase. Le profil vit pour
       l'instant sur l'appareil, et l'interface le dit.
 

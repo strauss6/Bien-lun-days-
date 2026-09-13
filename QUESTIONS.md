@@ -292,3 +292,56 @@ Soleil natal était comptée deux fois. Il annonçait 7 200 là où 41 paires é
 réellement calculées. Il est maintenant dérivé des paires réelles — 49 depuis que la Lune
 vise tout le thème — et affiche 7 350.
 
+## Q14 — Le contexte de vie change la consigne, et le produit ne le connaît pas
+
+Le rédacteur du corpus l'a soulevé de lui-même, sur l'axe Amour : « si la personne n'est
+pas en couple, tu vas pas lui conseiller la même chose que si elle est en couple ». En
+couple, un bon jour Amour demande de partager et de dire les choses ; seul, il demande de
+sortir et de rencontrer. **Ce sont deux consignes opposées tirées du même calcul.**
+
+Aujourd'hui la brique dit les deux, ce qui la dilue. Le vrai correctif est une ou deux
+questions de contexte au questionnaire — en couple ou non, en poste ou en recherche — qui
+choisiraient la bonne formulation. Son mot : « ça va l'affiner, et la rendre plus logique. »
+
+Ce n'est pas une décision d'implémentation : ajouter des questions au questionnaire allonge
+l'entrée dans le produit, ce qui se paie en abandons. Deux écrans de plus sur cinq, c'est
+quarante pour cent de longueur en plus. À arbitrer.
+
+Option retenue en attendant : une formulation qui reste vraie dans les deux cas, ce qui est
+le choix le plus réversible et le moins bon des trois.
+
+## Q15 — La comparaison de deux thèmes
+
+« Les gens adorent ça. » C'est, d'après le rédacteur, la demande qui vient juste après le
+couple et le travail, et elle a un livrable clair : trois choses à éviter et trois choses à
+faire avec une personne donnée, plus ce qui est franchement rédhibitoire.
+
+Le moteur sait déjà tout ce qu'il faut — calculer deux thèmes et les aspects de l'un à
+l'autre est le même code que les transits, avec un thème à la place du ciel du jour. Le
+travail est côté produit : comment deux personnes se transmettent un thème sans que des
+données de naissance circulent dans une adresse, ce que la règle interdit.
+
+À noter aussi, parce que c'est la moitié de la valeur : le rédacteur insiste pour que ce
+soit **présenté comme surmontable**. Un Saturne difficile sur un point de l'autre veut dire
+qu'on peut se montrer trop rigide — donc qu'il faut laisser de l'espace. Un tableau de
+compatibilité qui se contenterait de noter sur dix raterait complètement l'intérêt.
+
+Hors périmètre pour l'instant. Consigné en `TASKS.md`.
+
+## Q16 — Les couleurs de saison, version du rédacteur
+
+Sa proposition : été l'or, automne le marron et le rouge, hiver **le blanc** — « le gel, la
+neige » —, printemps le vert. Il écarte explicitement le bleu pour l'hiver, qui « fait
+penser à l'été ».
+
+La palette validée le 10 septembre dit : printemps `#34C759` vert, été `#FFC300` or,
+automne `#FF6B3D` rouge-orangé, hiver `#0A9BE8` bleu. **Trois saisons sur quatre
+correspondent déjà.** Seul l'hiver diverge.
+
+Ce n'est pas au rédacteur du corpus de trancher la palette, et ce n'est pas à moi non plus :
+le design final fait partie de ce qui ne se décide jamais seul. Le point pratique : le
+bandeau de saison est un dégradé fin sur fond blanc froid — un hiver blanc y serait
+**invisible**. S'il faut aller dans cette direction, le plus proche serait un bleu très
+clair et froid, lisible comme du gel plutôt que comme de l'eau. Rien n'est changé en
+attendant.
+
