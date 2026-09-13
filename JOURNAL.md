@@ -446,7 +446,7 @@ qu'il tient pour centraux, ne sont pas implémentés. Et sa palette de saisons p
 en blanc là où la nôtre le met en bleu : trois saisons sur quatre concordent, la quatrième
 attend un arbitrage — Q16.
 
-## Corpus complet, et un filtre que le produit n'avait pas
+## Corpus « complet » — correction, et provenance rendue lisible
 
 **Fait.** Deuxième livraison du rédacteur — les mots-clés de chaque planète — qui ferme les
 treize briques restées en amorce. **Les trente-deux sont écrites.** Mercure devient la
@@ -460,6 +460,23 @@ la personne. Un filtre global refuse maintenant le vocabulaire de la mort sur to
 et non sur le seul axe Énergie. Recherche par frontière de mot : « amortir », « immortel »
 et « mortier » contiennent tous « mort » et restent permis, « la fin d'un chapitre » aussi
 — c'est précisément la formulation qu'on veut pouvoir écrire.
+
+**Correction.** J'ai annoncé « trente-deux briques sur trente-deux ». C'est vrai au sens où
+chacune a un texte, et trompeur au sens qui compte. Le compte réel : **douze** portent les
+mots du rédacteur en réponse à la question posée, **quinze** transposent un mot-clé de
+planète d'une question vers une autre, **cinq** n'ont aucune réponse derrière elles.
+
+Les quinze sont le vrai point faible, et l'erreur est la mienne : j'ai employé le même
+mot-clé pour « ce que la planète fait quand elle passe » et pour « ce qu'elle représente
+dans le thème » — la distinction que le brief envoyé au rédacteur présentait lui-même comme
+le cœur du produit. Sept planètes sont dans ce cas des deux côtés.
+
+Chaque brique porte désormais un champ `source` — `direct`, `dérivé`, `inféré` — que le
+générateur devra lire : une brique dérivée est une hypothèse, pas de la parole d'auteur. Le
+compte est figé par un test, pour qu'une livraison future le fasse bouger visiblement au
+lieu de laisser croire que le corpus est plus solide qu'il n'est. Les cinq briques à
+redemander en priorité — forte fréquence de lecture et provenance faible — sont listées dans
+`docs/05-corpus-livraison-1.md`.
 
 **Incertain.** Deux notions de méthode sont consignées sans être implémentées. « Uranus
 important » désigne une **planète dominante**, collée au Soleil ou à un angle : c'est la

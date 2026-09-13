@@ -208,8 +208,10 @@ monétisation et le parcours. Voir l'encadré en tête de `BRIEF.md`.
 ## Reste à faire
 
 - [ ] **B07 — Canal de retour.** Bloqué : aucun canal réel n'est configuré. Voir Q10.
-- [ ] **T14 — Génération des textes par le modèle.** **Le corpus est complet** : les
-      trente-deux briques portent la matière du rédacteur, livrée les 13 et 14 septembre.
+- [ ] **T14 — Génération des textes par le modèle.** Les trente-deux briques ont un texte,
+      mais douze seulement portent une réponse directe : quinze transposent un mot-clé de
+      planète d'une question vers une autre, cinq n'ont aucune réponse derrière. Le champ
+      `source` de chaque brique le dit, et le générateur doit le lire.
       La couche de génération, son cache et son repli sur gabarit se construisent et se
       testent sans clé ; la clé n'est nécessaire que pour générer réellement les 465
       textes. Modèle retenu : `claude-opus-5`.

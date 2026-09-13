@@ -134,3 +134,47 @@ describe('le corpus respecte les règles de contenu', () => {
     }
   });
 });
+
+/**
+ * La provenance des briques, tenue à jour.
+ *
+ * « Les trente-deux briques sont écrites » est vrai et trompeur : douze portent
+ * les mots du rédacteur, quinze transposent un mot-clé de planète d'une question
+ * vers une autre, et cinq n'ont aucune réponse derrière elles. Le compte est figé
+ * ici pour qu'une livraison future le fasse bouger visiblement, au lieu de laisser
+ * croire que le corpus est plus solide qu'il n'est.
+ */
+describe('provenance du corpus', () => {
+  const toutes = [...TRANSIT_BLOCKS, ...ASPECT_BLOCKS, ...NATAL_BLOCKS, ...AXIS_BLOCKS];
+  const par = (s: string) => toutes.filter((b) => b.source === s).length;
+
+  it('compte douze briques directes, quinze dérivées, cinq inférées', () => {
+    expect(par('direct')).toBe(12);
+    expect(par('dérivé')).toBe(15);
+    expect(par('inféré')).toBe(5);
+    expect(toutes).toHaveLength(32);
+  });
+
+  /*
+   * Les trois axes et les quatre angles durs sont ceux que le produit affiche le
+   * plus. Les axes ont été demandés et répondus ; c'est la garantie minimale.
+   */
+  it('les trois axes portent une réponse directe', () => {
+    for (const b of AXIS_BLOCKS) expect(b.source, b.label).toBe('direct');
+  });
+
+  /*
+   * Le point faible nommé : une planète sert la même matière à deux questions
+   * différentes. Le test ne l'interdit pas — il le rend visible, et il tombera
+   * le jour où l'une des deux sera vraiment écrite.
+   */
+  it('nomme les planètes dont le transit et le natal partagent la même source', () => {
+    const partagees = TRANSIT_BLOCKS
+      .filter((t) => t.source === 'dérivé')
+      .filter((t) => NATAL_BLOCKS.find((n) => n.key === t.key)?.source === 'dérivé')
+      .map((t) => t.key);
+    expect(partagees.sort()).toEqual(
+      ['jupiter', 'mars', 'mercury', 'neptune', 'pluto', 'saturn', 'uranus'],
+    );
+  });
+});

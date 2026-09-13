@@ -1,8 +1,55 @@
 # Corpus — livraisons du rédacteur
 
-**13 et 14 septembre 2026.** Deux notes vocales, transcrites. Dix briques avaient été
-demandées ; les deux réponses couvrent **les trente-deux**, plus une quantité de matière
-qui ne rentre dans aucune brique et qui est consignée ici pour la suite.
+**13 et 14 septembre 2026.** Deux notes vocales, transcrites.
+
+## Ce que le corpus contient vraiment
+
+Les trente-deux briques ont un texte. **Elles n'ont pas toutes une réponse**, et la
+distinction compte : le générateur va s'appuyer dessus pour écrire 465 feuilles.
+
+| Provenance | Nombre | Ce que ça veut dire |
+|---|---|---|
+| `direct` | **12** | Les mots du rédacteur, en réponse à la question posée |
+| `dérivé` | **15** | Sa matière, transposée par nous |
+| `inféré` | **5** | Aucune réponse derrière |
+
+**Les douze directes** : la Lune et Vénus en transit ; le trigone, le carré, le sextile et
+l'opposition ; le Soleil, la Lune et Vénus natals ; les trois axes. Ce sont les dix briques
+demandées, plus deux qu'il a données en passant.
+
+**Les quinze dérivées** sont le point faible du corpus, et il faut le nommer précisément :
+ce sont les **mots-clés de planète employés deux fois** — une fois pour « ce qu'elle fait
+quand elle passe », une fois pour « ce qu'elle représente dans le thème ». Sept planètes
+sont dans ce cas des deux côtés : Mercure, Mars, Jupiter, Saturne, Uranus, Neptune, Pluton.
+
+Or c'est exactement la distinction que le brief envoyé au rédacteur présentait comme
+centrale — « ce qu'une planète fait quand elle passe n'est pas ce qu'elle représente dans
+le thème, c'est toute la mécanique du produit ». La question ne lui a pas été posée sous
+cette forme dans la seconde note ; il a donné des mots-clés, ce qui était ce qu'on lui
+demandait, et c'est nous qui avons dédoublé.
+
+**Les cinq inférées** : les quatre axes du thème — Ascendant, Milieu du Ciel, Descendant,
+Fond du Ciel — écrits depuis les maisons 1, 10, 7 et 4 qu'il avait décrites la veille. Un
+angle est le début de sa maison, donc la transposition est raisonnable ; elle reste une
+transposition. Et la conjonction, qu'il n'a jamais définie directement.
+
+## Les cinq briques à redemander en priorité
+
+Classées par ce qui coûte le plus : forte fréquence de lecture **et** provenance faible.
+
+| # | Brique | Part de ce qui est lu | Provenance | Pourquoi elle |
+|---|---|---|---|---|
+| 1 | **Le Soleil en transit** | 23 % des transits | `dérivé` | Deuxième transit le plus lu, et « la vie » ne dit pas ce qu'il *fait* en passant |
+| 2 | **La conjonction** | 15 % des angles | `inféré` | Le seul angle sans réponse, et le plus structurant — la planète prend le point en charge |
+| 3 | **L'Ascendant** | 12 % des points natals | `inféré` | Troisième point le plus lu, et l'axe le plus lourd de l'Énergie |
+| 4 | **Mars en transit** | 10 % des transits | `dérivé` | Porte l'axe Énergie, celui que les gens lisent le plus |
+| 5 | **Le Milieu du Ciel** | 8 % des points natals | `inféré` | Porte l'axe Business avec le Soleil |
+
+**Une seule question réglerait les quinze dérivées d'un coup**, et elle tient en une
+phrase : *pour chaque planète, qu'est-ce qui change entre ce qu'elle fait quand elle passe
+sur un point, et ce qu'elle représente quand elle est dans le thème de naissance ?*
+
+Le reste de ce document consigne la matière qui ne rentre dans aucune brique.
 
 Ce fichier est la source. Ce qui est déjà employé vit dans `lib/copy/blocks.ts`,
 `lib/astro/labels.ts` et `lib/copy/phrase.ts`.
