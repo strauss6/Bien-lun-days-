@@ -1,0 +1,14 @@
+@import './app/globals.css';
+@source './components';
+@source './standalone';
+
+/*
+ * La page autonome n'a pas `next/font` : les variables de familles que `globals.css`
+ * attend n'existeraient pas, et une `font-family` bâtie sur une variable indéfinie
+ * est invalide en bloc — toute la typographie retomberait sur la police par défaut.
+ * On les définit ici, sur les noms chargés depuis Google Fonts.
+ */
+:root {
+  --font-geist-mono: 'Geist Mono';
+  --font-eb-garamond: 'EB Garamond';
+}

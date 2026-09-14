@@ -1,0 +1,246 @@
+import type { AxisId, GridCell, NatalChart, PlanetId, PointId, Season } from './types';
+import { findAspect } from './aspects';
+import { longitudeOf, longitudeAndSpeed } from './ephemeris';
+import { addCivilDays, localHourInstant, localNoonInstant } from './zone';
+import { signOf } from './angles';
+
+/**
+ * Planètes en transit retenues par axe, et points natals visés.
+ *
+ * Périmètre fixé par le brief. Il avait été élargi après une mesure sur 90 jours
+ * — Jupiter ne parcourt que 8° et Saturne 3° sur une telle fenêtre, ce qui ne
+ * produit pas toujours cinq **événements distincts** à citer — puis ramené ici,
+ * parce que le brief fait foi et que la fenêtre courante est de 30 jours avec
+ * deux aspects par jour, un besoin bien moins exigeant en diversité. La mesure
+ * est conservée dans QUESTIONS.md Q3 et dans docs/02-architecture-moteur.md ;
+ * elle devra être rouverte quand le rapport passera à 90 jours et promettra cinq
+ * dates par axe.
+ */
+export const AXIS_TRANSITS: Record<AxisId, PlanetId[]> = {
+  business: ['jupiter', 'saturn', 'mercury', 'sun'],
+  love: ['venus', 'mars', 'moon', 'jupiter'],
+  energy: ['mars', 'sun', 'moon', 'saturn'],
+};
+
+export const AXIS_NATALS: Record<AxisId, PointId[]> = {
+  business: ['sun', 'mc', 'mercury', 'jupiter'],
+  love: ['venus', 'moon', 'dsc', 'sun'],
+  energy: ['asc', 'sun', 'mars', 'moon'],
+};
+
+/**
+ * Points natals que la Lune vient toucher, pour le score global du jour.
+ *
+ * Les quatre points par axe suffisent à mesurer un domaine ; ils ne suffisent
+ * pas à mesurer **une journée**. La Lune fait le tour du zodiaque en 27 jours et
+ * croise donc tout le thème chaque mois : c'est ce qui fait d'elle l'aiguille
+ * des heures du quotidien, et c'est pour ça que le score global la suit sur
+ * l'ensemble du thème et non sur un quart de celui-ci.
+ *
+ * Les axes — Ascendant, Milieu du Ciel, Descendant, Fond du Ciel — n'en font
+ * partie que si l'heure de naissance est connue : sans elle ils ne sont pas
+ * calculables, et `effectiveNatalWeights` les retire.
+ */
+export const LUNAR_NATALS: PointId[] = [
+  'sun', 'moon', 'mercury', 'venus', 'mars',
+  'jupiter', 'saturn', 'uranus', 'neptune', 'pluto',
+  'asc', 'mc', 'dsc', 'ic',
+];
+
+/**
+ * Longueur de la fenêtre par défaut.
+ *
+ * Trente jours : c'est ce que livre le produit aujourd'hui. Le rapport complet à
+ * quatre-vingt-dix jours reste calculable en passant `days`.
+ */
+export const DEFAULT_WINDOW_DAYS = 30;
+
+export const AXIS_LABELS: Record<AxisId, string> = {
+  business: 'Business',
+  love: 'Amour',
+  energy: 'Énergie',
+};
+
+export const AXIS_IDS: AxisId[] = ['business', 'love', 'energy'];
+
+export function pairKey(transit: PlanetId, natal: PointId): string {
+  return `${transit}|${natal}`;
+}
+
+/**
+ * Toutes les paires (transit, point natal) que la grille calcule.
+ *
+ * Les trois axes, plus la Lune sur l'ensemble du thème pour le score global du
+ * jour. Les doublons sont écartés : la Lune sur le Soleil natal sert aux deux,
+ * elle n'est calculée qu'une fois.
+ */
+export function allPairs(): Array<{ transit: PlanetId; natal: PointId }> {
+  const seen = new Set<string>();
+  const out: Array<{ transit: PlanetId; natal: PointId }> = [];
+  const add = (transit: PlanetId, natal: PointId) => {
+    const key = pairKey(transit, natal);
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push({ transit, natal });
+  };
+
+  for (const axis of AXIS_IDS) {
+    for (const transit of AXIS_TRANSITS[axis]) {
+      for (const natal of AXIS_NATALS[axis]) add(transit, natal);
+    }
+  }
+  for (const natal of LUNAR_NATALS) add('moon', natal);
+
+  return out;
+}
+
+/**
+ * Nombre de combinaisons réellement testées — le chiffre affiché à l'écran de
+ * calcul. Dérivé de `allPairs` et non recalculé à part : deux comptes séparés
+ * finiraient par diverger, et celui-ci est montré à l'utilisateur comme un fait.
+ */
+export function comparisonsTested(days: number): number {
+  return allPairs().length * 5 * days;
+}
+
+export interface TransitGrid {
+  /** Nombre de jours restitués à l'utilisateur. */
+  days: number;
+  /** Marge de calcul de chaque côté de la fenêtre : le lissage a besoin de voisins réels. */
+  pad: number;
+  /** Dates locales `YYYY-MM-DD`, une par jour. */
+  dates: string[];
+  /** Instant échantillonné, midi local. */
+  samples: number[];
+  /** Longitude du Soleil chaque jour — sert à la teinte saisonnière du ruban. */
+  sunLon: number[];
+  seasons: Season[];
+  /** Une série de 90 cases par paire. */
+  cells: Map<string, Array<GridCell | null>>;
+  comparisonsTested: number;
+  aspectDays: number;
+  aspectEvents: number;
+}
+
+const SEASON_OF_SIGN: Season[] = [
+  'spring', 'spring', 'spring',
+  'summer', 'summer', 'summer',
+  'autumn', 'autumn', 'autumn',
+  'winter', 'winter', 'winter',
+];
+
+/**
+ * Grille des transits sur la fenêtre.
+ *
+ * Échantillonnage à midi local pour les planètes lentes. La Lune avance de 13°
+ * par jour : un seul échantillon à midi manquerait un aspect exact à 20 h, on
+ * la prend donc à 0 h, midi et 24 h et on retient le meilleur orbe du jour.
+ */
+export function buildTransitGrid(options: {
+  chart: NatalChart;
+  zone: string;
+  startDate: string;
+  days?: number;
+  pad?: number;
+}): TransitGrid {
+  const { chart, zone, startDate } = options;
+  const days = options.days ?? DEFAULT_WINDOW_DAYS;
+  /*
+   * Deux jours de marge et non un.
+   *
+   * Le lissage porte sur trois jours : avec une marge d'un seul jour, la valeur
+   * lissée du premier jour de la fenêtre lisait le tout premier jour calculé —
+   * celui dont le « jour de l'exact » ne peut pas être déterminé faute de voisin
+   * précédent. Un même jour prenait donc une valeur différente selon la fenêtre
+   * d'où on le regardait. Deux jours de marge éloignent le bord du lissage, et
+   * la valeur d'une date devient enfin indépendante de la fenêtre.
+   */
+  const pad = options.pad ?? 2;
+  const spanDays = days + 2 * pad;
+  const firstDate = addCivilDays(startDate, -pad);
+  const pairs = allPairs();
+  const transitBodies = Array.from(new Set(pairs.map((p) => p.transit)));
+
+  const dates: string[] = [];
+  const samples: number[] = [];
+  const sunLon: number[] = [];
+  const seasons: Season[] = [];
+  const cells = new Map<string, Array<GridCell | null>>();
+  for (const p of pairs) cells.set(pairKey(p.transit, p.natal), new Array(spanDays).fill(null));
+
+  for (let d = 0; d < spanDays; d += 1) {
+    const date = addCivilDays(firstDate, d);
+    const noon = localNoonInstant(zone, date);
+    dates.push(date);
+    samples.push(noon);
+
+    // Longitudes du jour. La Lune est échantillonnée trois fois.
+    const lon: Partial<Record<PlanetId, number[]>> = {};
+    const retro: Partial<Record<PlanetId, boolean>> = {};
+    for (const body of transitBodies) {
+      if (body === 'moon') {
+        lon.moon = [
+          longitudeOf('moon', new Date(localHourInstant(zone, date, 0))),
+          longitudeOf('moon', new Date(noon)),
+          longitudeOf('moon', new Date(localHourInstant(zone, addCivilDays(date, 1), 0))),
+        ];
+        retro.moon = false;
+      } else {
+        const { lon: l, speed } = longitudeAndSpeed(body, new Date(noon));
+        lon[body] = [l];
+        retro[body] = speed < 0;
+      }
+    }
+    sunLon.push(lon.sun ? lon.sun[0] : longitudeOf('sun', new Date(noon)));
+    seasons.push(SEASON_OF_SIGN[signOf(sunLon[d])]);
+
+    for (const { transit, natal } of pairs) {
+      const natalLon = chart.points[natal].lon;
+      let best: GridCell | null = null;
+      for (const l of lon[transit] as number[]) {
+        const hit = findAspect(l, natalLon);
+        if (hit && (best === null || hit.orb < best.orb)) {
+          best = { ...hit, retrograde: retro[transit] ?? false, peaking: false };
+        }
+      }
+      cells.get(pairKey(transit, natal))![d] = best;
+    }
+  }
+
+  // Second passage : le jour de l'exact est un minimum local d'orbe. C'est ce
+  // qui empêche un transit lent de trois semaines de produire un plateau.
+  let aspectDays = 0;
+  let aspectEvents = 0;
+  for (const series of cells.values()) {
+    for (let d = 0; d < spanDays; d += 1) {
+      const cell = series[d];
+      if (!cell) continue;
+      const inWindow = d >= pad && d < pad + days;
+      if (inWindow) aspectDays += 1;
+      const prev = series[d - 1];
+      const next = series[d + 1];
+      if (inWindow && (!prev || prev.aspect !== cell.aspect)) aspectEvents += 1;
+      if (d === 0 || d === spanDays - 1) {
+        /*
+         * Aux deux extrémités de la période calculée, on ignore ce que fait
+         * l'orbe de l'autre côté du bord. L'ancien code répondait « oui, c'est
+         * le jour de l'exact » parce qu'un voisin absent compte comme infiniment
+         * loin : il fabriquait une majoration sur chaque bord. Ne pas savoir se
+         * dit « non », pas « oui ».
+         */
+        cell.peaking = false;
+        continue;
+      }
+      const beforeOrb = prev && prev.aspect === cell.aspect ? prev.orb : Infinity;
+      const afterOrb = next && next.aspect === cell.aspect ? next.orb : Infinity;
+      cell.peaking = cell.orb < beforeOrb && cell.orb <= afterOrb;
+    }
+  }
+
+  return {
+    days, pad, dates, samples, sunLon, seasons, cells,
+    comparisonsTested: comparisonsTested(days),
+    aspectDays,
+    aspectEvents,
+  };
+}
