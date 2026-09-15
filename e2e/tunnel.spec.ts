@@ -173,9 +173,14 @@ test('les jours rares donnent l’âge à la dernière occurrence', async ({ pag
   await expect(events.first()).toContainText(
     /La dernière fois, tu avais \d+ ans|Jamais depuis ta naissance|Aucune occurrence antérieure/,
   );
-  await expect(events.first()).toContainText(/une fois tous les|une ou deux fois dans une vie/);
+  // La cadence ouvre désormais la ligne d'histoire, donc avec une majuscule : le `i`
+  // porte sur la casse de la première lettre, pas sur le fond de l'assertion.
+  await expect(events.first()).toContainText(/une fois tous les|une ou deux fois dans une vie/i);
+  // Une plage a un début et une fin datés : « actif sur toute la période » ne disait rien.
+  await expect(events.first()).toContainText(/du \d+ \w+|Au plus près le \d+ \w+/);
   // Jamais l'affirmation absolue : le balayage couvre une vie, pas l'éternité.
   await expect(page.locator('main')).not.toContainText('Jamais auparavant');
+  await expect(page.locator('main')).not.toContainText('actif sur toute la période');
 });
 
 test('le parcours tient dans un écran de téléphone', async ({ page }) => {

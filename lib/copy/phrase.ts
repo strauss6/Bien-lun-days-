@@ -22,47 +22,127 @@ export interface PhraseAspect {
 /**
  * Ce que chaque axe demande de faire, selon que le jour porte ou résiste.
  *
- * **Rédigé par le rédacteur du corpus, le 13 septembre 2026.** Trois choses en
- * sont sorties.
+ * **Six formulations par cas, et non une.** Une seule phrase par axe et par
+ * polarité, c'était la même consigne tous les deux jours : au bout d'une semaine
+ * le lecteur ne la lit plus. Six suffisent à ce qu'un axe prioritaire ne se
+ * répète pas dans le mois.
  *
- * Un bon jour ne se contente pas d'être bon : il faut aller le chercher. « Si on
- * ne fait rien et qu'on reste chez soi, il ne se passera rien de spécial. » Les
- * verdicts favorables sont donc tous des verbes d'action, jamais des constats.
+ * **Le choix se fait sur l'événement, pas sur la date ni au hasard.** Un même
+ * transit garde donc sa formulation tant qu'il dure — c'est voulu : changer les
+ * mots chaque matin sur une situation qui n'a pas bougé, c'est fabriquer de la
+ * nouveauté, ce que la direction produit interdit. C'est la clause de continuité
+ * qui dit l'évolution : « ça commence », « ça dure depuis quatre jours ».
  *
- * Un jour difficile n'est jamais une fatalité. « L'aspect montre qu'il y a une
- * difficulté ; à nous de la vaincre. » Les verdicts défavorables demandent donc
- * de la vigilance ou de l'attente, jamais du renoncement, et n'annoncent aucune
- * catastrophe.
+ * **Le registre.** Concret, imagé, adulte. Une consigne qu'on pourrait donner à
+ * quelqu'un en face de soi. Jamais une promesse sur ce qu'une autre personne va
+ * faire ou ressentir — on dit ce que la personne peut faire, elle.
  *
- * L'axe Énergie a reçu une matière que le produit **n'emploiera pas** : en
- * astrologie médicale, Mars gouverne les défenses de l'organisme. C'est peut-être
- * vrai et c'est sans intérêt ici — la règle interdit à cet axe de parler de santé,
- * et le filtre de sortie l'arrêterait de toute façon. Il ne parle que de rythme,
- * d'élan et de capacité à pousser.
+ * L'axe Énergie ne parle que de rythme et d'élan. Jamais de santé, et le filtre
+ * de sortie le vérifie.
  */
-const VERDICTS: Record<AxisId, { good: string; bad: string }> = {
+const VERDICTS: Record<AxisId, { good: string[]; bad: string[] }> = {
   business: {
-    good: 'Va chercher l’occasion. Elle ne viendra pas te trouver assis.',
-    bad: 'Redouble de vigilance. Mieux vaut laisser passer que forcer.',
+    good: [
+      'Va chercher l’occasion. Aujourd’hui, demander coûte moins que d’habitude.',
+      'C’est le jour pour demander. Demande.',
+      'Une paire d’as en main ne rapporte rien si tu ne mises pas.',
+      'Relance ce que tu as laissé en attente. Ça passe mieux aujourd’hui.',
+      'Propose le chiffre que tu n’osais pas proposer.',
+      'Fais le premier pas plutôt que d’attendre qu’on le fasse.',
+    ],
+    bad: [
+      'Redouble de vigilance. Mieux vaut laisser passer que forcer.',
+      'Ne signe rien aujourd’hui. Prépare, envoie demain.',
+      'Ce n’est pas le jour pour demander. C’est le jour pour préparer le dossier.',
+      'Vérifie deux fois ce que tu envoies.',
+      'Laisse passer la tempête. Elle n’est pas contre toi, elle passe.',
+      'Décale ce qui peut l’être. Le reste, prudemment.',
+    ],
   },
   love: {
-    good: 'Sors, partage, dis ce que tu as à dire. C’est un jour qui relie.',
-    bad: 'Tu seras vite contrarié sur ce terrain. Ne force aucune conversation.',
+    good: [
+      'Dis ce que tu as à dire. C’est un jour qui relie.',
+      'Sors. Ce qui se noue aujourd’hui tient.',
+      'Le message que tu repousses depuis trois jours, envoie-le.',
+      'Propose quelque chose plutôt que d’attendre qu’on te propose.',
+      'Donne du temps à la personne qui compte. C’est ce qui se voit le plus aujourd’hui.',
+      'Ce que tu formules aujourd’hui sort mieux qu’hier.',
+    ],
+    bad: [
+      'Tu seras vite contrarié sur ce terrain. Ne force aucune conversation.',
+      'Ce n’est pas le jour pour mettre les choses à plat.',
+      'Garde pour demain ce que tu voulais dire aujourd’hui.',
+      'Ne relance pas. L’insistance te coûtera plus qu’elle ne te rapporte.',
+      'Écoute plus que tu ne parles.',
+      'Laisse la conversation venir au lieu d’aller la chercher.',
+    ],
   },
   energy: {
     // Rythme et élan uniquement. Jamais un symptôme, jamais un conseil de santé.
-    good: 'Va te dépenser. Tu tiendras l’effort mieux qu’hier.',
-    bad: 'Lève le pied. Garde le nerf pour un autre jour.',
+    good: [
+      'Va te dépenser. Tu tiendras l’effort mieux qu’hier.',
+      'Sors, bouge. Rester chez toi aujourd’hui, c’est du gâchis.',
+      'Attaque ce qui demande du nerf. Tu l’as.',
+      'Le rythme te porte. Charge.',
+      'La séance que tu repousses, fais-la aujourd’hui.',
+      'Tu as du carburant. Brûle-le.',
+    ],
+    bad: [
+      'Lève le pied. Garde le nerf pour un autre jour.',
+      'Ralentis. Ce n’est pas un jour à forcer.',
+      'Fais moins, et fais-le bien.',
+      'Reporte ce qui demande du nerf.',
+      'Ménage ton élan. Il remontera.',
+      'Ce n’est pas un jour de charge, c’est un jour d’entretien.',
+    ],
   },
 };
 
-const OPENERS = {
-  bothGood: 'Deux ouvertures le même jour.',
-  bothBad: 'Deux résistances le même jour.',
-  mixed: 'Une ouverture et une résistance.',
-  singleGood: 'Une seule chose, mais elle porte.',
-  singleBad: 'Une seule chose, et elle pèse.',
+/** Même principe pour l'ouverture : plusieurs façons de dire la même forme. */
+const OPENERS: Record<string, string[]> = {
+  bothGood: [
+    'Deux ouvertures le même jour.',
+    'Deux choses vont dans le même sens.',
+    'Tout pousse du même côté.',
+  ],
+  bothBad: [
+    'Deux résistances le même jour.',
+    'Deux choses tirent en arrière.',
+    'Ça coince des deux côtés.',
+  ],
+  mixed: [
+    'Une ouverture et une résistance.',
+    'Ça tire dans deux sens.',
+    'Un appui et un frein le même jour.',
+  ],
+  singleGood: [
+    'Une seule chose, mais elle porte.',
+    'Un seul appui, et il est solide.',
+  ],
+  singleBad: [
+    'Une seule chose, et elle pèse.',
+    'Un seul frein, mais il freine.',
+  ],
 };
+
+/**
+ * Empreinte stable d'une chaîne — FNV-1a, trente-deux bits.
+ *
+ * Sert à choisir une formulation sans tirage au sort : la même situation rend
+ * toujours la même phrase, sur n'importe quelle machine et à n'importe quel
+ * moment. Un `Math.random` donnerait un texte différent à chaque ouverture de la
+ * même journée, ce que la direction produit interdit explicitement.
+ */
+export function empreinte(cle: string): number {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < cle.length; i += 1) {
+    h ^= cle.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h;
+}
+
+const choisir = <T,>(options: T[], cle: string): T => options[empreinte(cle) % options.length];
 
 export const MAX_WORDS = 45;
 
@@ -93,13 +173,19 @@ export function buildPhrase(
 
   const positive = aspects[0].sign === '+';
   const cited = aspects.map((a) => a.phrase).join(', et ');
-  const opener = aspects.length > 1
-    ? (aspects[0].sign === aspects[1].sign
-      ? (positive ? OPENERS.bothGood : OPENERS.bothBad)
-      : OPENERS.mixed)
-    : (positive ? OPENERS.singleGood : OPENERS.singleBad);
 
-  const verdict = positive ? VERDICTS[axis].good : VERDICTS[axis].bad;
+  /*
+   * La clé du choix : l'axe et les aspects cités, pas la date. Deux journées
+   * portées par le même transit gardent la même formulation — c'est la clause de
+   * continuité qui dit que ça dure, pas un synonyme différent chaque matin.
+   */
+  const cle = `${axis}|${aspects.map((a) => a.phrase).join('|')}`;
+  const forme = aspects.length > 1
+    ? (aspects[0].sign === aspects[1].sign ? (positive ? 'bothGood' : 'bothBad') : 'mixed')
+    : (positive ? 'singleGood' : 'singleBad');
+
+  const opener = choisir(OPENERS[forme], cle);
+  const verdict = choisir(positive ? VERDICTS[axis].good : VERDICTS[axis].bad, cle);
 
   /*
    * Quarante-cinq mots, budget de densité. La clause de continuité est ce que
@@ -108,18 +194,26 @@ export function buildPhrase(
    * déborder l'écran. Quand il faut couper, c'est l'ouverture qui saute : elle
    * commente la forme, la continuité apporte un fait.
    */
+  /*
+   * Quarante-cinq mots, budget de densité, `reserve` comprise. On essaie les
+   * formes de la plus complète à la plus courte et on garde la première qui
+   * tient. L'ouverture saute avant la continuité — elle commente la forme, la
+   * continuité apporte un fait — et en dernier ressort la consigne est remplacée
+   * par la plus brève de son propre jeu : une variante imagée peut faire douze
+   * mots là où une autre en fait six, et c'est ce qui faisait déborder l'écran.
+   * La consigne elle-même ne saute jamais : un jour sans consigne ne dit rien.
+   */
   const budget = MAX_WORDS - reserve;
-  const full = continuity
-    ? `${cited}. ${opener} ${continuity} ${verdict}`
-    : `${cited}. ${opener} ${verdict}`;
-  if (wordCount(full) <= budget) return full;
+  const brève = [...(positive ? VERDICTS[axis].good : VERDICTS[axis].bad)]
+    .sort((a, b) => wordCount(a) - wordCount(b))[0];
 
-  const trimmed = continuity ? `${cited}. ${continuity} ${verdict}` : `${cited}. ${verdict}`;
-  if (wordCount(trimmed) <= budget) return trimmed;
-
-  // Dernier recours : les aspects cités et la consigne. On ne coupe jamais
-  // en deçà — un jour sans consigne ne dit plus rien.
-  return `${cited}. ${verdict}`;
+  const formes = [
+    continuity ? `${cited}. ${opener} ${continuity} ${verdict}` : `${cited}. ${opener} ${verdict}`,
+    continuity ? `${cited}. ${continuity} ${verdict}` : `${cited}. ${verdict}`,
+    `${cited}. ${verdict}`,
+    `${cited}. ${brève}`,
+  ];
+  return formes.find((f) => wordCount(f) <= budget) ?? formes[formes.length - 1];
 }
 
 export function wordCount(text: string): number {

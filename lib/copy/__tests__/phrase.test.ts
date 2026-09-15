@@ -16,7 +16,8 @@ describe('construction de la phrase', () => {
     const p = buildPhrase('business', [good, bad]);
     expect(p).toContain('Jupiter en trigone à ton Soleil');
     expect(p).toContain('Saturne en carré à ton Soleil');
-    expect(p).toContain('Une ouverture et une résistance');
+    // L'ouverture varie selon les aspects cités : on vérifie la forme, pas le mot.
+    expect(p).toMatch(/Une ouverture et une résistance|Ça tire dans deux sens|Un appui et un frein/);
   });
 
   /*
@@ -33,9 +34,15 @@ describe('construction de la phrase', () => {
       expect(porteur).not.toBe(resiste);
       expect(violatesContentRules(axis, porteur)).toBeNull();
       expect(violatesContentRules(axis, resiste)).toBeNull();
-      // Un verdict est une consigne, pas un constat : il porte un impératif.
+      /*
+       * Un verdict s'adresse à la personne : il la tutoie ou lui donne un ordre.
+       * Le test portait sur une liste de verbes à l'impératif — il tombait dès
+       * qu'une formulation imagée entrait dans le jeu (« une paire d'as en main
+       * ne rapporte rien si tu ne mises pas »), alors que celle-ci s'adresse bien
+       * à quelqu'un. C'est l'adresse qu'on vérifie, pas la conjugaison.
+       */
       for (const texte of [porteur, resiste]) {
-        expect(texte).toMatch(/\b(Va|Sors|Dis|Lève|Redouble|Ne |Garde|Prépare|Partage|Tu seras)\b/);
+        expect(texte, texte).toMatch(/\b(tu|te|toi|ton|ta|tes)\b|^[A-ZÉÈÀÇ]\w+(e|s|z)\b/mi);
       }
     }
   });
@@ -180,6 +187,68 @@ describe('vocabulaire de la mort', () => {
     ];
     for (const texte of permis) {
       expect(violatesContentRules('business', texte), texte).toBeNull();
+    }
+  });
+});
+
+/**
+ * La variété des formulations, et sa limite.
+ *
+ * « Tout le temps la même chose, c'est lourd » — retour d'essai du 15 septembre.
+ * Le produit servait une consigne unique par axe et par polarité : au bout d'une
+ * semaine, le lecteur ne la lit plus. Six variantes suffisent à ce qu'un axe
+ * prioritaire ne se répète pas dans le mois.
+ *
+ * La limite est aussi importante que la variété : le choix se fait sur
+ * l'événement, jamais au hasard ni sur la date. Deux ouvertures de la même
+ * journée donnent le même texte, et un transit qui dure garde sa formulation —
+ * c'est la clause de continuité qui dit qu'il dure.
+ */
+describe('variété des consignes', () => {
+  const aspectPour = (n: number, sign: '+' | '−') =>
+    [{ phrase: `Jupiter en trigone à ton ${'A'.repeat(n)}`, sign }];
+
+  it('produit au moins cinq consignes distinctes par axe et par polarité', () => {
+    for (const axis of ['business', 'love', 'energy'] as const) {
+      for (const sign of ['+', '−'] as const) {
+        const vues = new Set(
+          Array.from({ length: 40 }, (_, i) => buildPhrase(axis, aspectPour(i + 1, sign))),
+        );
+        expect(vues.size, `${axis} ${sign}`).toBeGreaterThanOrEqual(5);
+      }
+    }
+  });
+
+  it('rend exactement le même texte pour la même situation', () => {
+    const a = aspectPour(7, '+');
+    expect(buildPhrase('business', a)).toBe(buildPhrase('business', a));
+    expect(buildPhrase('business', a, 'Ça dure depuis 4 jours.'))
+      .toBe(buildPhrase('business', a, 'Ça dure depuis 4 jours.'));
+  });
+
+  it('tient le budget quelle que soit la variante tirée', () => {
+    for (const axis of ['business', 'love', 'energy'] as const) {
+      for (let n = 1; n <= 40; n += 1) {
+        for (const sign of ['+', '−'] as const) {
+          const p = buildPhrase(axis, aspectPour(n, sign), 'Ça dure depuis 12 jours.', 12);
+          expect(wordCount(p), p).toBeLessThanOrEqual(MAX_WORDS - 12);
+        }
+      }
+    }
+  });
+
+  it('aucune consigne ne promet ce qu’une autre personne va faire', () => {
+    // Règle du brief : on dit ce que la personne peut faire, jamais ce qu'on lui
+    // répondra. « On te dira oui » est la formulation à ne jamais écrire.
+    for (const axis of ['business', 'love', 'energy'] as const) {
+      for (let n = 1; n <= 40; n += 1) {
+        for (const sign of ['+', '−'] as const) {
+          const p = buildPhrase(axis, aspectPour(n, sign)).toLowerCase();
+          for (const interdit of ['on te dira', 'il te dira', 'elle te dira', 'te répondra oui', 'acceptera']) {
+            expect(p, p).not.toContain(interdit);
+          }
+        }
+      }
     }
   });
 });

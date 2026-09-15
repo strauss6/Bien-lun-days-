@@ -513,3 +513,35 @@ avoir sa typographie — le texte reste lisible sans, sur la pile de repli. Une 
 vraiment hors-ligne demanderait de les embarquer en base64, ce qui doublerait le poids du
 fichier.
 
+
+## 15 septembre 2026 — les jours rares disent quand, et arrêtent de se répéter
+
+**Fait.** Trois reproches du test sur téléphone, trois corrections. (1) « Actif sur toute la
+période » ne voulait rien dire : `orbSpan()` calcule maintenant la vraie plage d'un aspect —
+début, fin, durée, jour où l'orbe est le plus serré. Pluton en conjonction à l'Ascendant
+donne « du 18 novembre 2021 au 26 mars 2027 · 5 ans et 4 mois, au plus près le 22 décembre
+2024, à 0°01' ». (2) Les phrases se répétaient : six variantes de verdict par axe et par
+polarité, choisies par empreinte déterministe sur l'événement et non sur la date. « Elle ne
+viendra pas te trouver assis » est supprimée ; l'image du 15 septembre la remplace — « une
+paire d'as en main ne rapporte rien si tu ne mises pas ». (3) L'écran des jours rares ne
+disait pas ce qu'un transit signifie : `rareMeaning()` compose la phrase depuis les trois
+briques du corpus — ce que la planète fait, ce qu'elle touche, ce que l'angle impose.
+
+**Cassé, réparé.** Quatre fois, et chaque fois par la même cause : une phrase de brique
+arrachée à son contexte. Le découpage au tiret fabriquait des moitiés de phrase (« à toi de
+la lever »), les phrases suivantes d'une brique reprennent la précédente par le début (« Et
+l'endroit où tu en fais trop ») ou par la fin (« Ce qu'on néglige aussi »), certaines
+conditionnent à une polarité que l'angle contredit (« bien touchée, l'intérieur suit » sous
+un carré), et certaines posent un deux-points là où le gabarit en pose déjà un. Un filtre
+unique couvre les quatre cas, appliqué aux trois briques, avec un repli qui garde le côté
+porteur de sens quand tout serait écarté. Huit tests le tiennent. Le test de bout en bout
+attendait la cadence en minuscule : elle ouvre maintenant la ligne d'histoire, donc avec une
+majuscule — attente corrigée, pas contournée, et deux assertions ajoutées sur les dates.
+
+**Incertain.** La brique de Saturne n'a **qu'une seule** phrase utilisable sur trois : les
+deux autres conditionnent à la polarité. Résultat, « Saturne, c'est le temps, donc les
+obstacles et les retards » ouvre encore trois cartes sur six. Même limite pour Uranus, Mars,
+Vénus et Pluton. Ce n'est pas un défaut du code mais du corpus : ce sont exactement les dix
+réponses courtes en attente — ce qu'une planète **fait en passant**, distinct de ce qu'elle
+**représente dans le thème**. Tant qu'elles manquent, la variété vient des trois autres
+morceaux de la phrase, pas de l'ouverture.

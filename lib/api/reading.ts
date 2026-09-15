@@ -9,6 +9,7 @@ import { formatLongitude, formatOrb } from '@/lib/astro/angles';
 import { ASPECT_PLAIN, notation, transitPhrase } from '@/lib/astro/labels';
 import { ASPECTS } from '@/lib/astro/aspects';
 import { buildPhrase, violatesContentRules, wordCount } from '@/lib/copy/phrase';
+import { rareMeaning } from '@/lib/copy/meaning';
 import { continuityClause, continuityOf, type DayContinuity } from '@/lib/copy/continuity';
 import { longitudeOf } from '@/lib/astro/ephemeris';
 import { signOf } from '@/lib/astro/angles';
@@ -90,7 +91,31 @@ export interface RarePayload {
   previousDate: string | null;
   previousAge: number | null;
   nextYear: number | null;
+  nextAge: number | null;
   firstInLifetime: boolean;
+  /**
+   * Quand l'aspect entre dans son orbe et quand il en sort, et le jour où il est
+   * au plus près de l'exact. Remplace « actif sur toute la période », qui ne
+   * disait rien à personne : ce que la personne veut savoir, c'est quand ça
+   * commence et quand ça finit.
+   */
+  span: {
+    start: string;
+    end: string;
+    days: number;
+    peak: string;
+    /** Orbe au point culminant : certains passages n'atteignent jamais l'exact. */
+    peakOrb: string;
+    /** Le balayage s'est arrêté avant la vraie borne — on ne l'annonce pas comme une date. */
+    openStart: boolean;
+    openEnd: boolean;
+  } | null;
+  /**
+   * Ce que ce transit veut dire, composé à partir des briques du corpus : ce que
+   * la planète fait en passant, ce que l'angle impose, ce que le point natal
+   * représente. Déterministe, sans appel au modèle.
+   */
+  meaning: string;
 }
 
 /** Le jour lui-même, porté par la Lune. Voir `lib/astro/lunar.ts`. */
@@ -264,7 +289,18 @@ export function buildReading(input: ReadingInput): ReadingPayload {
       previousDate: r.previous?.date ?? null,
       previousAge: r.previous?.age ?? null,
       nextYear: r.next?.year ?? null,
+      nextAge: r.next?.age ?? null,
       firstInLifetime: r.firstInLifetime,
+      span: r.span && {
+        start: r.span.start,
+        end: r.span.end,
+        days: r.span.days,
+        peak: r.span.peak,
+        peakOrb: formatOrb(r.span.peakOrb),
+        openStart: r.span.openStart,
+        openEnd: r.span.openEnd,
+      },
+      meaning: rareMeaning(r.transit, r.aspect, r.natal),
     })),
     stats: {
       comparisonsTested: reading.stats.comparisonsTested,
