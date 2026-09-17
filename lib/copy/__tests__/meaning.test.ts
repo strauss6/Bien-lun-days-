@@ -56,19 +56,22 @@ describe('le sens composé depuis les briques', () => {
   });
 
   it('ne fait entrer aucune planète étrangère au transit', () => {
+    /*
+     * « C'est l'exact inverse de Saturne » éclaire dans la brique d'Uranus lue en
+     * entier ; dans une carte sur Uranus et ton Jupiter, ça fait entrer un
+     * troisième nom pour rien. Seuls le transit et le point natal sont admis.
+     */
+    const NOMS: Record<string, string> = {
+      sun: 'Soleil', moon: 'Lune', mercury: 'Mercure', venus: 'Vénus', mars: 'Mars',
+      jupiter: 'Jupiter', saturn: 'Saturne', uranus: 'Uranus', neptune: 'Neptune', pluto: 'Pluton',
+    };
     for (const t of TRANSITS) {
       for (const a of ASPECTS) {
         for (const n of NATALS) {
           const texte = rareMeaning(t, a, n);
-          // Le point natal est nommé par le gabarit ; le reste doit être le transit seul.
-          const noms = ['Soleil', 'Lune', 'Mercure', 'Vénus', 'Mars', 'Jupiter', 'Saturne', 'Uranus', 'Neptune', 'Pluton'];
-          const attendus = new Set([t, n].map((k) => k));
-          for (const nom of noms) {
-            if (!texte.includes(nom)) continue;
-            const estTransitOuNatal = [...attendus].some((k) => rareMeaning(t, a, n).includes(nom) && (
-              nom === texte.slice(0, nom.length) || texte.includes(`ton ${nom}`) || texte.includes(`ta ${nom}`)
-            ));
-            expect(estTransitOuNatal, `${nom} dans « ${texte} »`).toBe(true);
+          for (const [cle, nom] of Object.entries(NOMS)) {
+            if (cle === t || cle === n) continue;
+            expect(texte.includes(nom), `${nom} dans « ${texte} »`).toBe(false);
           }
         }
       }

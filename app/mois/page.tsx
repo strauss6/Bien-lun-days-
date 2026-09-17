@@ -15,7 +15,7 @@ export default function MoisPage() {
   const router = useRouter();
   return (
     <ReadingGate>
-      {(payload) => <DaysScreen payload={payload} onRare={() => router.push('/rares')} />}
+      {(payload) => <DaysScreen payload={payload} onRare={() => router.push('/rares')} onDuo={() => router.push('/duo')} />}
     </ReadingGate>
   );
 }

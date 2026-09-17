@@ -345,3 +345,43 @@ bandeau de saison est un dégradé fin sur fond blanc froid — un hiver blanc y
 clair et froid, lisible comme du gel plutôt que comme de l'eau. Rien n'est changé en
 attendant.
 
+
+## Q17 — L'opposition à l'Ascendant, dite conjonction au Descendant
+
+Question d'astrologie tranchée seule, faute de pouvoir attendre, et **à confirmer par
+le rédacteur**.
+
+Le Descendant est à 180° de l'Ascendant : une planète en conjonction à l'un est en
+opposition à l'autre, c'est le même fait. En comparant deux thèmes, le moteur les
+comptait donc deux fois — le Soleil de l'un ressortait à la fois en conjonction au
+Descendant (porteur, +0,51) et en opposition à l'Ascendant (frottant, −0,71). La même
+chose dans les deux colonnes, avec des verdicts contraires.
+
+Un axe ne compte plus que par une extrémité. Restait à choisir laquelle nommer, et la
+polarité en dépend : conjonction compte pour, opposition compte contre. **Option
+retenue : le Descendant**, parce que c'est le point de l'autre personne — « les
+associés, les partenaires, tout contrat signé avec quelqu'un d'autre » — et qu'un
+Soleil posé dessus est la signature classique de l'attirance, pas d'un obstacle. La
+même règle vaut pour le Milieu du Ciel et le Fond du Ciel.
+
+Ce que ça change si le rédacteur dit l'inverse : un seul bloc de six lignes dans
+`lib/astro/synastry.ts`, et deux tests. Option réversible, prise pour ça.
+
+## Q18 — Les briques de relation, aucune n'est de sa main
+
+Le corpus de la comparaison — dix planètes, trois voix chacune, ce qu'elles apportent,
+ce qu'elles abîment et le geste concret — est **entièrement écrit par nous**. Le
+rédacteur a donné la grille (ce qui est le plus dur, ce qui est surmontable, que le
+signe ne compte pas) et **un** exemple travaillé, celui de Saturne : « on peut se
+comporter de façon trop rigide et trop enfermante, donc faire des efforts et laisser de
+l'espace à l'autre ». Cette brique-là est marquée `dérivé` ; les neuf autres sont
+`inféré`, et un test vérifie qu'aucune ne se déclare `direct`.
+
+Ce n'est pas la même question que celle des transits, et c'est justement le risque :
+Saturne qui *passe* sur ton Soleil est une saison difficile qui finit ; le Saturne de
+quelqu'un sur ton Soleil est permanent. Réutiliser les briques de transit aurait donné
+des textes qui sonnent juste et qui disent faux — d'où un corpus séparé.
+
+À demander au rédacteur, dans cet ordre de priorité : Saturne, Vénus, Mars, Soleil et
+Pluton d'une personne sur le thème d'une autre. Cinq réponses couvrent la majorité de
+ce qui s'affiche.

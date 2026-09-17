@@ -76,7 +76,11 @@ function useCountUp(): number {
  * rapport que l'écran du jour — un 20 septembre y vaut le même score que dans la
  * vue quotidienne, parce que l'échelle ne dépend plus de la fenêtre affichée.
  */
-export function DaysScreen({ payload, onRare }: { payload: ReadingPayload; onRare: () => void }) {
+export function DaysScreen({ payload, onRare, onDuo }: {
+  payload: ReadingPayload;
+  onRare: () => void;
+  onDuo: () => void;
+}) {
   const [selected, setSelected] = useState(0);
   const progress = useCountUp();
   const track = useRef<HTMLDivElement>(null);
@@ -223,6 +227,21 @@ export function DaysScreen({ payload, onRare }: { payload: ReadingPayload; onRar
       >
         Les jours rares
         <span className="tabular-nums opacity-60">{payload.rare.length}</span>
+      </button>
+
+      {/*
+        Deuxième entrée, en contour et non en aplat : le seul noir plein de
+        l'écran reste « Les jours rares ». Deux aplats, ce sont deux appels à
+        l'action qui se disputent la même page.
+      */}
+      <button
+        type="button"
+        onClick={onDuo}
+        data-testid="duo-entry"
+        className="technical mt-3 flex w-full items-center justify-between rounded-full border border-ink/15 bg-surface px-6 py-3.5 text-[13px] font-semibold"
+      >
+        Toi et quelqu’un d’autre
+        <span className="opacity-40">→</span>
       </button>
 
       <footer className="reading mt-10 text-[15px] leading-relaxed opacity-50">

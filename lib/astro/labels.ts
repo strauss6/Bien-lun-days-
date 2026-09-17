@@ -22,6 +22,28 @@ export function possessive(natal: PointId): string {
   return `${FEMININE.has(natal) ? 'ta' : 'ton'} ${POINT_LABELS[natal]}`;
 }
 
+/**
+ * Article défini, élision comprise : « le Soleil », « la Lune », « l'Ascendant ».
+ *
+ * Le genre vit ici et nulle part ailleurs. Une deuxième table ailleurs dans le
+ * code finirait par écrire « à ton Lune », ce qu'elle a d'ailleurs fait avant que
+ * cette fonction existe.
+ */
+const VOYELLE = /^[aeiouyàâéèêëîïôöûü]/i;
+
+export function definite(point: PointId): string {
+  const label = POINT_LABELS[point];
+  if (VOYELLE.test(label)) return `l’${label}`;
+  return `${FEMININE.has(point) ? 'la' : 'le'} ${label}`;
+}
+
+/** « au Soleil », « à la Lune », « à l'Ascendant ». */
+export function aDefinite(point: PointId): string {
+  const label = POINT_LABELS[point];
+  if (VOYELLE.test(label)) return `à l’${label}`;
+  return FEMININE.has(point) ? `à la ${label}` : `au ${label}`;
+}
+
 /** « trigone à ton Soleil ». */
 export function aspectPhrase(aspect: AspectId, natal: PointId): string {
   return `${ASPECTS[aspect].label} à ${possessive(natal)}`;

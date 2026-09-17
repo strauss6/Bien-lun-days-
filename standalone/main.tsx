@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client';
 import { useEffect, useState } from 'react';
 import { TodayScreen } from '@/components/screens/TodayScreen';
 import { DaysScreen } from '@/components/screens/DaysScreen';
+import { DuoScreen } from '@/components/screens/DuoScreen';
 import { RareScreen } from '@/components/screens/RareScreen';
 import { QuizFlow } from '@/components/screens/QuizFlow';
 import { ReadingGate } from '@/components/app/ReadingGate';
@@ -109,6 +110,26 @@ function Profil() {
   );
 }
 
+/**
+ * La comparaison, en version autonome : même écran, mais la recherche de ville
+ * passe par l'index embarqué au lieu de la route serveur, qui n'existe pas ici.
+ */
+function Duo() {
+  const router = useRouter();
+  const profile = loadProfile();
+  useEffect(() => {
+    if (!profile) router.replace('/');
+  }, [profile, router]);
+  if (!profile) return null;
+  return (
+    <DuoScreen
+      me={profile.request as ReadingInput}
+      onBack={() => router.push('/mois')}
+      citySearch={async (q) => searchCities(q)}
+    />
+  );
+}
+
 /** L'accueil : aujourd'hui si un profil existe, la porte d'entrée sinon. */
 function Accueil() {
   const state = useReading();
@@ -165,10 +186,17 @@ function App() {
   if (path === '/mois') {
     return (
       <ReadingGate>
-        {(payload) => <DaysScreen payload={payload} onRare={() => router.push('/rares')} />}
+        {(payload) => (
+          <DaysScreen
+            payload={payload}
+            onRare={() => router.push('/rares')}
+            onDuo={() => router.push('/duo')}
+          />
+        )}
       </ReadingGate>
     );
   }
+  if (path === '/duo') return <Duo />;
   if (path === '/rares') {
     return (
       <ReadingGate>

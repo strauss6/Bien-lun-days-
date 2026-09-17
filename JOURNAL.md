@@ -545,3 +545,35 @@ Vénus et Pluton. Ce n'est pas un défaut du code mais du corpus : ce sont exact
 réponses courtes en attente — ce qu'une planète **fait en passant**, distinct de ce qu'elle
 **représente dans le thème**. Tant qu'elles manquent, la variété vient des trois autres
 morceaux de la phrase, pas de l'ouverture.
+
+## 17 septembre 2026 — la comparaison de deux thèmes
+
+**Fait.** `lib/astro/synastry.ts` croise les planètes d'un thème avec les quatorze points
+de l'autre, dans les deux sens, en réutilisant les aspects, les orbes et la polarité du
+reste du moteur. Pas de dimension temps : deux thèmes ne bougent pas l'un par rapport à
+l'autre, donc ni fenêtre, ni étalonnage, ni risque qu'un lien change de valeur selon
+l'écran. La grille du rédacteur est encodée telle quelle, y compris ce qu'il tient pour
+le plus dur. `lib/copy/relation.ts` porte le corpus relationnel — dix planètes, trois
+voix — et `/duo` rend le livrable qu'il a demandé : trois choses à faire, trois à éviter,
+et le point dur. Aucune note sur dix : il dit qu'une note rate l'intérêt.
+
+**Cassé, réparé.** Quatre défauts, tous trouvés par mesure ou par test, aucun à l'œil.
+(1) Les axes comptaient double : le Soleil ressortait en conjonction au Descendant *et*
+en opposition à l'Ascendant, le même fait dans les deux colonnes avec des verdicts
+contraires — un axe ne compte plus que par une extrémité, et le choix de laquelle est
+consigné en Q17. (2) Le même contact se lisait deux fois, et la polarité suivant la
+planète qui agit, l'un sortait positif et l'autre négatif ; un seul lien par paire de
+points, le plus lourd gagne. (3) Le départage des ex æquo dépendait de qui était la
+personne A : comparer Élioth à Marie ne donnait pas le même résultat que Marie à Élioth,
+pour un ciel identique. Il est désormais intrinsèque au lien. (4) Le conseil désignait la
+mauvaise personne — « ça vient chercher la sensibilité de Marie » là où la sensibilité
+touchée était celle du lecteur ; c'est ce qui a imposé les trois voix plutôt qu'une.
+Deux mots interdits par les règles du projet, « mauvais » et « seul », ont été attrapés
+par les tests après avoir été écrits — dont un que j'avais réintroduit en corrigeant
+l'autre.
+
+**Incertain.** Le corpus relationnel n'a aucune brique de la main du rédacteur : une est
+`dérivé`, neuf sont `inféré`, et un test l'empêche de se présenter autrement. Q18 liste
+les cinq à lui demander en premier. Par ailleurs la seconde personne ne peut pas encore
+renseigner ses données elle-même — on les saisit pour elle, ce qui couvre le cas courant
+mais pas celui de deux personnes qui ne sont pas dans la même pièce.

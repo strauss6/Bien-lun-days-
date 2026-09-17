@@ -218,9 +218,11 @@ monétisation et le parcours. Voir l'encadré en tête de `BRIEF.md`.
 - [ ] **B09 — Contexte de vie au questionnaire.** En couple ou non, en poste ou en
       recherche. Change la consigne de l'axe Amour et de l'axe Business à calcul identique.
       Arbitrage à rendre : deux écrans de plus sur cinq. Voir `QUESTIONS.md` Q14.
-- [ ] **B10 — Comparaison de deux thèmes.** Trois choses à faire, trois à éviter, et ce qui
-      est rédhibitoire. Le moteur sait déjà le calculer ; le travail est de transmettre un
-      thème sans mettre de données de naissance dans une adresse. Voir Q15.
+- [x] **B10 — Comparaison de deux thèmes.** Trois choses à faire, trois à éviter, et le
+      point dur. Le blocage supposé — transmettre un thème sans données de naissance dans
+      une adresse — n'en était pas un : on saisit la date de naissance de l'autre sur son
+      propre appareil, et rien ne circule. Le cas où la seconde personne renseigne
+      elle-même ses données reste à faire, et ne bloque rien. Voir Q15, Q17, Q18.
 - [ ] **B11 — Maîtres de maison et planète dominante.** Deux notions que le rédacteur tient
       pour centrales et que le moteur n'implémente pas. Elles relient un point natal à un
       domaine de vie, et rendraient les lectures nettement plus personnelles.
