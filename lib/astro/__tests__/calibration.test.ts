@@ -8,6 +8,7 @@ import { addCivilDays } from '../zone';
 import { computeNatalChart } from '../natal';
 import { resolveBirthInstant } from '../time';
 import { referenceChart } from './fixtures';
+import { buildReading } from '@/lib/api/reading';
 
 const ZONE = 'Europe/Paris';
 const read = (startDate: string, days: number) =>
@@ -98,5 +99,63 @@ describe('l’étalonnage', () => {
     expect(applyScale(-1e6, s)).toBe(SCORE_FLOOR);
     expect(applyScale(s.median, s)).toBeGreaterThan(SCORE_FLOOR);
     expect(applyScale(s.median, s)).toBeLessThan(SCORE_CEILING);
+  });
+});
+
+
+/*
+ * Le trimestre, ajouté le 29 septembre 2026, rejoue exactement le risque que cet
+ * étalonnage a été écrit pour supprimer : une même journée regardée dans deux
+ * fenêtres de longueurs différentes. Si l'échelle dépendait encore de ce qui est
+ * affiché, elle se trahirait ici.
+ */
+describe('un jour vaut la même chose dans le mois et dans le trimestre', () => {
+  const base = {
+    firstName: 'E', birthDate: '1993-08-06', birthTime: '20:40', timeKnown: true,
+    lat: 48.8352, lng: 2.2409, city: 'B', country: 'FR',
+    priorityAxis: 'business' as const, zone: 'Europe/Paris',
+  };
+
+  it('sur les trente jours communs, au centième près et sans exception', () => {
+    const mois = buildReading({ ...base, startDate: '2026-09-29', days: 30 });
+    const trimestre = buildReading({ ...base, startDate: '2026-09-29', days: 90 });
+
+    expect(mois.days).toHaveLength(30);
+    expect(trimestre.days).toHaveLength(90);
+    expect(mois.method).toBe(trimestre.method);
+
+    for (let i = 0; i < 30; i += 1) {
+      const a = mois.days[i];
+      const b = trimestre.days[i];
+      expect(b.date).toBe(a.date);
+      expect(b.overall.score, a.date).toBe(a.overall.score);
+      expect(b.overall.lunar, a.date).toBe(a.overall.lunar);
+      for (const axis of ['business', 'love', 'energy'] as const) {
+        expect(b.axes[axis].score, `${a.date} ${axis}`).toBe(a.axes[axis].score);
+        expect(b.axes[axis].phrase, `${a.date} ${axis}`).toBe(a.axes[axis].phrase);
+      }
+    }
+  });
+
+  /*
+   * La ligne neutre des fenêtres est le corollaire : dérivée des jours affichés,
+   * elle bougerait entre les deux vues et découperait des périodes différentes.
+   */
+  it('la ligne neutre ne dépend pas de la longueur de la fenêtre', () => {
+    const chart = referenceChart();
+    const court = computeReading({ chart, zone: 'Europe/Paris', startDate: '2026-09-29', days: 30 });
+    const long = computeReading({ chart, zone: 'Europe/Paris', startDate: '2026-09-29', days: 90 });
+    for (const axis of ['business', 'love', 'energy'] as const) {
+      expect(long.axes[axis].neutral).toBe(court.axes[axis].neutral);
+    }
+  });
+
+  it('ni de la date à laquelle on ouvre le produit', () => {
+    const chart = referenceChart();
+    const a = computeReading({ chart, zone: 'Europe/Paris', startDate: '2026-09-29', days: 90 });
+    const b = computeReading({ chart, zone: 'Europe/Paris', startDate: '2027-03-14', days: 90 });
+    for (const axis of ['business', 'love', 'energy'] as const) {
+      expect(b.axes[axis].neutral).toBe(a.axes[axis].neutral);
+    }
   });
 });

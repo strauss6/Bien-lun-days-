@@ -102,6 +102,21 @@ export function applyScale(value: number, s: Scale): number {
   return SCORE_FLOOR + (SCORE_CEILING - SCORE_FLOOR) * Math.min(1, Math.max(0, t));
 }
 
+/**
+ * Le score qui correspond à la journée **médiane de la personne**, sur la période
+ * de référence fixe.
+ *
+ * C'est la seule ligne neutre défendable. Prendre la médiane des jours affichés
+ * la ferait dépendre de la fenêtre — l'exacte erreur corrigée le 11 septembre, et
+ * elle reviendrait par la porte du trimestre. Prendre 50 en dur supposerait que
+ * la compression est symétrique autour de la médiane, ce qu'elle n'est pas : les
+ * bornes sont les centiles 2 et 98 d'une distribution qui ne l'est pas non plus.
+ * Mesuré sur cinq thèmes, le neutre tombe entre 45 et 55.
+ */
+export function neutralScore(s: Scale): number {
+  return applyScale(s.median, s);
+}
+
 export function applyCalibration(series: number[], s: Scale): number[] {
   return series.map((v) => applyScale(v, s));
 }

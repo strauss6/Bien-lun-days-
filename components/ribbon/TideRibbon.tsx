@@ -25,8 +25,13 @@ export interface RibbonDay {
 
 interface Props {
   days: RibbonDay[];
-  /** Jour sous le curseur. */
-  selected: number;
+  /**
+   * Jour sous le curseur, ou `null` pour n'en afficher aucun.
+   *
+   * Le trimestre n'a pas de jour choisi : à 3,6 px par colonne, désigner une
+   * journée n'a plus de sens, et un curseur posé au hasard en désignerait une.
+   */
+  selected: number | null;
   labels: Record<AxisId, string>;
   /**
    * Nom du premier jour. « AUJ. » quand la fenêtre commence aujourd'hui, « J1 »
@@ -120,7 +125,7 @@ export function TideRibbon({ days, selected, labels, firstLabel, onScrub, classN
       viewBox={`0 0 ${RIBBON_WIDTH} ${totalHeight}`}
       style={{ display: 'block', width: '100%', height: 'auto' }}
       role="img"
-      aria-label={`Trente jours, du ${days[0].date} au ${days[n - 1].date}`}
+      aria-label={`${n} jours, du ${days[0].date} au ${days[n - 1].date}`}
     >
       <defs>
         <linearGradient id={gradientId} x1="0" x2="1">
@@ -244,6 +249,8 @@ export function TideRibbon({ days, selected, labels, firstLabel, onScrub, classN
       ) : null}
 
       {/* Poignée du curseur : sans elle, le doigt n'a rien à saisir. */}
+      {selected === null ? null : (
+      <>
       <circle
         cx={columnCenter(selected, n)}
         cy={bandsTop - 3.5}
@@ -263,6 +270,8 @@ export function TideRibbon({ days, selected, labels, firstLabel, onScrub, classN
         strokeOpacity={0.35}
         data-testid="ribbon-cursor"
       />
+      </>
+      )}
     </svg>
   );
 }

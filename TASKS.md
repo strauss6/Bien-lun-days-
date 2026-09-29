@@ -223,6 +223,11 @@ monétisation et le parcours. Voir l'encadré en tête de `BRIEF.md`.
       une adresse — n'en était pas un : on saisit la date de naissance de l'autre sur son
       propre appareil, et rien ne circule. Le cas où la seconde personne renseigne
       elle-même ses données reste à faire, et ne bloque rien. Voir Q15, Q17, Q18.
+- [x] **B12 — Le trimestre.** Demandé le 29 septembre 2026, alors qu'il était listé
+      hors périmètre. Le produit calcule désormais 90 jours en une fois — même coût, le
+      gros de la dépense étant l'étalonnage de 780 jours — et le mois en lit les trente
+      premiers. La vue montre des **fenêtres** et non des journées : à 3,6 px par jour,
+      le score du jour porté par la Lune ferait une barrière de piquets. Voir Q19.
 - [ ] **B11 — Maîtres de maison et planète dominante.** Deux notions que le rédacteur tient
       pour centrales et que le moteur n'implémente pas. Elles relient un point natal à un
       domaine de vie, et rendraient les lectures nettement plus personnelles.
@@ -231,7 +236,7 @@ monétisation et le parcours. Voir l'encadré en tête de `BRIEF.md`.
 
 ## Hors périmètre de cette session
 
-Paywall, Stripe, Resend, PDF, fenêtre de 90 jours, vue hebdomadaire, compte utilisateur.
+Paywall, Stripe, Resend, PDF, vue hebdomadaire, compte utilisateur.
 
 ## Revue demandée le 10 septembre 2026
 

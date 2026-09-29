@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { ReadingPayload } from '@/lib/api/reading';
+import { readingBody, type ReadingPayload } from '@/lib/api/reading';
 import { civilDateIn, msUntilNextMidnight, residentZone } from '@/lib/app/today';
 import { loadProfile, loadReading, saveReading } from './store';
 
@@ -40,7 +40,7 @@ const parLeServeur: ReadingSource = async (request, today, zone) => {
   const r = await fetch('/api/reading', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ ...request, startDate: today, zone }),
+    body: JSON.stringify(readingBody(request, today, zone)),
   });
   const body = await r.json();
   if (!r.ok) throw new Error(body.error ?? 'Le calcul a échoué.');

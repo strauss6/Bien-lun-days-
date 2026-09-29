@@ -6,7 +6,7 @@ test.describe('le ruban des trente jours', () => {
   });
 
   test('rend trois bandes, une graduation et un curseur', async ({ page }) => {
-    const svg = page.getByRole('img', { name: /Trente jours/ });
+    const svg = page.getByRole('img', { name: /^\d+ jours, du / });
     await expect(svg).toBeVisible();
     // `toBeVisible` ne s'applique pas à une ligne SVG verticale : sa boîte fait
     // zéro pixel de large, ce que Playwright compte comme caché. On vérifie donc
@@ -27,7 +27,7 @@ test.describe('le ruban des trente jours', () => {
     );
     expect(overflow).toBeLessThanOrEqual(1);
 
-    const box = await page.getByRole('img', { name: /Trente jours/ }).boundingBox();
+    const box = await page.getByRole('img', { name: /^\d+ jours, du / }).boundingBox();
     expect(box!.width).toBeGreaterThan(280);
     expect(box!.height).toBeGreaterThan(80);
   });

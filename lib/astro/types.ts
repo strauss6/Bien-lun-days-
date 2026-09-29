@@ -1,3 +1,4 @@
+import type { AxisPeriod } from './periods';
 export type PlanetId =
   | 'sun' | 'moon' | 'mercury' | 'venus' | 'mars'
   | 'jupiter' | 'saturn' | 'uranus' | 'neptune' | 'pluto';
@@ -124,6 +125,17 @@ export interface AxisReading {
   worst: number[];
   /** Transit lent dominant sur la fenêtre — absorbé par la normalisation, restitué ici. */
   backdrop: DayAspect | null;
+  /**
+   * Suites d'au moins sept jours du même côté de la ligne neutre de la personne.
+   * C'est ce que le trimestre montre, faute de pouvoir montrer des journées à
+   * trois pixels de large. Voir `periods.ts`.
+   */
+  periods: AxisPeriod[];
+  /**
+   * Score de la journée médiane de la personne, sur la période de référence fixe
+   * de l'étalonnage. Jamais la médiane des jours affichés.
+   */
+  neutral: number;
 }
 
 export interface LunarDay {

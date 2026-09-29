@@ -3,11 +3,12 @@ import { useEffect, useState } from 'react';
 import { TodayScreen } from '@/components/screens/TodayScreen';
 import { DaysScreen } from '@/components/screens/DaysScreen';
 import { DuoScreen } from '@/components/screens/DuoScreen';
+import { QuarterScreen } from '@/components/screens/QuarterScreen';
 import { RareScreen } from '@/components/screens/RareScreen';
 import { QuizFlow } from '@/components/screens/QuizFlow';
 import { ReadingGate } from '@/components/app/ReadingGate';
 import { AppHeader } from '@/components/app/AppHeader';
-import { buildReading, ReadingRequest, type ReadingInput, type ReadingPayload } from '@/lib/api/reading';
+import { buildReading, readingBody, ReadingRequest, type ReadingInput, type ReadingPayload } from '@/lib/api/reading';
 import { searchCities } from '@/lib/cities/search';
 import { setReadingSource, useReading } from '@/lib/profile/useReading';
 import { saveProfile, saveReading, loadProfile } from '@/lib/profile/store';
@@ -30,7 +31,7 @@ setReadingSource(async (request, today, zone) => {
   // appel. On rend la main au navigateur pour qu'il peigne l'écran d'attente
   // avant de le bloquer, sinon la page reste blanche une demi-seconde.
   await new Promise((r) => setTimeout(r, 30));
-  return buildReading(ReadingRequest.parse({ ...request, startDate: today, zone }));
+  return buildReading(ReadingRequest.parse(readingBody(request, today, zone)));
 });
 
 function Quiz() {
@@ -191,12 +192,20 @@ function App() {
             payload={payload}
             onRare={() => router.push('/rares')}
             onDuo={() => router.push('/duo')}
+            onQuarter={() => router.push('/trimestre')}
           />
         )}
       </ReadingGate>
     );
   }
   if (path === '/duo') return <Duo />;
+  if (path === '/trimestre') {
+    return (
+      <ReadingGate>
+        {(payload) => <QuarterScreen payload={payload} onBack={() => router.push('/mois')} />}
+      </ReadingGate>
+    );
+  }
   if (path === '/rares') {
     return (
       <ReadingGate>

@@ -577,3 +577,44 @@ l'autre.
 les cinq à lui demander en premier. Par ailleurs la seconde personne ne peut pas encore
 renseigner ses données elle-même — on les saisit pour elle, ce qui couvre le cas courant
 mais pas celui de deux personnes qui ne sont pas dans la même pièce.
+
+## 29 septembre 2026 — le trimestre
+
+**Fait.** Le produit calcule quatre-vingt-dix jours en une seule fois, et le mois en lit
+les trente premiers : un calcul, trois vues, aucune occasion de diverger. Ça ne coûte
+rien — 1,5 s contre 1,9 s, 213 Ko contre 78 Ko — parce que la dépense d'un rapport est
+l'étalonnage de 780 jours, fait une fois par thème, jamais la fenêtre. `lib/astro/periods.ts`
+découpe chaque axe en fenêtres d'au moins sept jours du même côté de la ligne neutre de
+la personne, et `/trimestre` les rend datées des deux bouts, avec leur durée en clair et
+le jour où c'est le plus net.
+
+**Cassé, réparé.** Cinq fois. (1) L'écran affichait trente jours sous un titre qui en
+promettait quatre-vingt-dix : trois appelants demandaient la fenêtre chacun de leur côté
+et un n'avait pas suivi — celui du questionnaire, donc celui qui produit le rapport
+enregistré. Un seul point de décision désormais, `readingBody`. (2) Le ruban à
+quatre-vingt-dix jours donnait des colonnes de 2 px séparées de 1,6 px de vide : sous la
+largeur d'un trait, un vide ne se voit plus et le ruban devenait un peigne sale. Un vide
+franc ou pas de vide — le trimestre est contigu, le mois n'a pas bougé d'un pixel.
+(3) Les graduations hebdomadaires donnaient treize étiquettes sur 324 px ; elles passent
+au mois au-delà de quarante-cinq jours. (4) Deux fenêtres basses sortaient mot pour mot
+identiques : l'ouverture et le geste étaient tirés avec la même clé, donc ils se
+déplaçaient ensemble. (5) J'ai écrit « Rien d'irrémédiable » — un mot que le projet
+interdit en sortie, négation comprise ; le test l'a attrapé.
+
+Trois tests de bout en bout échouaient pour des attentes devenues fausses, pas pour des
+régressions. Le plus instructif figeait « Jupiter en conjonction à ton Soleil » comme
+phrase du jour : vrai le 15 septembre, faux le 29, Jupiter étant sorti d'orbe. Un test qui
+fige un aspect du ciel échoue à date fixe sans que rien n'ait cassé. Il vérifie désormais
+la règle du produit — un aspect vise un point natal nommé, jamais un signe.
+
+**Vérifié par la mesure, pas par l'intention.** Les trente jours communs au mois et au
+trimestre portent exactement les mêmes scores, les mêmes scores lunaires et les mêmes
+phrases, et la ligne neutre ne bouge ni avec la longueur de la fenêtre ni avec la date
+d'ouverture. C'est ce que l'étalonnage du 11 septembre avait été écrit pour garantir ; le
+trimestre était l'occasion de le vérifier pour de bon, et il tient.
+
+**Incertain.** Le seuil de sept jours et le rang « meilleure fenêtre », calculé sur la
+moyenne et non sur la durée, sont des choix de produit pris seul. Q19 les expose. Par
+ailleurs l'écran des jours rares couvre maintenant le trimestre et non plus le mois : il y
+trouve dix-neuf aspects au lieu de seize, ce qui est plus juste puisqu'il parle de
+planètes lentes, mais la pastille du mois annonce ce nombre sous une vue de trente jours.

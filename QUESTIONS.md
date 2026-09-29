@@ -385,3 +385,29 @@ des textes qui sonnent juste et qui disent faux — d'où un corpus séparé.
 À demander au rédacteur, dans cet ordre de priorité : Saturne, Vénus, Mars, Soleil et
 Pluton d'une personne sur le thème d'une autre. Cinq réponses couvrent la majorité de
 ce qui s'affiche.
+
+## Q19 — Ce que le trimestre montre, et ce qu'il ne montre pas
+
+Le trimestre était hors périmètre ; il a été demandé le 29 septembre 2026. Deux
+décisions ont été prises à la mesure plutôt qu'au goût, et elles méritent d'être
+relues.
+
+**Le score du jour n'est pas sur cet écran.** Sur le thème de référence, les trois axes
+changent de sens 13, 25 et 31 fois en 88 jours ; le score global du jour, 36 fois. Les
+axes tiennent parce que des planètes lentes les portent et qu'un même aspect dure des
+semaines ; le score du jour oscille parce que la Lune en fait les trois quarts et qu'elle
+boucle le zodiaque en vingt-sept jours. À 3,6 px par colonne, le tracer donnerait une
+barrière de piquets. Le trimestre montre donc des **fenêtres d'axe**, et le score du jour
+reste l'affaire de la vue du jour.
+
+**La ligne neutre est celle de la personne, pas celle du trimestre.** Une fenêtre est une
+suite d'au moins sept jours du même côté du score de la journée médiane de la personne,
+calculé sur la période de référence fixe de l'étalonnage. La calculer sur les 90 jours
+affichés aurait garanti à chacun autant de haut que de bas — joli, et faux. Corollaire
+assumé, déjà inscrit dans `CLAUDE.md` : sur cinq thèmes mesurés, l'un n'a aucune fenêtre
+Business haute du trimestre, et l'écran le dit au lieu de meubler.
+
+**Sept jours** est le seuil : en deçà, ce n'est pas une période mais une journée, et la
+journée a son écran. C'est aussi la plus petite unité autour de laquelle on déplace
+quelque chose dans un agenda. Seuil réglable d'une constante si le rédacteur le juge trop
+bas.

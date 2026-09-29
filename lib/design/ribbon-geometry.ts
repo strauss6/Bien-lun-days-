@@ -24,7 +24,26 @@ export const PLOT_WIDTH = RIBBON_WIDTH - LABEL_GUTTER;
 export const BAND_HEIGHT = 62;
 /** Ligne de base : au-dessus, les jours favorables ; en dessous, ceux à éviter. */
 export const BASELINE = 38;
+/**
+ * Part de son pas qu'une colonne occupe, le reste étant le vide qui la détache.
+ *
+ * À trente jours, un pas de 10,8 px donne une colonne de 6 px et un vide de 4,8 :
+ * on lit des journées distinctes, ce qui est le propos de cette vue. À quatre-
+ * vingt-dix, le même rapport donnerait 2 px de colonne et 1,6 px de vide — sous
+ * la largeur d'un trait, le vide ne se voit plus et le ruban devient un peigne
+ * sale. On resserre donc jusqu'au contigu quand le pas descend, ce qui est aussi
+ * le bon dessin : à l'échelle du trimestre on ne lit plus des jours mais des
+ * périodes, et une aire continue est ce qui les montre.
+ */
 const COLUMN_RATIO = 0.56;
+/**
+ * En dessous de cette largeur, un vide ne se voit plus : il se supprime.
+ *
+ * Un vide franc ou pas de vide, jamais un vide sous-pixel qui grise le ruban
+ * sans le structurer. À trente jours il vaut 4,8 px et reste ; à quatre-vingt-dix
+ * il vaudrait 1,6 px et disparaît, laissant une aire continue.
+ */
+const MIN_GAP = 2;
 const MIN_MARK = 0.8;
 /** Hauteur d'un tiret de l'axe Énergie : sa graduation se compte en unités. */
 const DASH = 2.2;
@@ -41,7 +60,9 @@ export interface Mark {
 }
 
 export function columnWidth(days: number): number {
-  return (PLOT_WIDTH / days) * COLUMN_RATIO;
+  const pas = PLOT_WIDTH / days;
+  const vide = pas * (1 - COLUMN_RATIO);
+  return vide < MIN_GAP ? pas : pas - vide;
 }
 
 export function columnCenter(day: number, days: number): number {
@@ -145,15 +166,33 @@ export interface Tick {
 }
 
 /**
- * Une graduation par jour, appuyée et étiquetée une semaine sur sept.
+ * Pas d'étiquetage, choisi pour que la graduation reste lisible.
+ *
+ * Une semaine sur trente jours : cinq étiquettes, confortable. La même règle sur
+ * un trimestre en donnerait treize sur 324 px, soit une tous les 25 px pour des
+ * libellés qui en font 24 — elles se toucheraient. On passe donc au mois.
+ *
+ * Le pas suit le nombre de jours et non un réglage d'appelant : deux vues qui
+ * choisiraient chacune le leur finiraient par se contredire, et le ruban est
+ * exactement l'endroit où l'on compare les deux.
+ */
+export function tickStep(days: number): number {
+  if (days <= 45) return 7;
+  if (days <= 120) return 30;
+  return 90;
+}
+
+/**
+ * Une graduation par jour, appuyée et étiquetée au pas ci-dessus.
  *
  * Le premier jour se nomme selon ce que la fenêtre représente : « AUJ. » dans le
  * produit, où elle commence aujourd'hui, « J1 » sur une démonstration à dates
  * fixes, où prétendre qu'il s'agit d'aujourd'hui devient faux dès le lendemain.
  */
 export function tickPositions(days: number, firstLabel = 'AUJ.'): Tick[] {
+  const step = tickStep(days);
   return Array.from({ length: days }, (_, day) => {
-    const labelled = day % 7 === 0;
+    const labelled = day % step === 0;
     return {
       day,
       x: columnCenter(day, days),

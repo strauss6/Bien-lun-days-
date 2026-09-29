@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { DRAFT_STORAGE_KEY } from '@/lib/quiz/steps';
 import { saveProfile, saveReading } from '@/lib/profile/store';
 import { residentZone } from '@/lib/app/today';
-import type { ReadingInput, ReadingPayload } from '@/lib/api/reading';
+import { readingBody, type ReadingInput, type ReadingPayload } from '@/lib/api/reading';
 
 const MONTHS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
 const longDate = (iso: string) => `${Number(iso.slice(8, 10))} ${MONTHS[Number(iso.slice(5, 7)) - 1]} ${iso.slice(0, 4)}`;
@@ -41,10 +41,21 @@ export default function CalculPage() {
       return;
     }
 
+    /*
+     * La fenêtre demandée vient de `readingBody`, jamais du brouillon : le
+     * questionnaire n'a pas à savoir que le produit calcule un trimestre, et
+     * c'est en la laissant décider ici qu'on s'est retrouvé avec un rapport de
+     * trente jours sous un écran qui en promettait quatre-vingt-dix.
+     */
+    const brouillon = JSON.parse(raw) as ReadingInput;
     fetch('/api/reading', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: raw,
+      body: JSON.stringify(readingBody(
+        brouillon as unknown as Record<string, unknown>,
+        brouillon.startDate,
+        brouillon.zone ?? residentZone(),
+      )),
     })
       .then(async (r) => {
         const body = await r.json();

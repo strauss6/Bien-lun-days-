@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AppHeader } from '@/components/app/AppHeader';
 import { TideRibbon, type RibbonDay } from '@/components/ribbon/TideRibbon';
-import { AXIS_IDS } from '@/lib/astro/transits';
+import { AXIS_IDS, DEFAULT_WINDOW_DAYS as MONTH_DAYS } from '@/lib/astro/transits';
 import { PEAK_SCORE } from '@/lib/design/ribbon-geometry';
 import { COUNT_MS, countAt } from '@/lib/ui/count-up';
 import { buzz, crossesPeak } from '@/lib/ui/haptics';
@@ -76,11 +76,18 @@ function useCountUp(): number {
  * rapport que l'écran du jour — un 20 septembre y vaut le même score que dans la
  * vue quotidienne, parce que l'échelle ne dépend plus de la fenêtre affichée.
  */
-export function DaysScreen({ payload, onRare, onDuo }: {
+export function DaysScreen({ payload, onRare, onDuo, onQuarter }: {
   payload: ReadingPayload;
   onRare: () => void;
   onDuo: () => void;
+  onQuarter: () => void;
 }) {
+  /*
+   * Le rapport couvre désormais un trimestre, calculé une seule fois. Cette vue
+   * en montre les trente premiers jours : elle n'a pas changé de sens, et un
+   * second calcul à trente jours aurait été une occasion de diverger du premier.
+   */
+  const jours = useMemo(() => payload.days.slice(0, MONTH_DAYS), [payload]);
   const [selected, setSelected] = useState(0);
   const progress = useCountUp();
   const track = useRef<HTMLDivElement>(null);
@@ -97,13 +104,13 @@ export function DaysScreen({ payload, onRare, onDuo }: {
   const settle = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const days: RibbonDay[] = useMemo(
-    () => payload.days.map((d) => ({
+    () => jours.map((d) => ({
       date: d.date,
       season: d.season as RibbonDay['season'],
       scores: Object.fromEntries(AXIS_IDS.map((a) => [a, d.axes[a].score])) as RibbonDay['scores'],
       peakSign: Object.fromEntries(AXIS_IDS.map((a) => [a, d.axes[a].peakSign])) as RibbonDay['peakSign'],
     })),
-    [payload],
+    [jours],
   );
 
   /** Un jour est un pic là où le ruban pose un glyphe : même seuil, même condition. */
@@ -169,7 +176,7 @@ export function DaysScreen({ payload, onRare, onDuo }: {
       <p className="technical mt-6 flex items-center justify-between gap-4 text-[12px]">
         <span className="flex items-baseline gap-2">
           <strong className="text-[15px] font-semibold tracking-[0.02em]">
-            {shortDate(payload.days[selected].date).toUpperCase()}
+            {shortDate(jours[selected].date).toUpperCase()}
           </strong>
           {selected > 0 ? <span className="opacity-40">+{selected}</span> : null}
         </span>
@@ -207,7 +214,7 @@ export function DaysScreen({ payload, onRare, onDuo }: {
           if (at !== current.current && at >= 0 && at < days.length) commit(at);
         }}
       >
-        {payload.days.map((d, index) => (
+        {jours.map((d, index) => (
           <DayCard
             key={d.date}
             day={d}
@@ -234,6 +241,16 @@ export function DaysScreen({ payload, onRare, onDuo }: {
         l'écran reste « Les jours rares ». Deux aplats, ce sont deux appels à
         l'action qui se disputent la même page.
       */}
+      <button
+        type="button"
+        onClick={onQuarter}
+        data-testid="quarter-entry"
+        className="technical mt-3 flex w-full items-center justify-between rounded-full border border-ink/15 bg-surface px-6 py-3.5 text-[13px] font-semibold"
+      >
+        Les trois mois qui viennent
+        <span className="opacity-40">→</span>
+      </button>
+
       <button
         type="button"
         onClick={onDuo}

@@ -1,38 +1,13 @@
 'use client';
 
 import type { RarePayload, ReadingPayload } from '@/lib/api/reading';
+import { duree, jourComplet, plage } from '@/lib/copy/duration';
 
-const MOIS = ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
-/** « 1er septembre », jamais « 1 septembre » : seul le premier du mois est ordinal. */
-const jourMois = (iso: string) => {
-  const jour = Number(iso.slice(8, 10));
-  return `${jour === 1 ? '1er' : jour} ${MOIS[Number(iso.slice(5, 7)) - 1]}`;
-};
-const jourComplet = (iso: string) => `${jourMois(iso)} ${iso.slice(0, 4)}`;
-
-/**
- * Durée en clair.
- *
- * Un nombre de jours ne se ressent pas : « 1 955 jours » ne dit rien, « cinq ans
- * et quatre mois » dit tout. C'est cette durée qui fait comprendre qu'un transit
- * de Pluton n'est pas un événement mais une saison de la vie.
+/*
+ * La durée en clair et les formats de date vivent dans `lib/copy/duration.ts` :
+ * le trimestre les emploie aussi, et deux exemplaires finiraient par arrondir
+ * différemment la même plage.
  */
-function duree(jours: number): string {
-  if (jours < 14) return `${jours} jours`;
-  if (jours < 60) return `${Math.round(jours / 7)} semaines`;
-  if (jours < 400) return `${Math.round(jours / 30.44)} mois`;
-  const ans = Math.floor(jours / 365.25);
-  const mois = Math.round((jours - ans * 365.25) / 30.44);
-  if (mois === 0) return ans === 1 ? 'un an' : `${ans} ans`;
-  return `${ans === 1 ? 'un an' : `${ans} ans`} et ${mois} mois`;
-}
-
-/** Une même date de début et de fin dans l'année : on ne répète pas l'année. */
-function plage(start: string, end: string): string {
-  return start.slice(0, 4) === end.slice(0, 4)
-    ? `du ${jourMois(start)} au ${jourComplet(end)}`
-    : `du ${jourComplet(start)} au ${jourComplet(end)}`;
-}
 
 /**
  * Les jours rares.

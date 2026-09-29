@@ -4,8 +4,9 @@ import type {
 } from './types';
 import type { TransitGrid } from './transits';
 import { AXIS_IDS, AXIS_NATALS, AXIS_TRANSITS, DEFAULT_WINDOW_DAYS, buildTransitGrid, pairKey } from './transits';
-import { type Calibration, applyCalibration, calibrationFor } from './calibration';
+import { type Calibration, applyCalibration, calibrationFor, neutralScore } from './calibration';
 import { effectiveLunarWeights, lunarSeries, overallScore } from './lunar';
+import { axisPeriods } from './periods';
 
 /** Poids des planètes en transit, par axe. */
 export const TRANSIT_WEIGHTS: Record<AxisId, Partial<Record<PlanetId, number>>> = {
@@ -341,8 +342,17 @@ export function computeReading(options: ScoreOptions): Reading {
       };
     });
 
+    /*
+     * La ligne neutre vient de l'étalonnage du thème, jamais des jours affichés :
+     * dérivée de la fenêtre, elle rendrait la moitié des jours favorables par
+     * construction, pour tout le monde et tous les trimestres.
+     */
+    const neutral = neutralScore(calibration.axes[axis].score);
+
     axes[axis] = {
       axis,
+      periods: axisPeriods(scores, neutral, axis),
+      neutral,
       days: dayList,
       best: selectDates(significance, {
         count: 5, order: 'best', threshold: BEST_THRESHOLD,

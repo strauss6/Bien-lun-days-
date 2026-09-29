@@ -36,15 +36,31 @@ test('du prénom au rendez-vous du jour, avec de vrais calculs', async ({ page }
   // L'écran de calcul porte les vraies valeurs du calcul, pas une attente décorative.
   await expect(page.getByTestId('calc-step').first()).toContainText('6 août 1993, 20:40');
   await expect(page.getByText(/Ascendant .*Verseau/)).toBeVisible();
-  // 49 paires uniques × 5 aspects × 30 jours. Le chiffre a changé le jour où la
-  // Lune s'est mise à viser tout le thème pour le score global — et où le compte
-  // a cessé d'additionner deux fois les paires partagées entre deux axes.
-  await expect(page.getByText(/7\s?350\s+combinaisons testées/)).toBeVisible();
+  /*
+   * 49 paires uniques × 5 aspects × 90 jours. Deux changements de fenêtre depuis
+   * l'écriture de ce test : la Lune visant tout le thème pour le score global, et
+   * le passage du produit au trimestre. Le chiffre n'est pas décoratif — il dit ce
+   * qui a réellement été calculé, donc il suit.
+   */
+  await expect(page.getByText(/22\s?050\s+combinaisons testées/)).toBeVisible();
+  await expect(page.getByText(/Transits sur 90 jours/)).toBeVisible();
 
   // Et il débouche sur la journée, jamais sur le mois.
   await page.waitForURL((url) => url.pathname === '/', { timeout: 25000 });
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('BUSINESS');
-  await expect(page.locator('.reading').first()).toContainText('Jupiter en conjonction à ton Soleil');
+  /*
+   * La grammaire du produit, pas un transit précis : « Jupiter en conjonction à
+   * ton Soleil » était vrai le 15 septembre 2026, jour où ce test a été écrit, et
+   * faux le 29 — Jupiter était sorti d'orbe. Un test qui fige un aspect du ciel
+   * échoue à date fixe sans que rien n'ait cassé. Ce qui doit tenir, c'est la
+   * règle : un aspect vise toujours un point natal nommé, jamais un signe.
+   */
+  await expect(page.locator('.reading').first()).toContainText(
+    /(Soleil|Lune|Mercure|Vénus|Mars|Jupiter|Saturne|Uranus|Neptune|Pluton) en (conjonction|sextile|carré|trigone|opposition) à (ton|ta) /,
+  );
+  await expect(page.locator('.reading').first()).not.toContainText(
+    /(Bélier|Taureau|Gémeaux|Cancer|Lion|Vierge|Balance|Scorpion|Sagittaire|Capricorne|Verseau|Poissons)/,
+  );
 
   expect(await grandsNombresVisibles(page), 'un seul nombre au-dessus de 24 px').toBe(1);
   const phrase = await page.locator('.reading').first().innerText();

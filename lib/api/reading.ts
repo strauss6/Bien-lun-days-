@@ -4,7 +4,7 @@ import { formatOffset, resolveBirthInstant } from '@/lib/astro/time';
 import { computeNatalChart, POINT_LABELS } from '@/lib/astro/natal';
 import { computeReading } from '@/lib/astro/scoring';
 import { computeRareEvents, RARITY_LABELS } from '@/lib/astro/rarity';
-import { AXIS_IDS, AXIS_LABELS } from '@/lib/astro/transits';
+import { AXIS_IDS, AXIS_LABELS, QUARTER_DAYS } from '@/lib/astro/transits';
 import { formatLongitude, formatOrb } from '@/lib/astro/angles';
 import { ASPECT_PLAIN, notation, transitPhrase } from '@/lib/astro/labels';
 import { ASPECTS } from '@/lib/astro/aspects';
@@ -161,6 +161,27 @@ export interface ReadingDay {
   }>;
 }
 
+/**
+ * Une fenêtre du trimestre, datée.
+ *
+ * L'interface reçoit des dates, pas des index : elle n'a rien à recalculer, et
+ * deux écrans qui déduiraient chacun de leur côté finiraient par diverger.
+ */
+export interface PeriodPayload {
+  axis: AxisId;
+  start: string;
+  end: string;
+  days: number;
+  /** Au-dessus de la ligne neutre de la personne — jamais de la fenêtre affichée. */
+  favourable: boolean;
+  average: number;
+  peakDate: string;
+  peakScore: number;
+  /** La fenêtre butait sur un bord du calcul : on ne l'annonce pas comme une date. */
+  openStart: boolean;
+  openEnd: boolean;
+}
+
 export interface ReadingPayload {
   firstName: string;
   birth: {
@@ -180,8 +201,28 @@ export interface ReadingPayload {
   axisLabels: Record<AxisId, string>;
   startDate: string;
   days: ReadingDay[];
+  /** Les fenêtres des trois axes, triées par date. Voir `PeriodPayload`. */
+  periods: PeriodPayload[];
   rare: RarePayload[];
   stats: { comparisonsTested: number; aspectEvents: number };
+}
+
+/**
+ * Le corps d'une demande de rapport, pour tous les appelants.
+ *
+ * Il y en a trois — l'écran de calcul du questionnaire, le crochet qui recalcule
+ * au changement de jour, et la page autonome — et ils demandaient la fenêtre
+ * chacun de leur côté. Le jour où le produit est passé au trimestre, deux l'ont
+ * suivi et un non : le rapport enregistré après le questionnaire faisait trente
+ * jours, et l'écran du trimestre en affichait trente. Un seul point de décision
+ * désormais.
+ */
+export function readingBody(
+  profile: Record<string, unknown>,
+  startDate: string,
+  zone: string,
+): Record<string, unknown> {
+  return { ...profile, startDate, zone, days: QUARTER_DAYS };
 }
 
 export function buildReading(input: ReadingInput): ReadingPayload {
@@ -279,6 +320,23 @@ export function buildReading(input: ReadingInput): ReadingPayload {
     axisLabels: AXIS_LABELS,
     startDate: input.startDate,
     days,
+    /*
+     * Les fenêtres des trois axes, à plat et triées par date. Le trimestre les
+     * filtre par axe ; la vue du mois ne s'en sert pas — une fenêtre de sept
+     * jours ne veut rien dire quand on en regarde trente.
+     */
+    periods: AXIS_IDS.flatMap((axis) => reading.axes[axis].periods.map((f) => ({
+      axis,
+      start: reading.axes[axis].days[f.from].date,
+      end: reading.axes[axis].days[f.to].date,
+      days: f.days,
+      favourable: f.favourable,
+      average: f.average,
+      peakDate: reading.axes[axis].days[f.peak].date,
+      peakScore: f.peakScore,
+      openStart: f.openStart,
+      openEnd: f.openEnd,
+    }))).sort((a, b) => a.start.localeCompare(b.start)),
     rare: rare.map((r) => ({
       notation: notation(r.transit, r.aspect, r.natal),
       phrase: transitPhrase(r.transit, r.aspect, r.natal),

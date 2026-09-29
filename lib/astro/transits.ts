@@ -55,6 +55,21 @@ export const LUNAR_NATALS: PointId[] = [
  */
 export const DEFAULT_WINDOW_DAYS = 30;
 
+/**
+ * La fenêtre que le produit calcule réellement : un trimestre.
+ *
+ * Elle ne coûte rien de plus que trente jours — la dépense d'un rapport est
+ * l'étalonnage de 780 jours, fait une fois par thème, pas la fenêtre elle-même.
+ * Mesuré : 1,5 s pour 90 jours contre 1,9 s pour 30, et 213 Ko contre 78 Ko de
+ * stockage local.
+ *
+ * Un seul calcul pour les trois vues, et c'est le point : la vue du mois prend
+ * les trente premiers jours de ce trimestre au lieu de relancer un calcul à
+ * elle. Deux calculs séparés, ce sont deux occasions de diverger — et le projet
+ * exige qu'un jour porte le même score partout.
+ */
+export const QUARTER_DAYS = 90;
+
 export const AXIS_LABELS: Record<AxisId, string> = {
   business: 'Business',
   love: 'Amour',
