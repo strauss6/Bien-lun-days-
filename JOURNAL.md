@@ -682,3 +682,28 @@ réconcilie pas les chiffres avec sa lecture : l'axe Business du thème de réf�
 bas sur l'année, parce que le score dit « ce jour comparé à ta journée médiane » quand
 l'astrologue dit « cette année en absolu ». Q21 pose la question de savoir si le produit
 doit porter la seconde lecture, et sous quelle forme.
+
+## 11 octobre 2026 (soir) — les maîtres de maison étaient muets
+
+**Fait.** Correction d'un défaut introduit le matin même. Les maîtres de maison entraient
+bien dans `effectiveNatalWeights`, mais `accumulate` ne parcourait que `AXIS_NATALS`, la
+liste fixe de l'axe, et `allPairs` ne calculait de cases que pour ces paires-là. Résultat :
+Pluton pesait 0,50 en Business sur le thème de référence et n'a jamais été lu une seule
+fois. Trois points par axe étaient déclarés et muets. `allPairs` prend désormais le thème
+et ajoute les paires des maîtres ; l'accumulation parcourt les points réellement pondérés.
+
+Le compteur de combinaisons devient propre au thème : 49 paires génériques, 63 pour celui
+de référence, soit 28 350 combinaisons sur un trimestre au lieu de 22 050. C'est plus
+honnête — le chiffre est montré comme un fait, il doit être celui du thème calculé.
+
+Effet mesuré : l'axe Business du thème de référence **descend**, de 9 à 3 le 11 octobre.
+La correction fait entrer Jupiter en carré au Pluton natal à 1,18°, exactement l'aspect que
+le rédacteur avait nommé de son côté.
+
+**Cassé, réparé.** Trois tests comparaient le compteur affiché à `comparisonsTested(jours)`
+sans thème. L'attente était devenue fausse puisque le compte dépend du signe ascendant :
+elle prend maintenant le thème.
+
+**Incertain.** Le rédacteur a corrigé la méthode le même soir, et sa remarque porte plus
+loin que ce correctif. Voir `QUESTIONS.md` Q22 et Q23 : nos orbes sont plus serrés que les
+siens, et surtout une journée ne se juge pas d'abord sur les planètes lentes.

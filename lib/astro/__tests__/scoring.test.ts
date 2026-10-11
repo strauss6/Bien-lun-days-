@@ -159,7 +159,13 @@ describe('rapport sur 90 jours', () => {
   it('annonce le nombre exact de combinaisons testées', () => {
     // Les paires réellement calculées, sans doublon entre axes, cinq aspects,
     // quatre-vingt-dix jours. Voir spec-conformance pour le détail du compte.
-    expect(reading.stats.comparisonsTested).toBe(comparisonsTested(90));
+    /*
+     * Compté sur **ce thème-ci** et non sur la liste générique : depuis que les
+     * maîtres de maison entrent dans les poids, le nombre de paires dépend du
+     * signe ascendant. Le chiffre montré à l'écran de calcul est présenté comme
+     * un fait — il doit donc être celui du thème calculé, pas une moyenne.
+     */
+    expect(reading.stats.comparisonsTested).toBe(comparisonsTested(90, reading.chart));
     expect(reading.stats.aspectEvents).toBeGreaterThan(20);
     expect(reading.stats.aspectDays).toBeGreaterThan(reading.stats.aspectEvents);
   });

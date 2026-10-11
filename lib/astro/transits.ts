@@ -4,6 +4,7 @@ import { longitudeOf, longitudeAndSpeed } from './ephemeris';
 import { addCivilDays, localHourInstant, localNoonInstant } from './zone';
 import { signOf } from './angles';
 import { wholeSignHouse } from './natal';
+import { houseRulerWeights } from './houses';
 
 /**
  * Planètes en transit retenues par axe, et points natals visés.
@@ -90,7 +91,7 @@ export function pairKey(transit: PlanetId, natal: PointId): string {
  * jour. Les doublons sont écartés : la Lune sur le Soleil natal sert aux deux,
  * elle n'est calculée qu'une fois.
  */
-export function allPairs(): Array<{ transit: PlanetId; natal: PointId }> {
+export function allPairs(chart?: NatalChart): Array<{ transit: PlanetId; natal: PointId }> {
   const seen = new Set<string>();
   const out: Array<{ transit: PlanetId; natal: PointId }> = [];
   const add = (transit: PlanetId, natal: PointId) => {
@@ -103,6 +104,17 @@ export function allPairs(): Array<{ transit: PlanetId; natal: PointId }> {
   for (const axis of AXIS_IDS) {
     for (const transit of AXIS_TRANSITS[axis]) {
       for (const natal of AXIS_NATALS[axis]) add(transit, natal);
+      /*
+       * Les maîtres des maisons de l'axe, propres à ce thème.
+       *
+       * Sans ce bloc, le 11 octobre 2026, ils figuraient dans les poids et ne
+       * contribuaient rien : la grille ne calculait aucune case pour ces paires
+       * et l'accumulation ne parcourait que la liste fixe. Pluton pesait 0,50 en
+       * Business pour ce thème-là, et n'a jamais été lu une seule fois.
+       */
+      if (chart) for (const natal of Object.keys(houseRulerWeights(chart, axis)) as PointId[]) {
+        add(transit, natal);
+      }
     }
   }
   for (const natal of LUNAR_NATALS) add('moon', natal);
@@ -115,8 +127,8 @@ export function allPairs(): Array<{ transit: PlanetId; natal: PointId }> {
  * calcul. Dérivé de `allPairs` et non recalculé à part : deux comptes séparés
  * finiraient par diverger, et celui-ci est montré à l'utilisateur comme un fait.
  */
-export function comparisonsTested(days: number): number {
-  return allPairs().length * 5 * days;
+export function comparisonsTested(days: number, chart?: NatalChart): number {
+  return allPairs(chart).length * 5 * days;
 }
 
 export interface TransitGrid {
@@ -188,7 +200,7 @@ export function buildTransitGrid(options: {
   const pad = options.pad ?? 2;
   const spanDays = days + 2 * pad;
   const firstDate = addCivilDays(startDate, -pad);
-  const pairs = allPairs();
+  const pairs = allPairs(chart);
   const transitBodies = Array.from(new Set(pairs.map((p) => p.transit)));
 
   const dates: string[] = [];
@@ -277,7 +289,7 @@ export function buildTransitGrid(options: {
 
   return {
     days, pad, dates, samples, sunLon, seasons, cells, houses,
-    comparisonsTested: comparisonsTested(days),
+    comparisonsTested: comparisonsTested(days, chart),
     aspectDays,
     aspectEvents,
   };

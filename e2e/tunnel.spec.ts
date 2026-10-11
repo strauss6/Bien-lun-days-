@@ -37,12 +37,13 @@ test('du prénom au rendez-vous du jour, avec de vrais calculs', async ({ page }
   await expect(page.getByTestId('calc-step').first()).toContainText('6 août 1993, 20:40');
   await expect(page.getByText(/Ascendant .*Verseau/)).toBeVisible();
   /*
-   * 49 paires uniques × 5 aspects × 90 jours. Deux changements de fenêtre depuis
-   * l'écriture de ce test : la Lune visant tout le thème pour le score global, et
-   * le passage du produit au trimestre. Le chiffre n'est pas décoratif — il dit ce
+   * 63 paires × 5 aspects × 90 jours, **pour ce thème-ci**. Trois changements
+   * depuis l'écriture de ce test : la Lune visant tout le thème pour le score
+   * global, le passage au trimestre, et les maîtres de maison qui ajoutent des
+   * paires propres au signe ascendant. Le chiffre n'est pas décoratif — il dit ce
    * qui a réellement été calculé, donc il suit.
    */
-  await expect(page.getByText(/22\s?050\s+combinaisons testées/)).toBeVisible();
+  await expect(page.getByText(/28\s?350\s+combinaisons testées/)).toBeVisible();
   await expect(page.getByText(/Transits sur 90 jours/)).toBeVisible();
 
   // Et il débouche sur la journée, jamais sur le mois.

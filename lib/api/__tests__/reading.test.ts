@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { comparisonsTested } from '@/lib/astro/transits';
+import { referenceChart } from '@/lib/astro/__tests__/fixtures';
 import { ReadingRequest, buildReading } from '../reading';
 
 const NOMINAL = {
@@ -93,7 +94,13 @@ describe('calcul complet', () => {
     // 49 paires uniques × 5 aspects × 30 jours. C'était 48 × 5 × 30 tant que le
     // compte additionnait les paires par axe sans retirer les doublons, et avant
     // que la Lune ne vise l'ensemble du thème pour le score global du jour.
-    expect(payload.stats.comparisonsTested).toBe(comparisonsTested(30));
+    /*
+     * Compté sur **ce thème-ci** et non sur la liste générique : depuis que les
+     * maîtres de maison entrent dans les poids, le nombre de paires dépend du
+     * signe ascendant. Le chiffre montré à l'écran de calcul est présenté comme
+     * un fait — il doit donc être celui du thème calculé, pas une moyenne.
+     */
+    expect(payload.stats.comparisonsTested).toBe(comparisonsTested(30, referenceChart()));
   });
 
   it('porte les jours rares, avec l\'âge à la dernière occurrence', () => {

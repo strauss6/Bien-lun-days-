@@ -42,6 +42,8 @@ describe('périmètre des axes, tel que fixé par le brief', () => {
    */
   it('compte les paires réellement calculées, sans doublon', () => {
     expect(comparisonsTested(1)).toBe(allPairs().length * 5);
+    // Avec un thème, les maîtres de maison s'ajoutent : plus de paires, pas moins.
+    expect(allPairs(referenceChart()).length).toBeGreaterThan(allPairs().length);
     expect(new Set(allPairs().map((p) => `${p.transit}|${p.natal}`)).size).toBe(allPairs().length);
   });
 });
@@ -55,7 +57,13 @@ describe('la fenêtre est un paramètre de premier plan', () => {
     expect(reading.axes.business.days[0].date).toBe('2026-09-10');
     expect(reading.axes.business.days[29].date).toBe('2026-10-09');
     expect(reading.seasons).toHaveLength(30);
-    expect(reading.stats.comparisonsTested).toBe(comparisonsTested(30));
+    /*
+     * Compté sur **ce thème-ci** et non sur la liste générique : depuis que les
+     * maîtres de maison entrent dans les poids, le nombre de paires dépend du
+     * signe ascendant. Le chiffre montré à l'écran de calcul est présenté comme
+     * un fait — il doit donc être celui du thème calculé, pas une moyenne.
+     */
+    expect(reading.stats.comparisonsTested).toBe(comparisonsTested(30, reading.chart));
   });
 
   it('sait encore produire 90 jours, pour le rapport complet à venir', () => {

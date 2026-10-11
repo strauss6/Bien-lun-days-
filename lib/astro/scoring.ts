@@ -3,7 +3,7 @@ import type {
   Reading,
 } from './types';
 import type { TransitGrid } from './transits';
-import { AXIS_IDS, AXIS_NATALS, AXIS_TRANSITS, DEFAULT_WINDOW_DAYS, buildTransitGrid, pairKey } from './transits';
+import { AXIS_IDS, AXIS_TRANSITS, DEFAULT_WINDOW_DAYS, buildTransitGrid, pairKey } from './transits';
 import { type Calibration, applyCalibration, calibrationFor, neutralScore } from './calibration';
 import { effectiveLunarWeights, lunarSeries, overallScore } from './lunar';
 import { houseAffinity, houseRulerWeights, houseTransits } from './houses';
@@ -319,7 +319,12 @@ export function accumulate(
   for (const transit of AXIS_TRANSITS[axis]) {
     const tw = transitWeights[transit];
     if (!tw) continue;
-    for (const natal of AXIS_NATALS[axis]) {
+    /*
+     * Les points réellement pondérés, et non la liste fixe de l'axe : depuis que
+     * les maîtres de maison s'ajoutent aux poids, la seconde ne couvre plus la
+     * première. Parcourir `AXIS_NATALS` laissait les maîtres déclarés et muets.
+     */
+    for (const natal of Object.keys(natalWeights) as PointId[]) {
       const nw = natalWeights[natal];
       if (!nw) continue;
       const series = grid.cells.get(pairKey(transit, natal));
