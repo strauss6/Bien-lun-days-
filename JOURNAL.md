@@ -707,3 +707,27 @@ elle prend maintenant le thème.
 **Incertain.** Le rédacteur a corrigé la méthode le même soir, et sa remarque porte plus
 loin que ce correctif. Voir `QUESTIONS.md` Q22 et Q23 : nos orbes sont plus serrés que les
 siens, et surtout une journée ne se juge pas d'abord sur les planètes lentes.
+
+## 11 octobre 2026 (nuit) — les bons aspects de Saturne valent plein tarif
+
+**Fait.** Le rédacteur, le soir : « Saturne, c'est Kronos, le dieu du temps — mais Saturne
+symbolise aussi ce qui se construit. Un bon aspect de Saturne à ton Soleil, pendant des
+mois, c'est très constructif. » Le barème disait l'inverse : trigone de Saturne à 0,60
+quand celui de Jupiter valait 1,00, et opposition à plein tarif — une planète pénalisée une
+fois et demie plus du bon côté que du mauvais. Et le corpus tenait déjà la réponse depuis
+le 13 septembre : « en bon aspect, c'est ce qui rend son travail très constructif » pour
+Saturne, « on gagne ce qu'on engage » pour Mars. Le moteur contredisait le corpus qu'il
+sert. La malédiction porte désormais sur la seule conjonction — « Jupiter ouvre, Saturne
+ralentit », sa phrase aussi — et plus sur les angles harmoniques.
+
+**Cassé, réparé.** Un test nommé « les harmoniques de Saturne comptent, mais moins »
+encodait l'erreur. Son attente était fausse, et elle l'était depuis l'origine : corrigée,
+pas contournée, avec les deux citations en commentaire.
+
+**Incertain, et c'est le point important.** La correction **n'améliore pas** le score de
+l'axe Business : 112 jours au-dessus du neutre sur l'année, contre 94 après. Rendre Saturne
+plus juste améliore aussi la période de référence, donc la position relative ne bouge pas.
+C'est la troisième correction d'affilée dans ce cas — maisons, maîtres de maison, Saturne.
+Ce n'est plus une coïncidence : le score dit « comparé à ta journée médiane » quand
+l'astrologue dit « favorable en soi ». Q24 pose la question, qui est de produit et non de
+moteur.

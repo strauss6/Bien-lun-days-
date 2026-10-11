@@ -40,9 +40,33 @@ describe('polarité', () => {
     expect(polarity('jupiter', 'conjunction')).toBeGreaterThan(0);
   });
 
-  it('les harmoniques de Saturne comptent, mais moins', () => {
-    expect(polarity('saturn', 'trine')).toBeGreaterThan(0);
-    expect(polarity('saturn', 'trine')).toBeLessThan(polarity('venus', 'trine'));
+  /*
+   * L'attente était fausse, et elle contredisait le corpus depuis le début.
+   *
+   * Le rédacteur, le 13 septembre 2026 : « Saturne en bon aspect, c'est ce qui
+   * rend son travail très constructif » ; « Mars en bon aspect, on gagne ce qu'on
+   * engage ». Et le 11 octobre : « Saturne symbolise ce qui se construit — un bon
+   * aspect de Saturne à ton Soleil pendant des mois, c'est très constructif ».
+   *
+   * Le barème amortissait pourtant leurs trigones à 0,60 quand Jupiter touchait
+   * 1,00, tout en comptant leurs oppositions à plein : une planète pénalisée une
+   * fois et demie plus du bon côté que du mauvais. La malédiction porte sur la
+   * conjonction — « Jupiter ouvre, Saturne ralentit », sa phrase aussi — jamais
+   * sur les angles harmoniques.
+   */
+  it('les bons aspects de Saturne et de Mars valent plein tarif', () => {
+    for (const malefique of ['saturn', 'mars'] as const) {
+      expect(polarity(malefique, 'trine')).toBe(polarity('venus', 'trine'));
+      expect(polarity(malefique, 'sextile')).toBe(polarity('jupiter', 'sextile'));
+      // Mais leur conjonction continue de peser contre.
+      expect(polarity(malefique, 'conjunction')).toBeLessThan(0);
+    }
+  });
+
+  it('un trigone vaut autant quelle que soit la planète', () => {
+    const trigones = (['sun', 'moon', 'mercury', 'venus', 'mars', 'jupiter', 'saturn'] as const)
+      .map((p) => polarity(p, 'trine'));
+    expect(new Set(trigones).size).toBe(1);
   });
 
   it('un carré de Jupiter est un excès, pas un mur', () => {

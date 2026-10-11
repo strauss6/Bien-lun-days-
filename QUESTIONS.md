@@ -459,3 +459,60 @@ Business du thème de référence reste bas sur l'année, parce que le score mes
 comparé à ta journée médiane » et non « cette année en absolu ». Les deux lectures
 répondent à deux questions. Reste à décider si le produit doit porter la seconde — et
 sous quelle forme, puisqu'un score ne sait pas la dire.
+
+## Q22 — Nos orbes sont plus serrés que les siens
+
+Le 11 octobre 2026, le rédacteur relève trois aspects sur le thème de référence. Il a
+raison trois fois ; le moteur n'en voit qu'un.
+
+| ce qu'il nomme | écart réel | notre orbe | vu ? |
+|---|---|---|---|
+| Jupiter en bon aspect au Soleil | conjonction 7,25° | 6° | non |
+| Jupiter opposé au Saturne natal | 6,39° | 6° | non |
+| Jupiter carré au Pluton natal | 1,18° | 5° | oui |
+
+Il compte donc au moins jusqu'à 7° pour une conjonction de Jupiter. Nos valeurs :
+conjonction et opposition 6°, carré et trigone 5°, sextile 4°.
+
+**À lui demander, chiffre par chiffre :** quels orbes retient-il, par aspect, et varient-ils
+selon la planète ou selon le point touché ? Les élargir n'est pas neutre — sur ce thème et
+ce jour, passer à 8° ferait entrer sept aspects supplémentaires d'un coup, et un ciel où
+tout est en aspect ne dit plus rien.
+
+## Q23 — Une journée ne se juge pas sur les planètes lentes
+
+Correction de méthode, le 11 octobre 2026, mot pour mot : « Pour une journée, ce qui compte
+surtout, ce sont les aspects formés par Mercure, Vénus et la Lune surtout. [Les lentes] sont
+des aspects qui renseignent sur une période de plusieurs mois. »
+
+Or l'axe Business pèse **Jupiter 1,0 et Saturne 0,9** contre **Soleil 0,7 et Mercure 0,6**,
+et **ni Vénus ni la Lune n'y figurent**. Le nombre quotidien est donc un fait de plusieurs
+mois affiché chaque matin — ce qui explique qu'il reste à 3 pendant des semaines.
+
+Sa règle de synthèse, elle, est implémentable telle quelle : « si la Lune ajoute un bon
+aspect à ton Soleil alors que Jupiter est aussi en bon aspect à ton Soleil, on peut dire
+que c'est une journée positive, ce qui n'empêche pas qu'il y ait des difficultés à vaincre
+s'il y a en même temps un aspect difficile formé par Saturne. Il y a des difficultés,
+certes, mais tu arrives à les vaincre ! »
+
+Deux chiffres manquent pour la coder : **quelle part donner aux rapides dans un score
+quotidien**, et **combien vaut une convergence** — deux planètes touchant le même point
+natal dans le même sens valent-elles plus que leur somme ?
+
+## Q24 — Le score est relatif, la lecture de l'astrologue est absolue
+
+Trois corrections successives ont rapproché le moteur de sa lecture — les maisons, les
+maîtres de maison, les bons aspects de Saturne — et **aucune n'a rapproché les chiffres**.
+L'axe Business du thème de référence reste bas, et chaque amélioration de justesse
+astrologique le laisse là où il était, parfois plus bas.
+
+La raison n'est pas un défaut de barème. Le score répond à « cette journée comparée à ta
+journée médiane sur deux ans » ; l'astrologue répond à « cette configuration est-elle
+favorable en soi ». Rendre Saturne plus juste en bon aspect améliore aussi la période de
+référence : la position relative ne bouge pas.
+
+C'est une question de produit et non de moteur, et elle n'est pas tranchable seule. Soit le
+produit assume de ne dire que du relatif — « par rapport à tes journées habituelles » — et
+l'écart avec un astrologue restera structurel. Soit il porte aussi une lecture absolue, et
+il faut décider ce qu'elle mesure et comment elle cohabite avec la première sans faire deux
+nombres contradictoires sur le même écran.

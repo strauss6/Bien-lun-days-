@@ -23,7 +23,27 @@ export const NATAL_WEIGHTS: Record<AxisId, Partial<Record<PointId, number>>> = {
   energy: { asc: 1.0, sun: 0.85, mars: 0.8, moon: 0.55 },
 };
 
-/** Planètes dont la conjonction pèse contre, et dont les aspects harmoniques pèsent moins. */
+/**
+ * Planètes dont la **conjonction** pèse contre.
+ *
+ * Saturne ou Mars posés sur un point natal freinent ou brusquent : c'est la
+ * phrase du rédacteur sur la conjonction, « ce qu'elle apporte dépend entièrement
+ * de laquelle : Jupiter ouvre, Saturne ralentit ».
+ *
+ * **Leurs bons aspects, eux, valent plein tarif**, et c'est une correction du
+ * 11 octobre 2026. Le barème amortissait leurs trigones et sextiles à 0,60 et
+ * 0,45 quand Jupiter et Vénus touchaient 1,00 et 0,70 — Saturne était donc
+ * pénalisé une fois et demie plus du bon côté que du mauvais. Cela contredisait
+ * frontalement le corpus, qui tenait déjà la réponse depuis le 13 septembre :
+ * « Saturne en bon aspect, c'est ce qui rend son travail très constructif », et
+ * « Mars en bon aspect, on gagne ce qu'on engage ».
+ *
+ * Le rédacteur l'a redit le soir du 11 octobre, et c'est le mot qui tranche :
+ * « Saturne, c'est Kronos, le dieu du temps — mais Saturne symbolise aussi ce qui
+ * se construit. Un bon aspect de Saturne à ton Soleil, pendant des mois, c'est
+ * très constructif. » Un trigone de Saturne n'est pas un petit trigone : pour
+ * bâtir quelque chose qui dure, c'est le meilleur aspect qui soit.
+ */
 const MALEFIC: ReadonlySet<PlanetId> = new Set<PlanetId>(['saturn', 'mars']);
 
 /** Planètes dont les aspects durs relèvent de l'excès plutôt que de l'obstacle. */
@@ -34,13 +54,13 @@ const SOFT_HARD: Partial<Record<PlanetId, number>> = { jupiter: -0.5, venus: -0.
  *
  * Une conjonction n'a pas de signe en soi : elle vaut ce que vaut la planète qui
  * arrive. Saturne ou Mars sur un point natal pèsent contre, Jupiter ou Vénus pour.
+ * Les angles harmoniques, eux, ne connaissent pas de malédiction : voir ci-dessus.
  */
 export function polarity(transit: PlanetId, aspect: AspectId): number {
-  const malefic = MALEFIC.has(transit);
   switch (aspect) {
-    case 'trine': return malefic ? 0.6 : 1.0;
-    case 'sextile': return malefic ? 0.45 : 0.7;
-    case 'conjunction': return malefic ? -0.8 : 0.9;
+    case 'trine': return 1.0;
+    case 'sextile': return 0.7;
+    case 'conjunction': return MALEFIC.has(transit) ? -0.8 : 0.9;
     case 'square': return SOFT_HARD[transit] ?? -1.0;
     case 'opposition': return SOFT_HARD[transit] ?? -0.9;
   }
