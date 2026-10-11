@@ -69,6 +69,10 @@ export function QuarterScreen({ payload, onBack }: { payload: ReadingPayload; on
   );
 
   const fenetres = useMemo(() => payload.periods.filter((p) => p.axis === axis), [payload, axis]);
+  const fonds = useMemo(
+    () => payload.houseBackdrops.filter((b) => b.axis === axis),
+    [payload, axis],
+  );
   const rang = useMemo(() => rangs(fenetres), [fenetres]);
 
   const premier = payload.days[0]?.date ?? '';
@@ -116,6 +120,27 @@ export function QuarterScreen({ payload, onBack }: { payload: ReadingPayload; on
           );
         })}
       </div>
+
+      {/*
+        Le fond de période, avant les fenêtres : c'est la première chose qu'un
+        astrologue regarde — « tu as Jupiter en maison 7 cette année » — et le
+        moteur n'en voyait rien jusqu'au 11 octobre 2026. Volontairement hors du
+        score : un fond constant sur des mois ne distingue aucun jour et se fait
+        réabsorber par l'étalonnage. Il se dit, il ne se chiffre pas.
+      */}
+      {fonds.length > 0 ? (
+        <section className="mt-6" data-testid="quarter-backdrop">
+          <h2 className="technical text-[11px] font-semibold tracking-[0.1em] opacity-55">
+            LE FOND DE LA PÉRIODE
+          </h2>
+          {fonds.slice(0, 2).map((f) => (
+            <p key={`${f.planet}${f.house}`} className="reading mt-3 text-[17px] leading-snug">
+              {f.planet} traverse ta maison {f.house} — {f.topic} —{' '}
+              {f.openEnd ? 'et continue au-delà des trois mois' : `jusqu’au ${jourMois(f.end)}`}.
+            </p>
+          ))}
+        </section>
+      ) : null}
 
       {fenetres.length === 0 ? (
         <p className="reading mt-6 text-[17px] leading-snug" data-testid="quarter-empty">

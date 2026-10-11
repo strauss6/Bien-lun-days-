@@ -3,6 +3,7 @@ import { findAspect } from './aspects';
 import { longitudeOf, longitudeAndSpeed } from './ephemeris';
 import { addCivilDays, localHourInstant, localNoonInstant } from './zone';
 import { signOf } from './angles';
+import { wholeSignHouse } from './natal';
 
 /**
  * Planètes en transit retenues par axe, et points natals visés.
@@ -132,6 +133,20 @@ export interface TransitGrid {
   seasons: Season[];
   /** Une série de 90 cases par paire. */
   cells: Map<string, Array<GridCell | null>>;
+  /**
+   * Maison traversée chaque jour par chaque planète, en signes entiers.
+   *
+   * Un aspect est un événement ; une planète posée dans une maison est un fond de
+   * période. Jupiter traverse une maison pendant des mois sans y former le moindre
+   * aspect, et c'est pourtant la lecture la plus courante d'un astrologue — « tu as
+   * Jupiter en maison 7 cette année ». Sans cette série, cette lecture-là n'existe
+   * tout simplement pas dans le moteur.
+   *
+   * Portée par la grille, donc partagée par le scoring **et** l'étalonnage. Si
+   * seul le premier la recevait, l'échelle ne verrait pas ce que les scores
+   * comptent, et un jour cesserait de valoir la même chose partout.
+   */
+  houses: Partial<Record<PlanetId, number[]>>;
   comparisonsTested: number;
   aspectDays: number;
   aspectEvents: number;
@@ -182,6 +197,8 @@ export function buildTransitGrid(options: {
   const seasons: Season[] = [];
   const cells = new Map<string, Array<GridCell | null>>();
   for (const p of pairs) cells.set(pairKey(p.transit, p.natal), new Array(spanDays).fill(null));
+  const houses: Partial<Record<PlanetId, number[]>> = {};
+  for (const body of transitBodies) houses[body] = new Array<number>(spanDays).fill(0);
 
   for (let d = 0; d < spanDays; d += 1) {
     const date = addCivilDays(firstDate, d);
@@ -206,6 +223,12 @@ export function buildTransitGrid(options: {
         retro[body] = speed < 0;
       }
     }
+    // La maison du jour, prise à midi comme le reste des planètes lentes.
+    for (const body of transitBodies) {
+      const l = lon[body];
+      if (l) houses[body]![d] = wholeSignHouse(l[l.length === 3 ? 1 : 0], chart.points.asc.lon);
+    }
+
     sunLon.push(lon.sun ? lon.sun[0] : longitudeOf('sun', new Date(noon)));
     seasons.push(SEASON_OF_SIGN[signOf(sunLon[d])]);
 
@@ -253,7 +276,7 @@ export function buildTransitGrid(options: {
   }
 
   return {
-    days, pad, dates, samples, sunLon, seasons, cells,
+    days, pad, dates, samples, sunLon, seasons, cells, houses,
     comparisonsTested: comparisonsTested(days),
     aspectDays,
     aspectEvents,

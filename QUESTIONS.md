@@ -411,3 +411,51 @@ Business haute du trimestre, et l'écran le dit au lieu de meubler.
 journée a son écran. C'est aussi la plus petite unité autour de laquelle on déplace
 quelque chose dans un agenda. Seuil réglable d'une constante si le rédacteur le juge trop
 bas.
+
+## Q20 — Les maisons : trois dosages pris seuls, à faire relire
+
+Les maisons entrent dans les scores le 11 octobre 2026, sur trois phrases du rédacteur :
+« le domaine dépend de la maison touchée » ; « si la maison 7 tombe en Cancer, son maître
+est la Lune, un bon aspect à la Lune est alors un bon aspect sur un partenariat » ; et les
+quatre maisons importantes — 1, 4, 7, 10 — assorties de « il ne faut pas qu'il se fie
+**qu'à** » elles.
+
+Trois chiffres ont été choisis par nous, et aucun ne vient de lui.
+
+**`RULER_SHARE = 0,5`.** Un maître de maison principale pèse la moitié du point natal le
+plus lourd de l'axe. Assez pour personnaliser, pas assez pour renverser des ancrages sur
+lesquels tout l'étalonnage a été vérifié. À trancher : le maître devrait-il peser autant
+que le point natal fixe, voire davantage ?
+
+**`HOUSE_FLOOR = 0,7`.** Un aspect sur un point logé dans une maison étrangère à l'axe
+garde 70 % de son poids. La maison module donc d'au plus 30 %. Mesuré sur le thème de
+référence, cela fait passer l'axe Business d'un jour difficile de 7 à 9 sur 100 — la
+direction est juste, l'ampleur est un choix.
+
+**Les cinq maisons secondaires** — 2 et 6 pour Business, 5 pour Amour, 6 et 8 pour
+Énergie — sont `inféré`. Les trois maisons principales (10, 7, 1) et la maison 4 de
+l'Amour sont `direct`. Un test vérifie que chaque axe tient sa maison principale de lui
+et non de nous.
+
+## Q21 — Le fond de maison se dit, il ne se chiffre pas
+
+Mis dans le score, puis retiré le même jour, sur trois constats mesurés.
+
+Une planète qui traverse une maison pendant neuf mois ajoute une **constante** : elle ne
+distingue aucun jour d'un autre, et l'étalonnage — calculé sur la même série — en
+réabsorbe l'essentiel. Gain réel sur le thème de référence : 9 → 10 sur 100.
+
+Elle casse l'explication. Un jour est devenu le plus bas de sa fenêtre alors que ses deux
+aspects affichés étaient positifs : le score portait une composante que l'écran ne montrait
+nulle part. Un test l'a refusé, et il avait raison.
+
+Et il existait déjà un endroit pour ce genre de fait : `AxisReading.backdrop` restitue en
+toutes lettres ce que la normalisation absorbe. Le fond de maison y a rejoint — « Jupiter
+traverse ta maison 7, tes associations, et continue au-delà des trois mois ».
+
+**Ce que ça règle, et ce que ça ne règle pas.** C'est la lecture qu'un astrologue donne en
+premier, et le produit ne la donnait pas. Mais elle ne réconcilie pas les chiffres : l'axe
+Business du thème de référence reste bas sur l'année, parce que le score mesure « ce jour
+comparé à ta journée médiane » et non « cette année en absolu ». Les deux lectures
+répondent à deux questions. Reste à décider si le produit doit porter la seconde — et
+sous quelle forme, puisqu'un score ne sait pas la dire.

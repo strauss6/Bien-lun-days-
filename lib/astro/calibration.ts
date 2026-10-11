@@ -58,8 +58,14 @@ import { effectiveLunarWeights, lunarSeries } from './lunar';
  * `v2` : arrivée du score global du jour, porté par la Lune. Les paires
  * calculées par la grille ont changé, donc les scores aussi — un rapport `v1`
  * enregistré sur un appareil se recalcule à la première ouverture.
+ *
+ * `v3` : les maisons entrent dans les poids. Les maîtres des maisons de chaque
+ * axe s'ajoutent à ses points natals, et chaque point est modulé par la maison
+ * qu'il occupe. Conséquence volontaire : **les poids ne sont plus les mêmes pour
+ * tout le monde** — ils dépendent du thème, donc de l'heure et de la ville de
+ * naissance. Tous les rapports enregistrés se recalculent.
  */
-export const SCORE_METHOD = 'stable-780-lune-v2';
+export const SCORE_METHOD = 'stable-780-maisons-v3';
 
 /** Début de la période de référence. Fixe : il ne suit pas la date du jour. */
 export const CALIBRATION_EPOCH = '2026-01-01';
@@ -160,7 +166,7 @@ export function computeCalibration(chart: NatalChart, zone: string): Calibration
 
   for (const axis of AXIS_IDS) {
     const { raw, rawSelection } = accumulate(
-      grid, axis, effectiveTransitWeights(axis, reliable), effectiveNatalWeights(axis, reliable),
+      grid, axis, effectiveTransitWeights(axis, reliable), effectiveNatalWeights(axis, chart),
     );
     // La marge de lissage est gardée ici : sur 780 jours, deux valeurs de bord
     // ne changent rien à la distribution, et les retirer coûterait une copie.

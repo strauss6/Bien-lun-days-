@@ -648,3 +648,37 @@ Ascendant faux sous le nom de la personne. Le chemin dégradé du moteur — `an
 et les poids réduits — est **conservé** : c'est un garde-fou de correction, pas une
 fonctionnalité, et supprimer du comportement moteur testé n'est pas une décision à
 prendre seul. Il n'a simplement plus de chemin pour être atteint depuis le produit.
+
+## 11 octobre 2026 — les maisons entrent dans les scores
+
+**Fait.** Le moteur calculait les douze maisons depuis le début et ne les relisait jamais :
+le mot `house` n'apparaissait nulle part dans le calcul, et `rulers.ts` n'était appelé que
+par un test. Trois phrases du rédacteur sont désormais du code. « Le domaine dépend de la
+maison touchée » : chaque point natal est modulé par la maison qu'il occupe, d'au plus
+30 %. « Si la maison 7 tombe en Cancer, son maître est la Lune, un bon aspect à la Lune est
+alors un bon aspect sur un partenariat » : les maîtres des maisons de chaque axe s'ajoutent
+à ses points natals. Et ses quatre maisons importantes servent de maisons principales, ses
+autres de secondaires — sa mise en garde étant de ne pas s'en tenir aux quatre.
+
+Conséquence voulue : **les poids ne sont plus les mêmes pour tout le monde.** Sur le thème
+de référence, Pluton entre à 0,50 en Business — il gouverne la maison 10 et y siège —, le
+Soleil passe de 0,60 à 1,10 en Amour — il gouverne la maison 7 et y siège —, et Jupiter
+natal tombe de 0,60 à 0,42, puisqu'il est en maison 9, étrangère à la carrière. En maisons
+signes entiers, tout cela ne dépend que du signe ascendant : c'est l'heure de naissance,
+rendue obligatoire la veille, qui l'achète.
+
+**Cassé, réparé.** Le fond de maison — une planète lente qui traverse une maison de l'axe —
+a été mis dans le score, puis retiré le même jour. Trois constats : une constante sur neuf
+mois ne distingue aucun jour et l'étalonnage la réabsorbe (9 → 10 sur 100) ; un jour est
+devenu le plus bas de sa fenêtre alors que ses deux aspects affichés étaient positifs, donc
+le score portait une composante invisible à l'écran ; et il existait déjà un endroit pour
+ce genre de fait, `AxisReading.backdrop`, qui restitue ce que la normalisation absorbe. Le
+fond s'y dit maintenant en toutes lettres, sur l'écran du trimestre. Un test m'a refusé la
+première version, et il avait raison.
+
+**Incertain.** Les trois dosages — part du maître de maison, plancher d'affinité, maisons
+secondaires par axe — sont de nous et pas de lui : Q20 les expose. Et le fond de maison ne
+réconcilie pas les chiffres avec sa lecture : l'axe Business du thème de référence reste
+bas sur l'année, parce que le score dit « ce jour comparé à ta journée médiane » quand
+l'astrologue dit « cette année en absolu ». Q21 pose la question de savoir si le produit
+doit porter la seconde lecture, et sous quelle forme.

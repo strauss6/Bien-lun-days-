@@ -1,4 +1,5 @@
 import type { AxisPeriod } from './periods';
+import type { HouseTransit } from './houses';
 export type PlanetId =
   | 'sun' | 'moon' | 'mercury' | 'venus' | 'mars'
   | 'jupiter' | 'saturn' | 'uranus' | 'neptune' | 'pluto';
@@ -136,6 +137,11 @@ export interface AxisReading {
    * de l'étalonnage. Jamais la médiane des jours affichés.
    */
   neutral: number;
+  /**
+   * Les planètes lentes qui traversent une maison de cet axe pendant la fenêtre.
+   * Fait de fond, volontairement **hors du score** : voir `houses.ts`.
+   */
+  houseTransits: HouseTransit[];
 }
 
 export interface LunarDay {

@@ -108,11 +108,24 @@ describe('sélection des dates', () => {
 
 describe('heure de naissance inconnue', () => {
   it('retire les axes du thème et dégrade la Lune', () => {
-    const w = effectiveNatalWeights('energy', false);
-    expect(w.asc).toBeUndefined();
-    expect(w.moon).toBeCloseTo(0.275, 6);
-    expect(effectiveNatalWeights('business', false).mc).toBeUndefined();
-    expect(effectiveNatalWeights('love', false).dsc).toBeUndefined();
+    /*
+     * Les poids prennent désormais le thème et non un booléen : ils dépendent de
+     * la personne depuis que les maisons comptent. Le chemin dégradé reste un
+     * garde-fou — le produit exige l'heure depuis le 11 octobre 2026 — mais il
+     * doit continuer de retirer les angles plutôt que de les inventer.
+     */
+    const sansHeure = computeNatalChart(
+      resolveBirthInstant({ ...BIRTH, time: null }), BIRTH.lat!, BIRTH.lng!,
+    );
+    expect(sansHeure.anglesReliable).toBe(false);
+    for (const axis of AXIS_IDS) {
+      const w = effectiveNatalWeights(axis, sansHeure);
+      for (const angle of ['asc', 'mc', 'dsc', 'ic'] as const) {
+        expect(w[angle], `${axis} ${angle}`).toBeUndefined();
+      }
+    }
+    // La Lune vaut la moitié de son poids d'axe, maison comprise.
+    expect(effectiveNatalWeights('energy', sansHeure).moon).toBeLessThan(0.55 * 0.5 + 1e-9);
   });
 
   it('produit malgré tout un rapport avec du relief', () => {

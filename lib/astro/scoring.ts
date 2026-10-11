@@ -6,6 +6,7 @@ import type { TransitGrid } from './transits';
 import { AXIS_IDS, AXIS_NATALS, AXIS_TRANSITS, DEFAULT_WINDOW_DAYS, buildTransitGrid, pairKey } from './transits';
 import { type Calibration, applyCalibration, calibrationFor, neutralScore } from './calibration';
 import { effectiveLunarWeights, lunarSeries, overallScore } from './lunar';
+import { houseAffinity, houseRulerWeights, houseTransits } from './houses';
 import { axisPeriods } from './periods';
 
 /** Poids des planètes en transit, par axe. */
@@ -89,14 +90,41 @@ export function primaryAspect(day: AxisDay, direction: 'best' | 'worst'): DayAsp
  * exploitables (±180°) et la Lune n'est connue qu'à ±6°. On les retire ou on
  * les dégrade plutôt que de simuler une précision qu'on n'a pas.
  */
-export function effectiveNatalWeights(axis: AxisId, anglesReliable: boolean): Partial<Record<PointId, number>> {
+export function effectiveNatalWeights(axis: AxisId, chart: NatalChart): Partial<Record<PointId, number>> {
   const base = NATAL_WEIGHTS[axis];
-  if (anglesReliable) return base;
   const out: Partial<Record<PointId, number>> = {};
+
+  /*
+   * Les ancrages fixes de l'axe, communs à tout le monde. Sans heure de naissance
+   * les angles ne sont pas calculables et sortent — chemin conservé comme
+   * garde-fou, bien que le produit exige désormais l'heure.
+   */
   for (const [point, weight] of Object.entries(base) as Array<[PointId, number]>) {
-    if (point === 'asc' || point === 'mc' || point === 'dsc' || point === 'ic') continue;
-    out[point] = point === 'moon' ? weight * 0.5 : weight;
+    if (!chart.anglesReliable && (point === 'asc' || point === 'mc' || point === 'dsc' || point === 'ic')) continue;
+    out[point] = !chart.anglesReliable && point === 'moon' ? weight * 0.5 : weight;
   }
+
+  /*
+   * Les maîtres des maisons de l'axe, propres à cette personne. « Si la maison 7
+   * tombe en Cancer, son maître est la Lune ; un bon aspect à la Lune est alors un
+   * bon aspect sur un partenariat. » C'est ce qui fait qu'un axe cesse d'être le
+   * même pour tout le monde. Les poids s'ajoutent à l'ancrage quand ils tombent
+   * sur le même point : un Soleil qui est aussi maître de la maison 7 compte deux
+   * fois pour l'Amour, et c'est juste.
+   */
+  for (const [point, weight] of Object.entries(houseRulerWeights(chart, axis)) as Array<[PointId, number]>) {
+    out[point] = (out[point] ?? 0) + weight;
+  }
+
+  /*
+   * « Le domaine dépend de la maison touchée. » Chaque point est enfin modulé par
+   * la maison qu'il occupe dans ce thème-ci : au plus 30 % d'écart, la maison
+   * nuance le domaine d'un aspect sans l'annuler.
+   */
+  for (const point of Object.keys(out) as PointId[]) {
+    out[point] = (out[point] as number) * houseAffinity(chart, axis, point);
+  }
+
   return out;
 }
 
@@ -266,6 +294,28 @@ export function accumulate(
   const rawSelection = new Array<number>(span).fill(0);
   const perDay: DayAspect[][] = Array.from({ length: span }, () => []);
 
+  /*
+   * **Le fond de maison n'est pas ici, et c'est une décision mesurée.**
+   *
+   * Il y a été, le 11 octobre 2026 : chaque planète lente traversant une maison
+   * de l'axe ajoutait une contribution constante. Trois constats l'en ont sorti.
+   *
+   * Il ne distingue pas les jours. Une valeur constante sur neuf mois décale la
+   * série entière, et l'étalonnage — calculé sur la même série — en réabsorbe
+   * l'essentiel. Gain mesuré sur le thème de référence : l'axe Business passait
+   * de 7 à 10 sur 100. Beaucoup de machinerie pour trois points.
+   *
+   * Il casse l'explication. Un jour pouvait devenir le plus bas de la fenêtre
+   * alors que ses deux aspects affichés étaient positifs : le score portait une
+   * composante que l'écran ne montrait nulle part. Un test l'a attrapé.
+   *
+   * Et il existe déjà un endroit pour ça. `AxisReading.backdrop` restitue en
+   * toutes lettres ce que la normalisation absorbe. Une traversée de maison est
+   * exactement de cette nature : un fait de fond, qui se **dit** — « Jupiter
+   * traverse ta maison 7 jusqu'en juillet » — au lieu de se diluer dans un
+   * nombre. Voir `houseTransits` et `QUESTIONS.md` Q20.
+   */
+
   for (const transit of AXIS_TRANSITS[axis]) {
     const tw = transitWeights[transit];
     if (!tw) continue;
@@ -314,7 +364,7 @@ export function computeReading(options: ScoreOptions): Reading {
 
   for (const axis of AXIS_IDS) {
     const transitWeights = effectiveTransitWeights(axis, reliable);
-    const natalWeights = effectiveNatalWeights(axis, reliable);
+    const natalWeights = effectiveNatalWeights(axis, chart);
 
     const { raw, rawSelection, perDay } = accumulate(grid, axis, transitWeights, natalWeights);
 
@@ -353,6 +403,7 @@ export function computeReading(options: ScoreOptions): Reading {
       axis,
       periods: axisPeriods(scores, neutral, axis),
       neutral,
+      houseTransits: houseTransits(axis, grid.houses, AXIS_TRANSITS[axis], grid.pad, grid.days),
       days: dayList,
       best: selectDates(significance, {
         count: 5, order: 'best', threshold: BEST_THRESHOLD,

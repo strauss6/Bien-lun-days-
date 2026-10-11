@@ -228,9 +228,14 @@ monétisation et le parcours. Voir l'encadré en tête de `BRIEF.md`.
       gros de la dépense étant l'étalonnage de 780 jours — et le mois en lit les trente
       premiers. La vue montre des **fenêtres** et non des journées : à 3,6 px par jour,
       le score du jour porté par la Lune ferait une barrière de piquets. Voir Q19.
-- [ ] **B11 — Maîtres de maison et planète dominante.** Deux notions que le rédacteur tient
-      pour centrales et que le moteur n'implémente pas. Elles relient un point natal à un
-      domaine de vie, et rendraient les lectures nettement plus personnelles.
+- [x] **B11 — Maîtres de maison.** Faits le 11 octobre 2026. Les maisons entrent dans les
+      poids : les maîtres des maisons de chaque axe s'ajoutent à ses points natals, et
+      chaque point est modulé par la maison qu'il occupe. Les poids cessent d'être les
+      mêmes pour tout le monde. Le fond de maison, lui, se dit au lieu de se chiffrer.
+      Dosages à faire relire : `QUESTIONS.md` Q20 et Q21.
+- [ ] **B13 — La planète dominante.** L'autre notion que le rédacteur tient pour centrale :
+      « à l'Ascendant, en maison 10, près de la maison 7 ou de la maison 4, ou près du
+      Soleil ou de la Lune. Elle colore toute la personne. » Non implémentée.
 - [ ] **T16 — Persistance serveur.** Bloqué : identifiants Supabase. Le profil vit pour
       l'instant sur l'appareil, et l'interface le dit.
 

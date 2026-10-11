@@ -98,3 +98,27 @@ test('aucun texte ne promet de résultat ni n’annonce de fatalité', async ({ 
   }
   await expect(page.getByText(/divertissement et de réflexion personnelle/)).toBeVisible();
 });
+
+/*
+ * Le fond de période, branché le 11 octobre 2026. C'est la lecture qu'un
+ * astrologue donne en premier — « tu as Jupiter en maison 7 cette année » — et
+ * le moteur n'en voyait rien : il calculait les douze maisons depuis le début
+ * sans jamais les relire.
+ */
+test('le trimestre nomme le fond de période quand il y en a un', async ({ page }) => {
+  await allerAuTrimestre(page);
+
+  const fond = page.getByTestId('quarter-backdrop');
+  if (await fond.count() === 0) return; // un axe peut n'avoir aucun fond : c'est licite
+
+  await expect(fond).toContainText('LE FOND DE LA PÉRIODE');
+  // Une planète nommée, une maison numérotée, et son domaine en clair.
+  await expect(fond).toContainText(
+    /(Soleil|Lune|Mercure|Vénus|Mars|Jupiter|Saturne|Uranus|Neptune|Pluton) traverse ta maison \d+ — .+ —/,
+  );
+  // Jamais de symbole à déchiffrer, jamais un signe à la place d'une maison.
+  await expect(fond).not.toContainText(/[♈♉♊♋♌♍♎♏♐♑♒♓☉☽☿♀♂♃♄♅♆♇]/);
+  for (const texte of await fond.locator('.reading').allInnerTexts()) {
+    expect(texte.trim().split(/\s+/).length, texte).toBeLessThanOrEqual(45);
+  }
+});

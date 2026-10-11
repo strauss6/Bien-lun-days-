@@ -190,6 +190,28 @@ export interface PeriodPayload {
   openEnd: boolean;
 }
 
+/**
+ * Un fond de période : une planète lente qui traverse une maison de l'axe.
+ *
+ * Volontairement **hors du score** — un fond constant sur des mois ne distingue
+ * aucun jour et se fait réabsorber par l'étalonnage. Il se dit en toutes lettres,
+ * parce que c'est la première chose qu'un astrologue regarde : « tu as Jupiter en
+ * maison 7 cette année ». Voir `lib/astro/houses.ts`.
+ */
+export interface HouseBackdropPayload {
+  axis: AxisId;
+  /** « Jupiter ». */
+  planet: string;
+  house: number;
+  /** Ce que la maison gouverne, en clair. */
+  topic: string;
+  start: string;
+  end: string;
+  /** La traversée déborde la fenêtre calculée : on ne l'annonce pas comme une date. */
+  openStart: boolean;
+  openEnd: boolean;
+}
+
 export interface ReadingPayload {
   firstName: string;
   birth: {
@@ -210,6 +232,8 @@ export interface ReadingPayload {
   days: ReadingDay[];
   /** Les fenêtres des trois axes, triées par date. Voir `PeriodPayload`. */
   periods: PeriodPayload[];
+  /** Les fonds de période, du plus lourd au plus léger. Voir `HouseBackdropPayload`. */
+  houseBackdrops: HouseBackdropPayload[];
   rare: RarePayload[];
   stats: { comparisonsTested: number; aspectEvents: number };
 }
@@ -343,6 +367,16 @@ export function buildReading(input: ReadingInput): ReadingPayload {
       openStart: f.openStart,
       openEnd: f.openEnd,
     }))).sort((a, b) => a.start.localeCompare(b.start)),
+    houseBackdrops: AXIS_IDS.flatMap((axis) => reading.axes[axis].houseTransits.map((t) => ({
+      axis,
+      planet: POINT_LABELS[t.planet],
+      house: t.house,
+      topic: t.topic,
+      start: reading.axes[axis].days[t.from].date,
+      end: reading.axes[axis].days[t.to].date,
+      openStart: t.openStart,
+      openEnd: t.openEnd,
+    }))),
     rare: rare.map((r) => ({
       notation: notation(r.transit, r.aspect, r.natal),
       phrase: transitPhrase(r.transit, r.aspect, r.natal),
