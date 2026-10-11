@@ -74,12 +74,11 @@ function Formulaire({
   const [firstName, setFirstName] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [birthTime, setBirthTime] = useState('');
-  const [timeKnown, setTimeKnown] = useState(true);
   const [city, setCity] = useState<City | null>(null);
 
   const complet = firstName.trim().length > 0
     && /^\d{4}-\d{2}-\d{2}$/.test(birthDate)
-    && (!timeKnown || /^([01]\d|2[0-3]):[0-5]\d$/.test(birthTime))
+    && /^([01]\d|2[0-3]):[0-5]\d$/.test(birthTime)
     && city !== null;
 
   return (
@@ -98,7 +97,7 @@ function Formulaire({
           onReady({
             firstName: firstName.trim(),
             birthDate,
-            birthTime: timeKnown ? birthTime : null,
+            birthTime,
             city,
           });
         }}
@@ -126,27 +125,27 @@ function Formulaire({
           />
         </label>
 
-        <div className="grid gap-2">
+        <label className="grid gap-2">
           <span className="technical text-[11px] tracking-[0.08em] opacity-55">SON HEURE DE NAISSANCE</span>
           <input
             id="duo-birthTime"
             type="time"
+            required
             value={birthTime}
-            disabled={!timeKnown}
             onChange={(e) => setBirthTime(e.target.value)}
-            className="w-full border-b border-ink/15 bg-transparent pb-2 text-[20px] outline-none disabled:opacity-30"
+            className="w-full border-b border-ink/15 bg-transparent pb-2 text-[20px] outline-none"
           />
-          <label className="technical -my-2 inline-flex min-h-11 cursor-pointer items-center gap-2 text-[11px] opacity-60">
-            <input
-              id="duo-timeUnknown"
-              type="checkbox"
-              checked={!timeKnown}
-              onChange={(e) => setTimeKnown(!e.target.checked)}
-              className="size-4 accent-ink"
-            />
-            Je ne connais pas son heure
-          </label>
-        </div>
+          {/*
+            Obligatoire des deux côtés. Une comparaison dont un seul thème a son
+            heure perd l'Ascendant et le Milieu du Ciel **des deux**, puisque le
+            moteur écarte les angles dès qu'il en manque un. Autant le dire à la
+            saisie plutôt que sous un résultat déjà amputé.
+          */}
+          <span className="technical text-[10.5px] leading-relaxed opacity-50">
+            Elle est sur sa copie intégrale d’acte de naissance. Sans elle, la comparaison
+            perd l’Ascendant des deux côtés.
+          </span>
+        </label>
 
         <div className="grid gap-2">
           <span className="technical text-[11px] tracking-[0.08em] opacity-55">SA VILLE DE NAISSANCE</span>
@@ -191,7 +190,7 @@ function Resultat({
     const mien = computeNatalChart(
       resolveBirthInstant({
         date: me.birthDate,
-        time: me.timeKnown ? me.birthTime : null,
+        time: me.birthTime,
         lat: me.lat,
         lng: me.lng,
       }),

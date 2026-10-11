@@ -39,8 +39,7 @@ test('l\'API rend un rapport complet à partir des données de naissance', async
       firstName: 'Elioth',
       birthDate: '1993-08-06',
       birthTime: '20:40',
-      timeKnown: true,
-      lat: 48.8352,
+        lat: 48.8352,
       lng: 2.2409,
       city: 'Boulogne-Billancourt',
       country: 'FR',
@@ -59,7 +58,7 @@ test('l\'API rend un rapport complet à partir des données de naissance', async
 test('l\'API refuse une date au format français, avec un message utilisable', async ({ request }) => {
   const response = await request.post('/api/reading', {
     data: {
-      firstName: 'Elioth', birthDate: '06/08/1993', birthTime: '20:40', timeKnown: true,
+      firstName: 'Elioth', birthDate: '06/08/1993', birthTime: '20:40',
       lat: 48.8352, lng: 2.2409, city: 'Boulogne-Billancourt', country: 'FR',
       priorityAxis: 'business', startDate: '2026-09-10',
     },

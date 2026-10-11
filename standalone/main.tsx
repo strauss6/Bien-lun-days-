@@ -82,7 +82,7 @@ function Profil() {
             {[
               ['Prénom', r.firstName],
               ['Naissance', r.birthDate],
-              ['Heure', r.timeKnown ? r.birthTime! : 'Inconnue'],
+              ['Heure', r.birthTime],
               ['Ville', `${r.city} (${r.country})`],
               ['Fuseau de résidence', residentZone()],
             ].map(([label, value]) => (

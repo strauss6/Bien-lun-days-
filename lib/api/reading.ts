@@ -43,8 +43,19 @@ export const ReadingRequest = z.object({
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'La date doit être au format AAAA-MM-JJ.')
     .refine(isCivilDate, 'Cette date n\'existe pas.')
     .refine((d) => d <= new Date().toISOString().slice(0, 10), 'Cette date est dans le futur.'),
-  birthTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'L\'heure doit être au format HH:MM.').nullable(),
-  timeKnown: z.boolean(),
+  /**
+   * **Obligatoire depuis le 11 octobre 2026.** C'est la décision produit, et elle
+   * se tient ici plutôt que dans le questionnaire : un contrat qui accepte encore
+   * l'absence d'heure finit par la recevoir, par un brouillon enregistré avant la
+   * règle, par un appel direct à l'API, ou par un écran qu'on oubliera de changer.
+   *
+   * Mesuré sur un thème réel, sans l'heure : l'Ascendant passe du Verseau à la
+   * Balance, le Milieu du Ciel du Scorpion au Cancer, les axes bougent de 9 points
+   * en moyenne et jusqu'à 49, et les jours rares tombent de 18 à 8. Ce n'est pas
+   * une version dégradée du produit, c'en est un autre — et c'est l'inverse de ce
+   * qu'il vend : « calculé pour l'heure et la ville exactes de ta naissance ».
+   */
+  birthTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'Il me faut ton heure de naissance, au format HH:MM.'),
   lat: z.number().min(-90, 'Latitude hors du globe.').max(90, 'Latitude hors du globe.'),
   lng: z.number().min(-180, 'Longitude hors du globe.').max(180, 'Longitude hors du globe.'),
   city: z.string().trim().min(1, 'Il me faut ta ville de naissance.'),
@@ -58,9 +69,6 @@ export const ReadingRequest = z.object({
   days: z.number().int().min(1).max(120).optional(),
   /** Fuseau de résidence : celui dans lequel « le jour » a un sens pour la personne. */
   zone: z.string().refine(isTimeZone, 'Ce fuseau horaire est inconnu.').optional(),
-}).refine((v) => v.timeKnown === (v.birthTime !== null), {
-  message: 'Coche « je ne connais pas mon heure » ou renseigne-la.',
-  path: ['birthTime'],
 });
 
 export type ReadingInput = z.infer<typeof ReadingRequest>;
@@ -187,7 +195,6 @@ export interface ReadingPayload {
   birth: {
     date: string;
     time: string;
-    timeKnown: boolean;
     city: string;
     country: string;
     zone: string;
@@ -228,7 +235,7 @@ export function readingBody(
 export function buildReading(input: ReadingInput): ReadingPayload {
   const birth = resolveBirthInstant({
     date: input.birthDate,
-    time: input.timeKnown ? input.birthTime : null,
+    time: input.birthTime,
     lat: input.lat,
     lng: input.lng,
   });
@@ -298,7 +305,6 @@ export function buildReading(input: ReadingInput): ReadingPayload {
     birth: {
       date: input.birthDate,
       time: birth.localTime,
-      timeKnown: input.timeKnown,
       city: input.city,
       country: input.country,
       zone: birth.zone,

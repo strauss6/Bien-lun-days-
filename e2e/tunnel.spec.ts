@@ -268,7 +268,13 @@ test('sous prefers-reduced-motion, les scores sont là d’emblée', async ({ pa
 test('le jour porte son propre score, sans devenir le grand nombre de l’écran', async ({ page }) => {
   await premiereVisite(page);
 
-  await expect(page.getByText('LE JOUR')).toBeVisible();
+  /*
+   * `exact` : sans lui, la recherche est une sous-chaîne insensible à la casse, et
+   * elle attrape aussi la phrase d'interprétation les jours où elle contient « le
+   * jour ». Elle en contenait une le 11 octobre 2026 — le test échouait selon la
+   * date, sans que rien n'ait cassé.
+   */
+  await expect(page.getByText('LE JOUR', { exact: true })).toBeVisible();
   const jour = page.getByTestId('overall');
   await expect(jour).toBeVisible();
   await expect.poll(async () => Number(await jour.innerText())).toBeGreaterThan(0);

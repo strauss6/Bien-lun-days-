@@ -33,8 +33,16 @@ Le brief de référence est `BRIEF.md`. En cas de contradiction entre ce fichier
 - **Mention « Bêta » discrète** près du nom, sans couleur d'alerte. Pas de bandeau « en
   cours de développement », pas de pourcentage, pas d'excuse permanente. Une fonction non
   prête est **absente** de la navigation, jamais désactivée ni marquée « bientôt ».
-- **Une limite qui affecte un résultat se dit.** Heure de naissance inconnue, donnée
-  manquante, calcul indisponible : c'est écrit, à l'endroit où ça compte.
+- **L'heure de naissance est obligatoire.** Décision du 11 octobre 2026. C'est la
+  promesse du produit : sans elle il n'y a ni Ascendant ni maisons, et l'heure exacte
+  est précisément ce qu'on achète en la demandant. Mesuré sur un thème réel, le calcul
+  sur midi déplaçait l'Ascendant du Verseau à la Balance, le Milieu du Ciel du Scorpion
+  au Cancer, les axes de 9 points en moyenne et jusqu'à 49, et faisait tomber les jours
+  rares de 18 à 8. La contrainte se tient **dans le contrat** `ReadingRequest`, pas
+  seulement dans le questionnaire. Qui ne la connaît pas trouve, à la place de l'ancienne
+  case « je ne la connais pas », où aller la chercher.
+- **Une limite qui affecte un résultat se dit.** Donnée manquante, calcul indisponible :
+  c'est écrit, à l'endroit où ça compte.
 - **Une entrée « Donner mon avis » n'existe que si un canal réel est configuré.** On
   n'invente pas d'adresse et on ne simule jamais un envoi. Voir `QUESTIONS.md` Q10.
 - **Aucune donnée personnelle dans une adresse.** Ni date, ni heure, ni ville, ni prénom.

@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { QUIZ_STEPS, blankDraft, isStepComplete, toReadingRequest } from '../steps';
+import { ReadingRequest } from '@/lib/api/reading';
 
 const filled = {
   firstName: 'Elioth',
   birthDate: '1993-08-06',
   birthTime: '20:40',
-  timeKnown: true,
   city: {
     name: 'Boulogne-Billancourt', country: 'FR', admin: '11',
     lat: 48.8352, lng: 2.2409, population: 108782, zone: 'Europe/Paris',
@@ -45,14 +45,16 @@ describe('validation écran par écran', () => {
   });
 
   /**
-   * L'écran de l'heure se valide de deux façons : une heure renseignée, ou la case
-   * « je ne la connais pas ». C'est le seul écran où ne pas savoir est une réponse.
+   * L'heure ne se valide que renseignée. C'était le seul écran où ne pas savoir
+   * était une réponse ; depuis le 11 octobre 2026, ce n'en est plus une — la case
+   * « je ne la connais pas » est devenue un dépliant qui dit où la trouver.
    */
-  it('l\'heure se valide aussi en déclarant qu\'on ne la connaît pas', () => {
-    expect(isStepComplete('birthTime', { ...filled, birthTime: '', timeKnown: true })).toBe(false);
-    expect(isStepComplete('birthTime', { ...filled, birthTime: '25:00', timeKnown: true })).toBe(false);
-    expect(isStepComplete('birthTime', { ...filled, birthTime: '', timeKnown: false })).toBe(true);
-    expect(isStepComplete('birthTime', { ...filled, birthTime: '20:40', timeKnown: true })).toBe(true);
+  it('l\'heure ne se valide que renseignée', () => {
+    expect(isStepComplete('birthTime', { ...filled, birthTime: '' })).toBe(false);
+    expect(isStepComplete('birthTime', { ...filled, birthTime: '25:00' })).toBe(false);
+    expect(isStepComplete('birthTime', { ...filled, birthTime: '7:5' })).toBe(false);
+    expect(isStepComplete('birthTime', { ...filled, birthTime: '20:40' })).toBe(true);
+    expect(isStepComplete('birthTime', { ...filled, birthTime: '00:00' })).toBe(true);
   });
 
   it('la ville doit avoir été choisie dans la liste, pas seulement tapée', () => {
@@ -67,15 +69,13 @@ describe('passage à la demande de calcul', () => {
     expect(request.lat).toBeCloseTo(48.8352, 4);
     expect(request.city).toBe('Boulogne-Billancourt');
     expect(request.birthTime).toBe('20:40');
-    expect(request.timeKnown).toBe(true);
     expect(request.startDate).toBe('2026-09-10');
     expect(request.zone).toBe('Europe/Paris');
   });
 
-  /** Heure inconnue : le champ part à `null`, jamais une heure inventée. */
-  it('n\'invente jamais d\'heure quand elle est inconnue', () => {
-    const request = toReadingRequest({ ...filled, timeKnown: false, birthTime: '' }, '2026-09-10');
-    expect(request.birthTime).toBeNull();
-    expect(request.timeKnown).toBe(false);
+  /* Le brouillon ne peut plus produire une demande sans heure : le schéma la refuse. */
+  it('ne compose jamais une demande que le schéma rejetterait', () => {
+    const request = toReadingRequest({ ...filled, birthTime: '' }, '2026-09-10');
+    expect(ReadingRequest.safeParse(request).success).toBe(false);
   });
 });

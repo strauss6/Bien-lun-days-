@@ -111,7 +111,7 @@ describe('l’étalonnage', () => {
  */
 describe('un jour vaut la même chose dans le mois et dans le trimestre', () => {
   const base = {
-    firstName: 'E', birthDate: '1993-08-06', birthTime: '20:40', timeKnown: true,
+    firstName: 'E', birthDate: '1993-08-06', birthTime: '20:40',
     lat: 48.8352, lng: 2.2409, city: 'B', country: 'FR',
     priorityAxis: 'business' as const, zone: 'Europe/Paris',
   };

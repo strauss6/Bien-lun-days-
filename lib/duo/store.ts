@@ -22,14 +22,19 @@ import type { City } from '@/lib/cities/search';
 
 export const DUO_KEY = 'bien-lune:duo';
 
-/** Monte avec la forme stockée. Une entrée d'une autre version est ignorée, pas migrée. */
-export const DUO_VERSION = 1;
+/**
+ * Monte avec la forme stockée. Une entrée d'une autre version est ignorée, pas
+ * migrée. `2` : l'heure de naissance est devenue obligatoire — une comparaison
+ * enregistrée sans elle se ressaisit plutôt que de se recalculer en silence sur
+ * un thème qui n'est pas celui de la personne.
+ */
+export const DUO_VERSION = 2;
 
 export interface DuoPerson {
   firstName: string;
   birthDate: string;
-  /** `null` quand l'heure est inconnue : les angles sortent alors du calcul. */
-  birthTime: string | null;
+  /** Obligatoire depuis le 11 octobre 2026, comme celle du lecteur. */
+  birthTime: string;
   city: City;
 }
 

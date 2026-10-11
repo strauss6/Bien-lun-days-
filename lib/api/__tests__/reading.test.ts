@@ -6,7 +6,6 @@ const NOMINAL = {
   firstName: 'Elioth',
   birthDate: '1993-08-06',
   birthTime: '20:40',
-  timeKnown: true,
   lat: 48.8352,
   lng: 2.2409,
   city: 'Boulogne-Billancourt',
@@ -36,9 +35,18 @@ describe('validation de la demande', () => {
     }
   });
 
-  it('accepte une heure inconnue et ignore alors le champ heure', () => {
-    const parsed = ReadingRequest.safeParse({ ...NOMINAL, timeKnown: false, birthTime: null });
-    expect(parsed.success).toBe(true);
+  /*
+   * Règle du 11 octobre 2026 : l'heure est obligatoire. Elle se tient dans le
+   * contrat et pas seulement dans le questionnaire — un schéma qui accepte encore
+   * l'absence d'heure finit par la recevoir, par un brouillon d'avant la règle ou
+   * par un appel direct à l'API.
+   */
+  it('refuse une demande sans heure de naissance', () => {
+    for (const heure of [null, undefined, '', '25:00']) {
+      const parsed = ReadingRequest.safeParse({ ...NOMINAL, birthTime: heure });
+      expect(parsed.success, `heure ${JSON.stringify(heure)}`).toBe(false);
+    }
+    expect(ReadingRequest.safeParse({ ...NOMINAL, birthTime: '20:40' }).success).toBe(true);
   });
 });
 
@@ -95,10 +103,16 @@ describe('calcul complet', () => {
     expect(jupiter!.nextYear).toBe(2038);
   });
 
-  it('sans heure connue, le dit et ne parle pas des axes du thème', () => {
-    const p = buildReading(ReadingRequest.parse({ ...NOMINAL, timeKnown: false, birthTime: null }));
-    expect(p.birth.precision).toBe('noon-fallback');
-    expect(p.rare.every((r) => !r.natal.includes('Ascendant') && !r.natal.includes('Milieu'))).toBe(true);
+  /*
+   * Le corollaire de l'heure obligatoire : tout rapport porte désormais ses
+   * angles. C'est ce que l'heure exacte achète, et c'est tout l'argument de vente
+   * du produit — sur ce thème, la calculer sur midi déplaçait l'Ascendant du
+   * Verseau à la Balance.
+   */
+  it('porte toujours un Ascendant et un Milieu du Ciel exacts', () => {
+    expect(payload.birth.precision).toBe('exact');
+    expect(payload.chart.asc).toMatch(/\d+°\d+' \w+/);
+    expect(payload.chart.mc).toMatch(/\d+°\d+' \w+/);
   });
 
   it('ordonne les axes selon ce qui compte pour la personne', () => {

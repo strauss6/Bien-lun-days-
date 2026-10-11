@@ -43,23 +43,38 @@ test.describe('le quiz', () => {
     expect(draft.firstName).toBe('Elioth');
     expect(draft.birthDate).toBe('1993-08-06');
     expect(draft.birthTime).toBe('20:40');
-    expect(draft.timeKnown).toBe(true);
     expect(draft.city).toBe('Boulogne-Billancourt');
     expect(draft.lat).toBeCloseTo(48.835, 2);
     expect(draft.priorityAxis).toBe('business');
   });
 
-  /** Le seul écran où ne pas savoir est une réponse. */
-  test('l’heure inconnue débloque l’écran sans inventer d’heure', async ({ page }) => {
+  /*
+   * L'heure est obligatoire depuis le 11 octobre 2026. C'était le seul écran où ne
+   * pas savoir était une réponse ; on n'y propose plus de s'en passer, on y dit où
+   * la trouver. Sans l'heure, l'Ascendant de ce thème passait du Verseau à la
+   * Balance : ce n'était plus le thème de la personne.
+   */
+  test('l’heure est obligatoire, et l’écran dit où la trouver', async ({ page }) => {
     await page.goto('/quiz');
     await page.locator('#quiz-firstName').fill('Elioth');
     await page.getByRole('button', { name: 'Continuer' }).click();
     await page.locator('#quiz-birthDate').fill('1993-08-06');
     await page.getByRole('button', { name: 'Continuer' }).click();
 
+    // Aucune échappatoire : plus de case à cocher, et rien ne débloque l'écran.
     await expect(page.getByRole('button', { name: 'Continuer' })).toBeDisabled();
-    await page.locator('#quiz-timeUnknown').check();
-    await expect(page.locator('#quiz-birthTime')).toBeDisabled();
+    await expect(page.locator('#quiz-timeUnknown')).toHaveCount(0);
+
+    // Mais la réponse est là pour qui ne la connaît pas, repliée.
+    const aide = page.getByTestId('time-help');
+    await expect(aide).toBeVisible();
+    await expect(page.getByText(/copie intégrale d’acte de naissance/)).toBeHidden();
+    await aide.getByText('Je ne la connais pas').click();
+    await expect(page.getByText(/copie intégrale d’acte de naissance/)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Continuer' })).toBeDisabled();
+
+    // Seule une heure valide ouvre la suite.
+    await page.locator('#quiz-birthTime').fill('20:40');
     await expect(page.getByRole('button', { name: 'Continuer' })).toBeEnabled();
   });
 

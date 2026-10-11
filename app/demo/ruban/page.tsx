@@ -14,7 +14,6 @@ export default function RibbonDemoPage() {
     firstName: 'Elioth',
     birthDate: '1993-08-06',
     birthTime: '20:40',
-    timeKnown: true,
     lat: 48.8352,
     lng: 2.2409,
     city: 'Boulogne-Billancourt',

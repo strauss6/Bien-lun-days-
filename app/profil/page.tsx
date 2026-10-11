@@ -65,7 +65,7 @@ export default function ProfilPage() {
         {[
           ['Prénom', r.firstName],
           ['Naissance', longDate(r.birthDate)],
-          ['Heure', r.timeKnown ? r.birthTime! : 'Inconnue'],
+          ['Heure', r.birthTime],
           ['Ville', `${r.city} (${r.country})`],
           ['Fuseau de résidence', zone],
         ].map(([label, value]) => (
@@ -76,13 +76,6 @@ export default function ProfilPage() {
         ))}
       </dl>
 
-      {!r.timeKnown ? (
-        <p className="reading mt-4 text-[15px] leading-relaxed opacity-70">
-          Sans heure de naissance, l’Ascendant et le Milieu du Ciel ne sont pas calculables :
-          le calcul part de midi et l’axe Énergie perd son point le plus lourd. Les scores
-          restent justes, ils sont simplement moins personnels.
-        </p>
-      ) : null}
 
       <p className="reading mt-6 text-[15px] leading-relaxed opacity-60">
         Ces données sont enregistrées <strong className="font-medium">sur cet appareil</strong>,

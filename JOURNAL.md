@@ -618,3 +618,33 @@ moyenne et non sur la durée, sont des choix de produit pris seul. Q19 les expos
 ailleurs l'écran des jours rares couvre maintenant le trimestre et non plus le mois : il y
 trouve dix-neuf aspects au lieu de seize, ce qui est plus juste puisqu'il parle de
 planètes lentes, mais la pastille du mois annonce ce nombre sous une vue de trente jours.
+
+## 11 octobre 2026 — l'heure de naissance devient obligatoire
+
+**Fait.** Décision produit, prise après une mesure : sur un thème réel, calculer sur midi
+au lieu de l'heure exacte déplace l'Ascendant du Verseau à la Balance, le Milieu du Ciel
+du Scorpion au Cancer, bouge les axes de 9 points en moyenne et jusqu'à 49, et fait
+tomber les jours rares de 18 à 8. Ce n'était pas une version dégradée du produit, c'en
+était un autre — et l'inverse de ce qu'il vend. La contrainte se tient dans le contrat
+`ReadingRequest` et non dans le seul questionnaire : un schéma qui accepte encore
+l'absence d'heure finit par la recevoir, par un brouillon d'avant la règle ou par un
+appel direct à l'API. L'heure est exigée des deux côtés d'une comparaison, puisque le
+moteur écarte les angles dès qu'il en manque un.
+
+La case « je ne la connais pas » devient un dépliant **qui dit où la trouver** : même
+geste, résultat inverse. Replié par défaut, donc hors budget de densité pour qui n'en a
+pas besoin.
+
+**Cassé, réparé.** Le compilateur a listé les neuf appelants à reprendre, ce qui a rendu
+la bascule mécanique. Quatre tests de bout en bout échouaient : trois encodaient
+l'ancienne règle et ont été réécrits à l'envers — l'heure obligatoire, l'absence de case,
+le dépliant qui s'ouvre. Le quatrième était une dérive de date déguisée en régression :
+`getByText('LE JOUR')` fait une recherche de sous-chaîne insensible à la casse, et la
+phrase d'interprétation du jour contenait « le jour ». Corrigé en `exact: true`.
+
+**Incertain.** Les profils enregistrés sans heure sont refusés au chargement et renvoyés
+au questionnaire ; ils ne sont pas migrés en silence sur midi, ce qui donnerait un
+Ascendant faux sous le nom de la personne. Le chemin dégradé du moteur — `anglesReliable`
+et les poids réduits — est **conservé** : c'est un garde-fou de correction, pas une
+fonctionnalité, et supprimer du comportement moteur testé n'est pas une décision à
+prendre seul. Il n'a simplement plus de chemin pour être atteint depuis le produit.

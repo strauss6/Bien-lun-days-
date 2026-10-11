@@ -120,29 +120,34 @@ export function QuizFlow({ onComplete, search, initial }: Props) {
               <input
                 ref={field}
                 id="quiz-birthTime"
-                className="w-full border-b border-ink/15 bg-transparent pb-2 text-[26px] font-medium tracking-[-0.02em] outline-none disabled:opacity-30"
+                className="w-full border-b border-ink/15 bg-transparent pb-2 text-[26px] font-medium tracking-[-0.02em] outline-none"
                 type="time"
                 aria-label="Heure de naissance"
-                disabled={!draft.timeKnown}
+                required
                 value={draft.birthTime}
                 onChange={(e) => set('birthTime', e.target.value)}
               />
-              <label className="mt-6 flex items-start gap-3 text-[13px] leading-relaxed" htmlFor="quiz-timeUnknown">
-                <input
-                  id="quiz-timeUnknown"
-                  type="checkbox"
-                  className="mt-0.5 size-4 accent-ink"
-                  checked={!draft.timeKnown}
-                  onChange={(e) => setDraft((d) => ({ ...d, timeKnown: !e.target.checked, birthTime: '' }))}
-                />
-                <span>
-                  Je ne la connais pas.
-                  <span className="block opacity-55">
-                    On calculera sur midi. L’Ascendant et la Lune seront approchés, et le rapport
-                    le dira.
-                  </span>
-                </span>
-              </label>
+              {/*
+                Il y avait ici une case « je ne la connais pas » qui calculait sur
+                midi. Elle est retirée : sans l'heure, l'Ascendant de ce thème
+                passait du Verseau à la Balance et le Milieu du Ciel du Scorpion au
+                Cancer — ce n'est pas une version approchée du produit, c'en est un
+                autre, et l'inverse de ce qu'il vend.
+
+                Le même geste reste offert, avec le résultat inverse : on ne propose
+                plus de s'en passer, on dit où la trouver. Replié par défaut, donc
+                hors du budget de densité pour qui n'en a pas besoin.
+              */}
+              <details className="mt-7" data-testid="time-help">
+                <summary className="technical inline-flex min-h-11 cursor-pointer items-center text-[12px] underline underline-offset-4 opacity-60">
+                  Je ne la connais pas
+                </summary>
+                <p className="reading mt-2 text-[16px] leading-snug opacity-75">
+                  Elle est écrite sur ta copie intégrale d’acte de naissance, gratuite, à
+                  demander à la mairie de ta commune de naissance. Sans elle, l’Ascendant se
+                  trompe de plusieurs signes entiers : ce ne serait plus ton thème.
+                </p>
+              </details>
             </>
           ) : null}
 

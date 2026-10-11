@@ -16,8 +16,6 @@ export interface QuizDraft {
   firstName: string;
   birthDate: string;
   birthTime: string;
-  /** `false` quand la personne coche « je ne la connais pas ». */
-  timeKnown: boolean;
   city: City | null;
   priorityAxis: AxisId | null;
 }
@@ -42,7 +40,7 @@ export const QUIZ_STEPS: QuizStep[] = [
 ];
 
 export function blankDraft(): QuizDraft {
-  return { firstName: '', birthDate: '', birthTime: '', timeKnown: true, city: null, priorityAxis: null };
+  return { firstName: '', birthDate: '', birthTime: '', city: null, priorityAxis: null };
 }
 
 const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -68,7 +66,7 @@ export function isStepComplete(step: StepId, draft: QuizDraft, today?: string): 
       return isRealPastDate(draft.birthDate, today);
     // Le seul écran où ne pas savoir est une réponse valide.
     case 'birthTime':
-      return draft.timeKnown ? TIME_RE.test(draft.birthTime) : true;
+      return TIME_RE.test(draft.birthTime);
     case 'city':
       return draft.city !== null;
     case 'priorityAxis':
@@ -91,7 +89,6 @@ export function draftFromRequest(request: ReadingInput): QuizDraft {
     firstName: request.firstName,
     birthDate: request.birthDate,
     birthTime: request.birthTime ?? '',
-    timeKnown: request.timeKnown,
     city: {
       name: request.city,
       country: request.country,
@@ -111,8 +108,7 @@ export function toReadingRequest(draft: QuizDraft, startDate: string): ReadingIn
   return {
     firstName: draft.firstName.trim(),
     birthDate: draft.birthDate,
-    birthTime: draft.timeKnown ? draft.birthTime : null,
-    timeKnown: draft.timeKnown,
+    birthTime: draft.birthTime,
     lat: draft.city.lat,
     lng: draft.city.lng,
     city: draft.city.name,

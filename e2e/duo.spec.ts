@@ -2,11 +2,10 @@ import { expect, test, type Page } from '@playwright/test';
 import { allerAuMois, premiereVisite } from './helpers/parcours';
 
 /** Saisir la seconde personne, comme on la saisit vraiment : de mémoire. */
-async function saisirLautre(page: Page, { heure = '07:15' }: { heure?: string | null } = {}) {
+async function saisirLautre(page: Page, { heure = '07:15' }: { heure?: string } = {}) {
   await page.locator('#duo-firstName').fill('Marie');
   await page.locator('#duo-birthDate').fill('1996-02-14');
-  if (heure === null) await page.locator('#duo-timeUnknown').check();
-  else await page.locator('#duo-birthTime').fill(heure);
+  await page.locator('#duo-birthTime').fill(heure);
   await page.locator('#quiz-city').fill('marseil');
   await page.getByRole('button', { name: /Marseille/ }).first().click();
   await page.getByRole('button', { name: 'Comparer les deux thèmes' }).click();
@@ -69,14 +68,26 @@ test('la comparaison se retient, et se remplace', async ({ page }) => {
 });
 
 /*
- * Une limite qui change un résultat se dit. Sans les deux heures de naissance,
- * l'Ascendant sort du calcul : la comparaison n'est pas la même, et l'écran le
- * dit au lieu de la vendre pour ce qu'elle n'est pas.
+ * L'heure est obligatoire des deux côtés depuis le 11 octobre 2026 : une
+ * comparaison dont un thème n'a pas la sienne perd l'Ascendant **des deux**, le
+ * moteur écartant les angles dès qu'il en manque un. Il n'y a donc plus de cas
+ * dégradé à annoncer — il y a un champ à remplir.
  */
-test('sans heure de naissance, l’écran dit ce qui manque', async ({ page }) => {
+test('la comparaison exige l’heure de l’autre personne', async ({ page }) => {
   await allerAuDuo(page);
-  await saisirLautre(page, { heure: null });
-  await expect(page.getByTestId('duo-limite')).toContainText('Ascendant');
+  await expect(page.locator('#duo-timeUnknown')).toHaveCount(0);
+
+  const comparer = page.getByRole('button', { name: 'Comparer les deux thèmes' });
+  await page.locator('#duo-firstName').fill('Marie');
+  await page.locator('#duo-birthDate').fill('1996-02-14');
+  await page.locator('#quiz-city').fill('marseil');
+  await page.getByRole('button', { name: /Marseille/ }).first().click();
+  await expect(comparer, 'tout saisi sauf l’heure').toBeDisabled();
+
+  await page.locator('#duo-birthTime').fill('07:15');
+  await expect(comparer).toBeEnabled();
+  await comparer.click();
+  await expect(page.getByTestId('duo-limite')).toHaveCount(0);
   await expect(page.getByTestId('duo-link').first()).toBeVisible();
 });
 

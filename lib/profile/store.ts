@@ -23,7 +23,7 @@ import { SCORE_METHOD } from '@/lib/astro/calibration';
 export const PROFILE_KEY = 'bien-lune:profil';
 export const READING_KEY = 'bien-lune:rapport';
 /** Forme du contenu enregistré. À changer quand la structure évolue. */
-export const STORE_VERSION = 2;
+export const STORE_VERSION = 3;
 
 export interface StoredProfile {
   version: number;
@@ -61,9 +61,20 @@ function write(key: string, value: unknown): void {
   }
 }
 
+/**
+ * Le profil enregistré sur cet appareil, ou `null` s'il n'est plus exploitable.
+ *
+ * Deux refus, et le second est arrivé avec la version 3. Un profil d'une autre
+ * version n'est pas migré. Et un profil **sans heure de naissance** — il en existe,
+ * enregistrés quand le questionnaire proposait encore de s'en passer — n'est pas
+ * accepté : le recalculer en silence sur midi donnerait un Ascendant faux d'un
+ * demi-zodiaque sous le nom de la personne. La porte d'entrée renvoie au
+ * questionnaire, où il n'y a qu'un champ à remplir.
+ */
 export function loadProfile(): StoredProfile | null {
   const stored = read<StoredProfile>(PROFILE_KEY);
-  return stored && stored.version === STORE_VERSION && stored.request ? stored : null;
+  if (!stored || stored.version !== STORE_VERSION || !stored.request) return null;
+  return stored.request.birthTime ? stored : null;
 }
 
 export function saveProfile(request: StoredProfile['request'], zone: string): void {

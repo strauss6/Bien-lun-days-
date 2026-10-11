@@ -83,9 +83,7 @@ export default function CalculPage() {
   const steps = payload ? [
     `Soleil au ${longDate(payload.birth.date)}, ${payload.birth.time} — ${payload.chart.sun}`,
     `Heure convertie : ${payload.chart.utcISO.slice(11, 16)} UTC, ${payload.chart.offset}`,
-    payload.birth.timeKnown
-      ? `Ascendant ${payload.chart.asc} · Milieu du Ciel ${payload.chart.mc}`
-      : 'Heure inconnue : calcul sur midi, Ascendant non retenu',
+    `Ascendant ${payload.chart.asc} · Milieu du Ciel ${payload.chart.mc}`,
     `Transits sur ${payload.days.length} jours, à partir du ${longDate(payload.startDate)}`,
     `${payload.stats.comparisonsTested.toLocaleString('fr-FR')} combinaisons testées`,
     `${payload.stats.aspectEvents} aspects retenus · ${payload.rare.length} rares`,
