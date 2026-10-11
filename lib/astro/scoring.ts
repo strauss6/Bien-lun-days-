@@ -486,31 +486,45 @@ const SLOW: ReadonlySet<PlanetId> = new Set<PlanetId>(['saturn', 'jupiter']);
  * Saturne ou de Jupiter produit sur les 90 jours. L'information ne doit pas
  * disparaître pour autant : on la restitue à part, en tête de l'axe.
  */
+/**
+ * Le transit lent qui domine la période.
+ *
+ * Mesuré par **ce qu'il a réellement pesé** : la somme des contributions
+ * absolues sur la fenêtre. Un premier jet comptait `durée × poids`, ce qui
+ * ignorait l'exactitude — un aspect large mais installé battait un aspect quasi
+ * exact. Sur le thème de référence, le fond Business sortait « Jupiter en carré à
+ * ton Milieu du Ciel » là où l'astrologue qui a lu ce thème désignait Saturne
+ * opposé au Jupiter natal, à deux centièmes de degré. La somme des contributions
+ * combine d'elle-même les trois choses qui comptent : la durée, le poids du
+ * couple, et la proximité à l'exact.
+ *
+ * On garde le jour le plus serré comme représentant : c'est celui dont l'orbe se
+ * dit.
+ */
 function findBackdrop(
   axis: AxisId,
   dayList: AxisDay[],
   transitWeights: Partial<Record<PlanetId, number>>,
   natalWeights: Partial<Record<PointId, number>>,
 ): DayAspect | null {
-  const tally = new Map<string, { count: number; best: DayAspect; weight: number }>();
+  void axis;
+  void transitWeights;
+  void natalWeights;
+  const tally = new Map<string, { poids: number; best: DayAspect }>();
   for (const day of dayList) {
     for (const a of day.aspects) {
       if (!SLOW.has(a.transit)) continue;
       const key = `${a.transit}|${a.aspect}|${a.natal}`;
-      const weight = (transitWeights[a.transit] ?? 0) * (natalWeights[a.natal] ?? 0);
       const entry = tally.get(key);
       if (!entry) {
-        tally.set(key, { count: 1, best: a, weight });
+        tally.set(key, { poids: Math.abs(a.contribution), best: a });
       } else {
-        entry.count += 1;
+        entry.poids += Math.abs(a.contribution);
         if (a.orb < entry.best.orb) entry.best = a;
       }
     }
   }
-  let winner: { count: number; best: DayAspect; weight: number } | null = null;
-  for (const entry of tally.values()) {
-    const score = entry.count * entry.weight;
-    if (!winner || score > winner.count * winner.weight) winner = entry;
-  }
+  let winner: { poids: number; best: DayAspect } | null = null;
+  for (const entry of tally.values()) if (!winner || entry.poids > winner.poids) winner = entry;
   return winner ? winner.best : null;
 }

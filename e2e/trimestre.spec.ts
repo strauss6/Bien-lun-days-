@@ -122,3 +122,34 @@ test('le trimestre nomme le fond de période quand il y en a un', async ({ page 
     expect(texte.trim().split(/\s+/).length, texte).toBeLessThanOrEqual(45);
   }
 });
+
+/*
+ * « Si tu fais attention, c'est bien, tu vas pouvoir contrer l'aspect qui montre
+ * ces difficultés, sur ce plan. » — le rédacteur, 11 octobre 2026. Un aspect
+ * difficile nomme un domaine, celui de la maison du point natal touché, et ce
+ * domaine se surveille. Le transit lent dominant existait dans le moteur depuis
+ * l'origine sans être affiché nulle part.
+ */
+test('le fond lent nomme son domaine, et dit qu’il se contre', async ({ page }) => {
+  await allerAuTrimestre(page);
+
+  const lent = page.getByTestId('quarter-slow');
+  if (await lent.count() === 0) return; // un axe peut n'avoir aucun transit lent
+
+  await expect(lent).toContainText(/CE À QUOI FAIRE ATTENTION|CE QUI TE PORTE/);
+  // L'aspect en toutes lettres, et la maison qu'il touche avec son domaine.
+  await expect(lent).toContainText(
+    /(Soleil|Lune|Mercure|Vénus|Mars|Jupiter|Saturne|Uranus|Neptune|Pluton) en (conjonction|sextile|carré|trigone|opposition) à (ton|ta) /,
+  );
+  await expect(lent).toContainText(/maison \d+, /);
+
+  const texte = await lent.innerText();
+  if (texte.includes('CE À QUOI FAIRE ATTENTION')) {
+    // Une difficulté se contre : jamais un verdict, jamais un renoncement.
+    expect(texte).toMatch(/contres?|passe au travers|désamorcer/);
+    expect(texte.toLowerCase()).not.toMatch(/renonce|abandonne|annule/);
+  }
+  for (const t of await lent.locator('.reading').allInnerTexts()) {
+    expect(t.trim().split(/\s+/).length, t).toBeLessThanOrEqual(45);
+  }
+});

@@ -43,7 +43,16 @@ export function signOfHouse(chart: NatalChart, house: number): number {
   return (signOf(chart.points.asc.lon) + house - 1) % 12;
 }
 
-/** Domaine de vie de chaque maison, en clair. */
+/**
+ * Domaine de vie de chaque maison, en clair.
+ *
+ * Quatre viennent du rédacteur — 1, 4, 7, 10, les angulaires. Les autres sont de
+ * nous, sauf la **9**, qu'il a précisée le 11 octobre 2026 en lisant un Saturne
+ * opposé à un Jupiter qui s'y trouve : « ça veut dire tout simplement qu'il faut
+ * faire attention à tout ce qui est d'ordre juridique, administratif ». Le
+ * juridique y est passé devant, parce que c'est la lecture qu'il en donne en
+ * premier et que c'est celle qui se traduit en geste.
+ */
 export const HOUSE_TOPICS: Record<number, string> = {
   1: 'toi, ton allure, ta façon d\'entrer dans une pièce',
   2: 'ton argent, ce que tu produis',
@@ -53,7 +62,7 @@ export const HOUSE_TOPICS: Record<number, string> = {
   6: 'ton travail au quotidien, ton hygiène',
   7: 'tes associations, tes contrats, ton couple',
   8: 'ce que tu transformes, l\'argent des autres',
-  9: 'ce que tu explores, l\'étranger, la conviction',
+  9: 'ce qui est juridique et administratif, l\'étranger, ce que tu explores',
   10: 'ta carrière, ta réputation',
   11: 'tes amis, tes réseaux, tes soutiens',
   12: 'ce que tu ne montres pas',

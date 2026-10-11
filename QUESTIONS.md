@@ -516,3 +516,22 @@ produit assume de ne dire que du relatif — « par rapport à tes journées hab
 l'écart avec un astrologue restera structurel. Soit il porte aussi une lecture absolue, et
 il faut décider ce qu'elle mesure et comment elle cohabite avec la première sans faire deux
 nombres contradictoires sur le même écran.
+
+## Q25 — Les douze vigilances, une seule est de lui
+
+« Si tu fais attention, c'est bien, tu vas pouvoir contrer l'aspect qui montre ces
+difficultés, sur ce plan. » Le rédacteur, le 11 octobre 2026, lisant un Saturne opposé à un
+Jupiter natal logé en maison 9 : « il faut faire attention à tout ce qui est d'ordre
+juridique, administratif ».
+
+La maison 9 porte donc ses mots, et le libellé du domaine a été corrigé pour les refléter —
+le juridique est passé devant l'étranger, parce que c'est la lecture qu'il en donne en
+premier et la seule qui se traduise en geste. **Les onze autres vigilances sont de nous**,
+écrites sur le même gabarit depuis le domaine de chaque maison. C'est une liste courte et
+concrète : c'est le genre de texte qu'il corrige en dix minutes, et il faut le lui faire
+relire avant qu'elle ne s'installe.
+
+À lui demander aussi : une vigilance devrait-elle dépendre de la **planète** qui forme
+l'aspect autant que de la maison touchée ? Saturne opposé à un point en maison 9 donne
+« juridique et administratif » ; Neptune carré au même point donnerait-il la même chose, ou
+plutôt « ne signe rien que tu n'aies relu » ?

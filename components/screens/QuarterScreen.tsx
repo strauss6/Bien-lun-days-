@@ -73,6 +73,10 @@ export function QuarterScreen({ payload, onBack }: { payload: ReadingPayload; on
     () => payload.houseBackdrops.filter((b) => b.axis === axis),
     [payload, axis],
   );
+  const lent = useMemo(
+    () => payload.slowBackdrops.find((b) => b.axis === axis) ?? null,
+    [payload, axis],
+  );
   const rang = useMemo(() => rangs(fenetres), [fenetres]);
 
   const premier = payload.days[0]?.date ?? '';
@@ -139,6 +143,28 @@ export function QuarterScreen({ payload, onBack }: { payload: ReadingPayload; on
               {f.openEnd ? 'et continue au-delà des trois mois' : `jusqu’au ${jourMois(f.end)}`}.
             </p>
           ))}
+        </section>
+      ) : null}
+
+      {/*
+        Le transit lent dominant, et ce qu'il demande de surveiller.
+        `AxisReading.backdrop` existait depuis l'origine sans être affiché nulle
+        part. Il porte pourtant la lecture qu'un astrologue donne en premier d'une
+        difficulté durable : le domaine vient de la maison du point natal touché,
+        et la difficulté **se contre**. « Si tu fais attention, c'est bien, tu vas
+        pouvoir contrer l'aspect qui montre ces difficultés, sur ce plan. »
+      */}
+      {lent ? (
+        <section className="mt-6" data-testid="quarter-slow">
+          <h2 className="technical text-[11px] font-semibold tracking-[0.1em] opacity-55">
+            {lent.hard ? 'CE À QUOI FAIRE ATTENTION' : 'CE QUI TE PORTE'}
+          </h2>
+          <p className="technical mt-2 text-[10.5px] tracking-[0.02em] opacity-55">
+            {lent.phrase} · maison {lent.house}, {lent.topic}
+          </p>
+          <p className="reading mt-3 text-[17px] leading-snug">
+            {lent.watch ?? 'Un bon aspect ne promet rien : c’est un terrain, il demande d’être employé.'}
+          </p>
         </section>
       ) : null}
 

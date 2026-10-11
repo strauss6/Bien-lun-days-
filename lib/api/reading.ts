@@ -2,6 +2,8 @@ import { z } from 'zod';
 import type { AspectId, AxisId, PlanetId, PointId } from '@/lib/astro/types';
 import { formatOffset, resolveBirthInstant } from '@/lib/astro/time';
 import { computeNatalChart, POINT_LABELS } from '@/lib/astro/natal';
+import { HOUSE_TOPICS } from '@/lib/astro/rulers';
+import { vigilanceFor } from '@/lib/copy/vigilance';
 import { computeReading } from '@/lib/astro/scoring';
 import { computeRareEvents, RARITY_LABELS } from '@/lib/astro/rarity';
 import { AXIS_IDS, AXIS_LABELS, QUARTER_DAYS } from '@/lib/astro/transits';
@@ -212,6 +214,28 @@ export interface HouseBackdropPayload {
   openEnd: boolean;
 }
 
+/**
+ * Le transit lent qui domine la période, et ce qu'il demande de surveiller.
+ *
+ * `AxisReading.backdrop` existait depuis l'origine et n'était affiché nulle part.
+ * Il porte pourtant la lecture que le rédacteur donne en premier d'un aspect
+ * difficile et durable : le domaine vient de la maison où loge le point natal
+ * touché, et la difficulté **se contre** — « si tu fais attention, c'est bien, tu
+ * vas pouvoir contrer l'aspect qui montre ces difficultés, sur ce plan ».
+ */
+export interface SlowBackdropPayload {
+  axis: AxisId;
+  /** « Saturne en opposition à ton Jupiter ». */
+  phrase: string;
+  /** Maison du point natal touché, et ce qu'elle gouverne. */
+  house: number;
+  topic: string;
+  /** `true` quand l'aspect pèse contre : seule une difficulté demande une vigilance. */
+  hard: boolean;
+  /** Le geste concret, ou `null` si l'aspect porte. */
+  watch: string | null;
+}
+
 export interface ReadingPayload {
   firstName: string;
   birth: {
@@ -234,6 +258,8 @@ export interface ReadingPayload {
   periods: PeriodPayload[];
   /** Les fonds de période, du plus lourd au plus léger. Voir `HouseBackdropPayload`. */
   houseBackdrops: HouseBackdropPayload[];
+  /** Le transit lent dominant de chaque axe, et sa vigilance. Voir `SlowBackdropPayload`. */
+  slowBackdrops: SlowBackdropPayload[];
   rare: RarePayload[];
   stats: { comparisonsTested: number; aspectEvents: number };
 }
@@ -367,6 +393,21 @@ export function buildReading(input: ReadingInput): ReadingPayload {
       openStart: f.openStart,
       openEnd: f.openEnd,
     }))).sort((a, b) => a.start.localeCompare(b.start)),
+    slowBackdrops: AXIS_IDS.flatMap((axis) => {
+      const b = reading.axes[axis].backdrop;
+      if (!b) return [];
+      const house = chart.points[b.natal].house;
+      const hard = b.contribution < 0;
+      return [{
+        axis,
+        phrase: transitPhrase(b.transit, b.aspect, b.natal),
+        house,
+        topic: HOUSE_TOPICS[house] ?? '',
+        hard,
+        /* Seule une difficulté demande une vigilance : un bon aspect, lui, demande d'agir. */
+        watch: hard ? vigilanceFor(b.natal, house) : null,
+      }];
+    }),
     houseBackdrops: AXIS_IDS.flatMap((axis) => reading.axes[axis].houseTransits.map((t) => ({
       axis,
       planet: POINT_LABELS[t.planet],

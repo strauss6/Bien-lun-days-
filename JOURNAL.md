@@ -731,3 +731,29 @@ C'est la troisième correction d'affilée dans ce cas — maisons, maîtres de m
 Ce n'est plus une coïncidence : le score dit « comparé à ta journée médiane » quand
 l'astrologue dit « favorable en soi ». Q24 pose la question, qui est de produit et non de
 moteur.
+
+## 11 octobre 2026 (nuit, suite) — une difficulté nomme un domaine, et se contre
+
+**Fait.** Le rédacteur, sur le Saturne opposé au Jupiter natal : « ça veut dire tout
+simplement qu'il faut faire attention à tout ce qui est d'ordre juridique, administratif.
+Mais si tu fais attention, c'est bien, tu vas pouvoir contrer l'aspect qui montre ces
+difficultés, sur ce plan. » Trois choses que le produit ne disait pas : un aspect difficile
+nomme un **domaine** — celui de la maison où loge le point natal touché —, ce domaine se
+**surveille**, et la difficulté est **circonscrite** à ce plan.
+
+`AxisReading.backdrop`, le transit lent dominant, existait depuis l'origine et n'était
+affiché nulle part — le même oubli que les maîtres de maison le matin. Il remonte
+maintenant jusqu'à l'écran du trimestre, avec la maison touchée, son domaine et le geste.
+Sur le thème de référence : « Saturne en opposition à ton Jupiter · maison 9 — fais
+attention à tout ce qui est d'ordre juridique et administratif. »
+
+**Cassé, réparé.** Le fond lent était choisi sur `durée × poids`, ce qui ignore
+l'exactitude : un aspect large mais installé battait un aspect quasi exact. Business
+sortait « Jupiter en carré à ton Milieu du Ciel » là où l'astrologue désignait le Saturne à
+deux centièmes de degré. Le critère devient la somme des contributions absolues, qui
+combine d'elle-même durée, poids et proximité à l'exact — et le moteur désigne désormais le
+même aspect que lui.
+
+**Incertain.** Onze vigilances sur douze sont de nous ; seule la maison 9 porte ses mots.
+Q25 les liste et pose la question suivante : la vigilance devrait-elle dépendre aussi de la
+planète qui forme l'aspect, et pas seulement de la maison touchée ?
