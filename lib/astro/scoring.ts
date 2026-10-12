@@ -1,0 +1,530 @@
+import type {
+  AspectId, AxisDay, AxisId, AxisReading, DayAspect, LunarDay, NatalChart, PlanetId, PointId,
+  Reading,
+} from './types';
+import type { TransitGrid } from './transits';
+import { AXIS_IDS, AXIS_TRANSITS, DEFAULT_WINDOW_DAYS, buildTransitGrid, pairKey } from './transits';
+import { type Calibration, applyCalibration, calibrationFor, neutralScore } from './calibration';
+import { effectiveLunarWeights, lunarSeries, overallScore } from './lunar';
+import { houseAffinity, houseRulerWeights, houseTransits } from './houses';
+import { axisPeriods } from './periods';
+
+/** Poids des planètes en transit, par axe. */
+export const TRANSIT_WEIGHTS: Record<AxisId, Partial<Record<PlanetId, number>>> = {
+  business: { jupiter: 1.0, saturn: 0.9, sun: 0.7, mercury: 0.6 },
+  love: { venus: 1.0, mars: 0.7, jupiter: 0.65, moon: 0.45 },
+  energy: { mars: 1.0, saturn: 0.85, sun: 0.8, moon: 0.5 },
+};
+
+/** Poids des points natals visés, par axe. */
+export const NATAL_WEIGHTS: Record<AxisId, Partial<Record<PointId, number>>> = {
+  business: { sun: 1.0, mc: 0.95, mercury: 0.7, jupiter: 0.6 },
+  love: { venus: 1.0, moon: 0.8, dsc: 0.75, sun: 0.6 },
+  energy: { asc: 1.0, sun: 0.85, mars: 0.8, moon: 0.55 },
+};
+
+/**
+ * Planètes dont la **conjonction** pèse contre.
+ *
+ * Saturne ou Mars posés sur un point natal freinent ou brusquent : c'est la
+ * phrase du rédacteur sur la conjonction, « ce qu'elle apporte dépend entièrement
+ * de laquelle : Jupiter ouvre, Saturne ralentit ».
+ *
+ * **Leurs bons aspects, eux, valent plein tarif**, et c'est une correction du
+ * 11 octobre 2026. Le barème amortissait leurs trigones et sextiles à 0,60 et
+ * 0,45 quand Jupiter et Vénus touchaient 1,00 et 0,70 — Saturne était donc
+ * pénalisé une fois et demie plus du bon côté que du mauvais. Cela contredisait
+ * frontalement le corpus, qui tenait déjà la réponse depuis le 13 septembre :
+ * « Saturne en bon aspect, c'est ce qui rend son travail très constructif », et
+ * « Mars en bon aspect, on gagne ce qu'on engage ».
+ *
+ * Le rédacteur l'a redit le soir du 11 octobre, et c'est le mot qui tranche :
+ * « Saturne, c'est Kronos, le dieu du temps — mais Saturne symbolise aussi ce qui
+ * se construit. Un bon aspect de Saturne à ton Soleil, pendant des mois, c'est
+ * très constructif. » Un trigone de Saturne n'est pas un petit trigone : pour
+ * bâtir quelque chose qui dure, c'est le meilleur aspect qui soit.
+ */
+const MALEFIC: ReadonlySet<PlanetId> = new Set<PlanetId>(['saturn', 'mars']);
+
+/** Planètes dont les aspects durs relèvent de l'excès plutôt que de l'obstacle. */
+const SOFT_HARD: Partial<Record<PlanetId, number>> = { jupiter: -0.5, venus: -0.6 };
+
+/**
+ * Polarité d'un aspect, modulée par la nature de la planète en transit.
+ *
+ * Une conjonction n'a pas de signe en soi : elle vaut ce que vaut la planète qui
+ * arrive. Saturne ou Mars sur un point natal pèsent contre, Jupiter ou Vénus pour.
+ * Les angles harmoniques, eux, ne connaissent pas de malédiction : voir ci-dessus.
+ */
+export function polarity(transit: PlanetId, aspect: AspectId): number {
+  switch (aspect) {
+    case 'trine': return 1.0;
+    case 'sextile': return 0.7;
+    case 'conjunction': return MALEFIC.has(transit) ? -0.8 : 0.9;
+    case 'square': return SOFT_HARD[transit] ?? -1.0;
+    case 'opposition': return SOFT_HARD[transit] ?? -0.9;
+  }
+}
+
+/** Majoration du jour où l'aspect est au plus près de l'exact. */
+export const PEAK_BONUS = 0.15;
+
+/**
+ * Poids de la Lune dans le choix des dates du rapport.
+ *
+ * La Lune repasse sur chaque point natal tous les mois : ses aspects donnent au
+ * ruban son grain quotidien — c'est voulu — mais ils ne doivent pas décider des
+ * cinq meilleures dates sur 90 jours, sinon le rapport promet une date rare et
+ * livre un événement mensuel. Elle est donc divisée par quatre dans la série qui
+ * sert au classement, et gardée entière dans celle qui est affichée.
+ */
+export const MOON_SELECTION_FACTOR = 0.25;
+
+/** Seuils de citation d'une date, sur l'échelle normalisée 3–97. */
+export const BEST_THRESHOLD = 55;
+export const WORST_THRESHOLD = 45;
+
+/**
+ * Nombre de dates en dessous duquel un axe se lit comme vide. C'est un repère
+ * d'affichage, pas une garantie du moteur : rien n'est fabriqué pour l'atteindre.
+ */
+export const SPARSE_AXIS_THRESHOLD = 3;
+
+/**
+ * Aspect à citer pour justifier une date.
+ *
+ * Un bon jour doit être expliqué par son meilleur aspect harmonique, un mauvais
+ * par son aspect dur le plus fort. Trier par proximité à l'exact ne suffit pas :
+ * un carré très serré peut être l'aspect le plus net d'une journée par ailleurs
+ * excellente, et le rapport justifierait alors un pic par un aspect négatif.
+ */
+export function primaryAspect(day: AxisDay, direction: 'best' | 'worst'): DayAspect | null {
+  const wanted = day.aspects.filter((a) => (direction === 'best' ? a.contribution > 0 : a.contribution < 0));
+  return wanted[0] ?? day.aspects[0] ?? null;
+}
+
+/**
+ * Poids natals effectifs.
+ *
+ * Sans heure de naissance, l'Ascendant, le MC et le Descendant ne sont pas
+ * exploitables (±180°) et la Lune n'est connue qu'à ±6°. On les retire ou on
+ * les dégrade plutôt que de simuler une précision qu'on n'a pas.
+ */
+export function effectiveNatalWeights(axis: AxisId, chart: NatalChart): Partial<Record<PointId, number>> {
+  const base = NATAL_WEIGHTS[axis];
+  const out: Partial<Record<PointId, number>> = {};
+
+  /*
+   * Les ancrages fixes de l'axe, communs à tout le monde. Sans heure de naissance
+   * les angles ne sont pas calculables et sortent — chemin conservé comme
+   * garde-fou, bien que le produit exige désormais l'heure.
+   */
+  for (const [point, weight] of Object.entries(base) as Array<[PointId, number]>) {
+    if (!chart.anglesReliable && (point === 'asc' || point === 'mc' || point === 'dsc' || point === 'ic')) continue;
+    out[point] = !chart.anglesReliable && point === 'moon' ? weight * 0.5 : weight;
+  }
+
+  /*
+   * Les maîtres des maisons de l'axe, propres à cette personne. « Si la maison 7
+   * tombe en Cancer, son maître est la Lune ; un bon aspect à la Lune est alors un
+   * bon aspect sur un partenariat. » C'est ce qui fait qu'un axe cesse d'être le
+   * même pour tout le monde. Les poids s'ajoutent à l'ancrage quand ils tombent
+   * sur le même point : un Soleil qui est aussi maître de la maison 7 compte deux
+   * fois pour l'Amour, et c'est juste.
+   */
+  for (const [point, weight] of Object.entries(houseRulerWeights(chart, axis)) as Array<[PointId, number]>) {
+    out[point] = (out[point] ?? 0) + weight;
+  }
+
+  /*
+   * « Le domaine dépend de la maison touchée. » Chaque point est enfin modulé par
+   * la maison qu'il occupe dans ce thème-ci : au plus 30 % d'écart, la maison
+   * nuance le domaine d'un aspect sans l'annuler.
+   */
+  for (const point of Object.keys(out) as PointId[]) {
+    out[point] = (out[point] as number) * houseAffinity(chart, axis, point);
+  }
+
+  return out;
+}
+
+export function effectiveTransitWeights(axis: AxisId, anglesReliable: boolean): Partial<Record<PlanetId, number>> {
+  const base = TRANSIT_WEIGHTS[axis];
+  if (anglesReliable) return base;
+  return { ...base, ...(base.moon ? { moon: base.moon * 0.5 } : {}) };
+}
+
+export function median(values: number[]): number {
+  const s = [...values].sort((a, b) => a - b);
+  const mid = s.length >> 1;
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+}
+
+export function medianAbsoluteDeviation(values: number[], center = median(values)): number {
+  return median(values.map((v) => Math.abs(v - center)));
+}
+
+/** Lissage sur trois jours, bords renormalisés. Tue le bruit lunaire d'un jour isolé. */
+export function smooth(series: number[]): number[] {
+  return series.map((_, i) => {
+    const prev = i > 0 ? series[i - 1] : null;
+    const next = i < series.length - 1 ? series[i + 1] : null;
+    let sum = series[i] * 0.5;
+    let weight = 0.5;
+    if (prev !== null) { sum += prev * 0.25; weight += 0.25; }
+    if (next !== null) { sum += next * 0.25; weight += 0.25; }
+    return sum / weight;
+  });
+}
+
+export const SCORE_FLOOR = 3;
+export const SCORE_CEILING = 97;
+
+/**
+ * Normalisation sur la distribution propre de la personne.
+ *
+ * Une échelle absolue rendrait la moitié des rapports plats. Le rang percentile
+ * garantirait l'amplitude mais écraserait la forme — un vrai pic deviendrait un
+ * plateau. On centre donc sur la médiane avec un écart robuste (MAD), on comprime
+ * par une tangente hyperbolique, puis on étale entre 3 et 97 : amplitude garantie,
+ * forme conservée.
+ */
+export function normalize(raw: number[]): number[] {
+  return normalizeSmoothed(smooth(raw));
+}
+
+/** Même normalisation, sur une série déjà lissée (la marge de calcul a été retirée). */
+export function normalizeSmoothed(s: number[]): number[] {
+  const med = median(s);
+  const mad = 1.4826 * medianAbsoluteDeviation(s, med);
+  const scale = mad > 1e-9 ? mad : Math.max(1e-9, Math.max(...s.map((v) => Math.abs(v - med))));
+  const compressed = s.map((v) => Math.tanh((v - med) / (2.2 * scale)));
+  const lo = Math.min(...compressed);
+  const hi = Math.max(...compressed);
+  const span = hi - lo;
+  if (span < 1e-9) return s.map(() => (SCORE_FLOOR + SCORE_CEILING) / 2);
+  return compressed.map(
+    (c) => SCORE_FLOOR + (SCORE_CEILING - SCORE_FLOOR) * ((c - lo) / span),
+  );
+}
+
+/**
+ * Meilleurs ou pires jours, espacés d'au moins `minGap` jours.
+ *
+ * Sans cette contrainte, un seul transit exact livrerait cinq dates consécutives
+ * et le rapport paraîtrait vide.
+ */
+export function selectDates(
+  scores: number[],
+  options: {
+    count: number;
+    order: 'best' | 'worst';
+    minGap?: number;
+    /**
+     * Identité de l'événement astrologique qui explique ce jour. Deux dates du
+     * rapport ne peuvent pas partager le même événement : Vénus reste dans
+     * l'orbe d'un trigone pendant deux semaines, et sans cette contrainte les
+     * cinq « meilleures dates » sont cinq fois le même transit.
+     *
+     * Un retour `null` signifie **ce jour n'a rien à citer** : il est écarté.
+     * Le brief demande que chaque date affichée porte l'aspect qui l'explique ;
+     * une journée sans aucun aspect sur cet axe n'est pas une date du rapport,
+     * même si son score la place haut par simple absence de contrariété.
+     */
+    eventKey?: (day: number) => string | null;
+    /**
+     * Score minimum (`best`) ou maximum (`worst`) pour qu'une date soit citée.
+     * Une fenêtre calme ne doit pas produire un « meilleur jour » médiocre :
+     * mieux vaut quatre dates fortes que cinq dont une tiède.
+     */
+    threshold?: number;
+  },
+): number[] {
+  const minGap = options.minGap ?? 3;
+  const ranked = scores
+    .map((score, day) => ({ score, day }))
+    .sort((a, b) => (options.order === 'best' ? b.score - a.score : a.score - b.score));
+
+  const picked: number[] = [];
+  const usedEvents = new Set<string>();
+  const spaced = (day: number) => picked.every((p) => Math.abs(p - day) >= minGap);
+
+  const passesThreshold = (day: number) => options.threshold === undefined
+    || (options.order === 'best' ? scores[day] >= options.threshold : scores[day] <= options.threshold);
+
+  const citable = (day: number): string | null | undefined => {
+    if (!options.eventKey) return undefined;      // pas de contrainte d'événement
+    const key = options.eventKey(day);
+    if (key === null || usedEvents.has(key)) return null;
+    return key;
+  };
+
+  for (const { day } of ranked) {
+    if (picked.length >= options.count) break;
+    if (!spaced(day) || !passesThreshold(day)) continue;
+    const key = citable(day);
+    if (key === null) continue;
+    if (key !== undefined) usedEvents.add(key);
+    picked.push(day);
+  }
+
+  /**
+   * Aucun repli.
+   *
+   * Deux tentations ont été essayées et écartées, chacune parce qu'elle faisait
+   * mentir le rapport : compléter avec un événement déjà cité produit trois
+   * dates qui sont trois fois le même transit, et relâcher le seuil de qualité
+   * présente un jour à 19 sur 100 comme un pic. Une date est citée quand elle
+   * passe le seuil **et** apporte un événement nouveau, sinon elle ne l'est pas.
+   *
+   * Un axe peut donc rendre moins de dates que demandé, y compris aucune sur une
+   * fenêtre calme. C'est la réponse juste, et l'interface doit savoir l'afficher
+   * plutôt que la masquer.
+   */
+  return picked.sort((a, b) => a - b);
+}
+
+/** Identité d'un événement : la paire visée et l'aspect formé, sans la date. */
+export function eventKeyOf(aspect: DayAspect | null): string | null {
+  return aspect ? `${aspect.transit}|${aspect.aspect}|${aspect.natal}` : null;
+}
+
+/**
+ * Série brute d'un axe sur toute la fenêtre élargie de la marge.
+ *
+ * Élargie pour que le lissage ait des voisins réels aux deux bords : sans ça, le
+ * premier et le dernier jour sont moins lissés que les autres et se retrouvent
+ * surreprésentés dans les extrêmes. **Conséquence importante : la valeur lissée
+ * d'un jour ne dépend pas de la fenêtre dans laquelle on le regarde.** C'est ce
+ * qui rend un étalonnage stable possible — seule la mise à l'échelle dépendait
+ * de la fenêtre, et c'est elle que `calibration.ts` fige.
+ *
+ * Extraite de `computeReading` pour que l'étalonnage la réutilise telle quelle :
+ * deux accumulations différentes produiraient deux distributions différentes, et
+ * l'échelle ne mesurerait plus ce qu'elle prétend mesurer.
+ */
+export function accumulate(
+  grid: TransitGrid,
+  axis: AxisId,
+  transitWeights: Partial<Record<PlanetId, number>>,
+  natalWeights: Partial<Record<PointId, number>>,
+): { raw: number[]; rawSelection: number[]; perDay: DayAspect[][] } {
+  const span = grid.days + 2 * grid.pad;
+  const raw = new Array<number>(span).fill(0);
+  const rawSelection = new Array<number>(span).fill(0);
+  const perDay: DayAspect[][] = Array.from({ length: span }, () => []);
+
+  /*
+   * **Le fond de maison n'est pas ici, et c'est une décision mesurée.**
+   *
+   * Il y a été, le 11 octobre 2026 : chaque planète lente traversant une maison
+   * de l'axe ajoutait une contribution constante. Trois constats l'en ont sorti.
+   *
+   * Il ne distingue pas les jours. Une valeur constante sur neuf mois décale la
+   * série entière, et l'étalonnage — calculé sur la même série — en réabsorbe
+   * l'essentiel. Gain mesuré sur le thème de référence : l'axe Business passait
+   * de 7 à 10 sur 100. Beaucoup de machinerie pour trois points.
+   *
+   * Il casse l'explication. Un jour pouvait devenir le plus bas de la fenêtre
+   * alors que ses deux aspects affichés étaient positifs : le score portait une
+   * composante que l'écran ne montrait nulle part. Un test l'a attrapé.
+   *
+   * Et il existe déjà un endroit pour ça. `AxisReading.backdrop` restitue en
+   * toutes lettres ce que la normalisation absorbe. Une traversée de maison est
+   * exactement de cette nature : un fait de fond, qui se **dit** — « Jupiter
+   * traverse ta maison 7 jusqu'en juillet » — au lieu de se diluer dans un
+   * nombre. Voir `houseTransits` et `QUESTIONS.md` Q20.
+   */
+
+  for (const transit of AXIS_TRANSITS[axis]) {
+    const tw = transitWeights[transit];
+    if (!tw) continue;
+    /*
+     * Les points réellement pondérés, et non la liste fixe de l'axe : depuis que
+     * les maîtres de maison s'ajoutent aux poids, la seconde ne couvre plus la
+     * première. Parcourir `AXIS_NATALS` laissait les maîtres déclarés et muets.
+     */
+    for (const natal of Object.keys(natalWeights) as PointId[]) {
+      const nw = natalWeights[natal];
+      if (!nw) continue;
+      const series = grid.cells.get(pairKey(transit, natal));
+      if (!series) continue;
+      for (let d = 0; d < span; d += 1) {
+        const cell = series[d];
+        if (!cell) continue;
+        const contribution =
+          tw * nw * polarity(transit, cell.aspect) * cell.exactness * (1 + (cell.peaking ? PEAK_BONUS : 0));
+        raw[d] += contribution;
+        rawSelection[d] += transit === 'moon' ? contribution * MOON_SELECTION_FACTOR : contribution;
+        perDay[d].push({ ...cell, transit, natal, contribution });
+      }
+    }
+  }
+
+  return { raw, rawSelection, perDay };
+}
+
+export interface ScoreOptions {
+  chart: NatalChart;
+  /** Fuseau de résidence — celui dans lequel « le jour » a un sens pour l'utilisateur. */
+  zone: string;
+  startDate: string;
+  days?: number;
+  /**
+   * Étalonnage des scores. Omis, il est calculé — et mis en cache — à partir du
+   * thème : voir `calibration.ts`. Le passer évite de le recalculer quand
+   * plusieurs fenêtres du même profil sont demandées.
+   */
+  calibration?: Calibration;
+}
+
+export function computeReading(options: ScoreOptions): Reading {
+  const { chart, zone, startDate } = options;
+  const days = options.days ?? DEFAULT_WINDOW_DAYS;
+  const grid = buildTransitGrid({ chart, zone, startDate, days });
+  const reliable = chart.anglesReliable;
+  const calibration = options.calibration ?? calibrationFor(chart, zone);
+
+  const axes = {} as Record<AxisId, AxisReading>;
+
+  for (const axis of AXIS_IDS) {
+    const transitWeights = effectiveTransitWeights(axis, reliable);
+    const natalWeights = effectiveNatalWeights(axis, chart);
+
+    const { raw, rawSelection, perDay } = accumulate(grid, axis, transitWeights, natalWeights);
+
+
+    const window = <T,>(series: T[]): T[] => series.slice(grid.pad, grid.pad + grid.days);
+    // Mise à l'échelle par l'étalonnage du thème, jamais par la fenêtre : c'est
+    // ce qui garantit qu'un 11 septembre vaut la même chose vu d'aujourd'hui,
+    // vu demain, et vu depuis la vue mensuelle.
+    const scores = applyCalibration(window(smooth(raw)), calibration.axes[axis].score);
+    const significance = applyCalibration(window(smooth(rawSelection)), calibration.axes[axis].selection);
+    const rawWindow = window(raw);
+    const aspectsWindow = window(perDay);
+
+    const dayList: AxisDay[] = window(grid.dates).map((date, d) => {
+      const aspects = aspectsWindow[d]
+        .sort((a, b) => Math.abs(b.contribution) - Math.abs(a.contribution));
+      return {
+        day: d,
+        date,
+        score: scores[d],
+        raw: rawWindow[d],
+        significance: significance[d],
+        aspects,
+        explaining: aspects.slice(0, 2),
+      };
+    });
+
+    /*
+     * La ligne neutre vient de l'étalonnage du thème, jamais des jours affichés :
+     * dérivée de la fenêtre, elle rendrait la moitié des jours favorables par
+     * construction, pour tout le monde et tous les trimestres.
+     */
+    const neutral = neutralScore(calibration.axes[axis].score);
+
+    axes[axis] = {
+      axis,
+      periods: axisPeriods(scores, neutral, axis),
+      neutral,
+      houseTransits: houseTransits(axis, grid.houses, AXIS_TRANSITS[axis], grid.pad, grid.days),
+      days: dayList,
+      best: selectDates(significance, {
+        count: 5, order: 'best', threshold: BEST_THRESHOLD,
+        eventKey: (d) => eventKeyOf(primaryAspect(dayList[d], 'best')),
+      }),
+      worst: selectDates(significance, {
+        count: 3, order: 'worst', threshold: WORST_THRESHOLD,
+        eventKey: (d) => eventKeyOf(primaryAspect(dayList[d], 'worst')),
+      }),
+      backdrop: findBackdrop(axis, dayList, transitWeights, natalWeights),
+    };
+  }
+
+  /*
+   * La journée elle-même. Calculée après les axes parce qu'elle en dépend : le
+   * score global mêle la Lune, qui en porte les trois quarts, à la moyenne des
+   * trois axes déjà calibrés.
+   */
+  const { raw: lunarRaw, perDay: lunarAspects } = lunarSeries(grid, effectiveLunarWeights(reliable));
+  const windowOf = <T,>(series: T[]): T[] => series.slice(grid.pad, grid.pad + grid.days);
+  const lunarScores = applyCalibration(windowOf(smooth(lunarRaw)), calibration.lunar);
+  const lunarWindow = windowOf(lunarAspects);
+
+  const lunar: LunarDay[] = windowOf(grid.dates).map((date, d) => ({
+    day: d, date, score: lunarScores[d], aspects: lunarWindow[d],
+  }));
+
+  const overall = lunar.map((l, d) =>
+    overallScore(l.score, AXIS_IDS.map((axis) => axes[axis].days[d].score)));
+
+  return {
+    chart,
+    startDate,
+    days,
+    zone,
+    method: calibration.method,
+    axes,
+    lunar,
+    overall,
+    seasons: grid.seasons.slice(grid.pad, grid.pad + grid.days),
+    stats: {
+      comparisonsTested: grid.comparisonsTested,
+      aspectDays: grid.aspectDays,
+      aspectEvents: grid.aspectEvents,
+    },
+  };
+}
+
+const SLOW: ReadonlySet<PlanetId> = new Set<PlanetId>(['saturn', 'jupiter']);
+
+/**
+ * Transit lent dominant sur la fenêtre.
+ *
+ * L'étalement de la normalisation absorbe l'offset constant qu'un transit de
+ * Saturne ou de Jupiter produit sur les 90 jours. L'information ne doit pas
+ * disparaître pour autant : on la restitue à part, en tête de l'axe.
+ */
+/**
+ * Le transit lent qui domine la période.
+ *
+ * Mesuré par **ce qu'il a réellement pesé** : la somme des contributions
+ * absolues sur la fenêtre. Un premier jet comptait `durée × poids`, ce qui
+ * ignorait l'exactitude — un aspect large mais installé battait un aspect quasi
+ * exact. Sur le thème de référence, le fond Business sortait « Jupiter en carré à
+ * ton Milieu du Ciel » là où l'astrologue qui a lu ce thème désignait Saturne
+ * opposé au Jupiter natal, à deux centièmes de degré. La somme des contributions
+ * combine d'elle-même les trois choses qui comptent : la durée, le poids du
+ * couple, et la proximité à l'exact.
+ *
+ * On garde le jour le plus serré comme représentant : c'est celui dont l'orbe se
+ * dit.
+ */
+function findBackdrop(
+  axis: AxisId,
+  dayList: AxisDay[],
+  transitWeights: Partial<Record<PlanetId, number>>,
+  natalWeights: Partial<Record<PointId, number>>,
+): DayAspect | null {
+  void axis;
+  void transitWeights;
+  void natalWeights;
+  const tally = new Map<string, { poids: number; best: DayAspect }>();
+  for (const day of dayList) {
+    for (const a of day.aspects) {
+      if (!SLOW.has(a.transit)) continue;
+      const key = `${a.transit}|${a.aspect}|${a.natal}`;
+      const entry = tally.get(key);
+      if (!entry) {
+        tally.set(key, { poids: Math.abs(a.contribution), best: a });
+      } else {
+        entry.poids += Math.abs(a.contribution);
+        if (a.orb < entry.best.orb) entry.best = a;
+      }
+    }
+  }
+  let winner: { poids: number; best: DayAspect } | null = null;
+  for (const entry of tally.values()) if (!winner || entry.poids > winner.poids) winner = entry;
+  return winner ? winner.best : null;
+}

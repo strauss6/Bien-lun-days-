@@ -1,0 +1,230 @@
+@import 'tailwindcss';
+
+/*
+ * Une couleur vive par axe, en dégradé, sur un fond blanc froid — la grammaire
+ * des graphiques d'Apple. Les saisons gardent leur teinte, réduites à un bandeau
+ * fin au-dessus du ruban.
+ */
+@theme {
+  --color-paper: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-ink: #0f1419;
+
+  --color-business: #1e4fff;
+  --color-love: #ff2d6f;
+  --color-energy: #d46700;
+
+  --color-spring: #34c759;
+  --color-summer: #ffc300;
+  --color-autumn: #ff6b3d;
+  --color-winter: #0a9be8;
+
+  --radius-card: 20px;
+
+  --font-technical: var(--font-geist-mono), ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-reading: var(--font-eb-garamond), 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+}
+
+/*
+ * Les variables de `@theme` ne sont émises par Tailwind que si une classe les
+ * utilise. Celles-ci sont lues en CSS direct par le ruban et les cartes : elles
+ * sont donc déclarées ici, où rien ne peut les élaguer.
+ */
+:root {
+  color-scheme: light;
+  --axis-business: #1e4fff;
+  --axis-love: #ff2d6f;
+  --axis-energy: #d46700;
+  --axis-business-text: #1338b8;
+  --axis-love-text: #c21048;
+  --axis-energy-text: #9a5b00;
+}
+
+html,
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-technical);
+}
+
+/* Le focus clavier reste visible partout : c'est une exigence, pas une option. */
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/*
+ * Les champs de saisie portent leur focus autrement : le filet du bas s'épaissit
+ * et passe à l'encre pleine. Un rectangle de deux pixels autour d'un champ pleine
+ * largeur écrase la question qu'il sert, et le premier champ d'un écran reçoit le
+ * focus par programme — la bague apparaîtrait sans que personne ait rien touché.
+ */
+input[type='text']:focus-visible,
+input[type='date']:focus-visible,
+input[type='time']:focus-visible {
+  outline: none;
+  border-bottom-width: 2px;
+  border-bottom-color: var(--color-ink);
+  padding-bottom: calc(0.5rem - 1px);
+}
+
+/* Les segments d'un champ date ou heure sont surlignés par la couleur d'accent. */
+input[type='date'],
+input[type='time'] {
+  accent-color: var(--color-ink);
+}
+
+input[type='date']::selection,
+input[type='time']::selection {
+  background: rgb(15 20 25 / 0.14);
+}
+
+/* Surface posée sur le papier : blanche, largement arrondie, ombre à peine là. */
+.surface {
+  background: var(--color-surface);
+  border-radius: var(--radius-card);
+  box-shadow: 0 1px 2px rgb(15 20 25 / 0.04), 0 8px 24px -12px rgb(15 20 25 / 0.12);
+}
+
+/* Registre « interprétation » : colonne étroite, interlignage large. */
+.reading {
+  font-family: var(--font-reading);
+  font-size: 1.1875rem;
+  line-height: 1.62;
+  max-width: 34rem;
+}
+
+/* Registre « calcul » : dense, tabulaire, aligné. */
+.technical {
+  font-family: var(--font-technical);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/*
+ * Rail des jours : une carte par jour, aimantée.
+ *
+ * Pleine largeur, gouttière portée par la carte et non par le rail — sinon la
+ * carte suivante dépasse dans la marge et l'on voit deux jours à la fois, ce
+ * que la règle 1 du budget de densité interdit. La barre de défilement est
+ * masquée : sur trente cartes qui s'accrochent une à une, elle n'apprend rien
+ * que la pagination ne dise déjà, et elle mange une ligne sur un téléphone. Le
+ * rail reste défilable au clavier, `tabindex` et flèches, sans souris.
+ */
+.day-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  margin-inline: calc(var(--spacing) * -5);
+}
+
+.day-track::-webkit-scrollbar {
+  display: none;
+}
+
+.day-track > * {
+  flex: 0 0 100%;
+  padding-inline: calc(var(--spacing) * 5);
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Texte réservé aux lecteurs d'écran. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Revue UI : mêmes jetons validés, une hiérarchie commune aux deux écrans. */
+.app-shell { max-width: 1080px; margin: auto; padding: 0 32px; }
+.app-header { min-height: 100px; display: flex; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid rgb(15 20 25 / .1); }
+.wordmark { font-family: var(--font-technical); font-size: 24px; font-weight: 500; letter-spacing: -.04em; text-decoration: none; }
+.secondary { font-size: .8125rem; color: rgb(15 20 25 / .65); }
+.report-heading { margin: 44px 0 30px; display: flex; align-items: baseline; justify-content: space-between; gap: 20px; }
+.report-title { font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.15; letter-spacing: -.035em; }
+.report-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 28px; align-items: start; }
+.ribbon-surface { padding: 26px 20px 10px; }
+.day-range { display: block; width: 100%; height: 44px; accent-color: var(--color-ink); cursor: pointer; }
+.day-navigation { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; }
+.quiet-button { width: 44px; height: 44px; border: 1px solid rgb(15 20 25 / .14); border-radius: 50%; font-size: 24px; background: var(--color-surface); cursor: pointer; }
+button:disabled { opacity: .3; cursor: default; }
+.day-card { padding: 12px 24px 16px; }
+.day-card-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; font-size: .875rem; }
+.text-button { min-height: 44px; padding: 0 4px; font-size: .8125rem; text-decoration: underline; text-underline-offset: 4px; cursor: pointer; }
+.axis-options { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-bottom: 1px solid rgb(15 20 25 / .1); margin-top: 12px; }
+.axis-option { position: relative; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 12px 0; font-size: .8125rem; color: rgb(15 20 25 / .65); cursor: pointer; border-bottom: 2px solid transparent; }
+.axis-option[aria-pressed='true'] { color: var(--axis-tone); border-bottom-color: var(--axis-tone); }
+.axis-small-score { font-size: 1.1875rem; font-variant-numeric: tabular-nums; }
+.score-block { display: flex; align-items: baseline; justify-content: center; gap: 10px; padding: 16px 0 18px; }
+.score-number { font-size: clamp(4rem, 8vw, 5.5rem); font-weight: 500; letter-spacing: -.07em; line-height: 1.2; }
+.score-scale { font-size: .8125rem; }
+.aspect-detail { border-top: 1px solid rgb(15 20 25 / .1); }
+.aspect-detail summary { position: relative; list-style: none; padding: 16px 22px 16px 0; cursor: pointer; }
+.aspect-detail summary::-webkit-details-marker { display: none; }
+.aspect-detail summary::after { content: '+'; position: absolute; right: 0; top: 16px; font-size: 16px; }
+.aspect-detail[open] summary::after { content: '−'; }
+.aspect-name { display: block; font-size: .8125rem; line-height: 1.6; }
+.reading.aspect-plain { display: block; font-size: 1.1875rem; line-height: 1.45; margin-top: 5px; color: rgb(15 20 25 / .7); }
+.aspect-measure { font-size: .8125rem; line-height: 1.6; padding-bottom: 16px; color: rgb(15 20 25 / .65); }
+.app-footer { max-width: 34rem; margin: 48px 0 24px; font-size: .75rem; line-height: 1.7; color: rgb(15 20 25 / .65); }
+.home-intro { padding: 64px 0 56px; max-width: 730px; }
+.home-title { max-width: 800px; font-size: clamp(2rem, 5vw, 3.5rem); line-height: 1.02; font-weight: 500; letter-spacing: -.035em; }
+.home-description { margin: 24px 0 28px; }
+.home-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; }
+.primary-link { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 14px 24px; border-radius: 8px; background: var(--color-ink); color: var(--color-surface); font-size: .875rem; text-decoration: none; }
+.primary-link:hover { opacity: .85; }
+.zodiac-index { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 20px 8px; border-top: 1px solid rgb(15 20 25 / .1); padding-top: 26px; }
+.zodiac-index li { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.zodiac-index span { font-size: .75rem; color: rgb(15 20 25 / .65); }
+@media (max-width: 760px) {
+  .app-shell { padding: 0 20px; }
+  .app-header { min-height: 76px; }
+  .report-heading { display: block; margin: 24px 0 20px; }
+  .report-heading p { margin-top: 8px; }
+  .report-layout { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .ribbon-surface { padding: 16px 12px 0; }
+  .day-card { padding: 8px 20px 12px; }
+  .day-navigation { padding: 8px 0 4px; }
+  .day-navigation .quiet-button { width: 44px; height: 44px; }
+  .home-intro { padding: 44px 0 40px; }
+  /*
+   * Six colonnes faisaient se chevaucher « Sagittaire », « Capricorne » et
+   * « Verseau » à 412 px : les noms sont plus larges que la colonne. Quatre
+   * colonnes laissent la place, et le nom passe sous le glyphe sans se couper.
+   */
+  .zodiac-index { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px 10px; }
+  .zodiac-index span { font-size: .6875rem; text-align: center; }
+  .app-footer { margin-top: 30px; }
+}
+@media (max-width: 360px) {
+  .app-shell { padding: 0 14px; }
+  .app-header { flex-wrap: wrap; padding: 14px 0; }
+  .zodiac-index { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}

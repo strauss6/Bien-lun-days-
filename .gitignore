@@ -1,0 +1,11 @@
+node_modules
+.next
+out
+.env
+.env.local
+*.tsbuildinfo
+.vercel
+next-env.d.ts
+playwright-report
+test-results
+bien-lune.html
